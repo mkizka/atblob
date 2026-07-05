@@ -1,0 +1,37 @@
+{
+  "name": "@atcdn/express",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "AGPL-3.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "format": "eslint --fix . && prettier --write .",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@atcdn/core": "workspace:*",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "prettier": "^3.8.1",
+    "prettier-plugin-pkg": "^0.21.2"
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-pkg"
+    ]
+  }
+}

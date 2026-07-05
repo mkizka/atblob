@@ -1,0 +1,36 @@
+{
+  "name": "@atcdn/hono",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "AGPL-3.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "format": "eslint --fix . && prettier --write .",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@atcdn/core": "workspace:*",
+    "hono": "^4.12.27"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "prettier-plugin-pkg": "^0.21.2"
+  },
+  "prettier": {
+    "plugins": [
+      "prettier-plugin-pkg"
+    ]
+  }
+}
