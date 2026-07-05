@@ -1,0 +1,194 @@
+# atcdn 仕様書
+
+## コンセプト
+
+bluesky-social/atproto の bsky(AppView)に実装されている画像CDNだけを単体で切り出したOSS実装。
+
+- **パス互換**: cdn.bsky.app と同じURLパスを受け付ける。クライアント側はCDNのホスト名を差し替えるだけで使える
+- **atprotoアプリの共通基盤**: bsky以外のatprotoアプリでも、ほとんどの場合必要になる画像CDNをすぐ使える形で提供する
+
+## 仕様サマリー
+
+| 項目                     | 内容                                                                                                              |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| 実行環境                 | Node.js + Docker(sharpを使用)                                                                                     |
+| blob取得                 | DID解決してPDSから取得。解決にはatproto公式ライブラリ(`@atproto/identity`)を使う                                  |
+| プリセット               | bsky互換の4種のみ固定。独自プリセットの追加機能は持たない                                                         |
+| 出力フォーマット         | 本家互換(`jpeg` / `webp`、`@format` 省略時はプリセット既定の `webp`)                                              |
+| 互換性の基準             | 入出力仕様の互換(同じURLパスを受け付け、同等の寸法・フォーマット・ステータスコードを返す)。バイト一致は保証しない |
+| DID解決キャッシュ        | Redisにキャッシュ(デフォルト・必須)。オプションでインメモリキャッシュに切替可能                                   |
+| 変換済み画像のキャッシュ | サーバーは持たない。長期の `Cache-Control` を付与し、実キャッシュは前段CDN(Cloudflare、nginx等)に委ねる           |
+| 悪用対策                 | 基本ガードのみ内蔵(サイズ上限・タイムアウト・Content-Type検証・SSRF対策)。レートリミットは前段に委ねる            |
+| 観測性                   | `GET /health`(Redis疎通確認を含む)と構造化ログ(JSON)を内蔵。メトリクスはスコープ外                                |
+| パッケージ構成           | モノレポ4パッケージ。`@atcdn/core`(メイン処理)/ `@atcdn/hono`・`@atcdn/express`(アダプタ)/ `atcdn`(CLI)           |
+| HTTPフレームワーク       | コアはフレームワーク非依存。アダプタでHono / Expressに対応。CLIはHonoアダプタ + `@hono/node-server` で起動        |
+| 配布                     | Dockerイメージ(ghcr.io)+ npmパッケージ(上記4パッケージ)の両方                                                     |
+| スコープ                 | 画像CDNのみ。動画CDN(video.bsky.app)やリンクカードサムネイル(cardyb)は将来も対象外                                |
+| ライセンス               | AGPL-3.0                                                                                                          |
+
+## API仕様
+
+### エンドポイント
+
+```
+GET /img/{preset}/plain/{did}/{cid}@{format}
+GET /img/{preset}/plain/{did}/{cid}
+```
+
+- `preset`: 下記4種のいずれか
+- `did`: 画像の持ち主のDID(`did:plc:...` または `did:web:...`)
+- `cid`: blobのCID
+- `format`: `jpeg` または `webp`。省略時はプリセット既定のフォーマット(全プリセットで `webp`)
+
+### プリセット定義(本家準拠)
+
+本家 `packages/bsky/src/image/uri.ts` の定義値に一致させる。
+
+| preset           | width | height | fit    | 既定format | min  |
+| ---------------- | ----- | ------ | ------ | ---------- | ---- |
+| `avatar`         | 1000  | 1000   | cover  | webp       | true |
+| `banner`         | 3000  | 1000   | cover  | webp       | true |
+| `feed_thumbnail` | 2000  | 2000   | inside | webp       | true |
+| `feed_fullsize`  | 1000  | 1000   | inside | webp       | true |
+
+- `min: true` は「元画像が指定サイズより小さい場合に拡大しない」挙動
+- 画質は `quality: 100`(本家準拠)
+- アニメーション画像(GIF・animated webp)は静止画化し、先頭フレームのみ処理する(本家準拠)
+
+### エラーレスポンス(本家準拠)
+
+| 状況                                   | ステータス   |
+| -------------------------------------- | ------------ |
+| パス不正(未知のpreset、不正なformat等) | 400          |
+| 取得したblobのContent-Typeが画像でない | 400          |
+| CID検証失敗                            | 404          |
+| 上流(PDS等)のHTTPエラー                | そのまま透過 |
+| その他の失敗                           | 502          |
+
+### レスポンスヘッダ
+
+- 成功時: `Cache-Control: public, max-age=31536000`(CIDはコンテンツアドレスで不変のため1年)
+- エラー時(400/404/502等): `Cache-Control: public, max-age=60`。PDSの一時障害等による失敗が前段CDNに長期キャッシュされるのを防ぎつつ、リトライストームは前段で吸収する
+- `Content-Type`: 出力フォーマットに応じて設定
+
+### 運用エンドポイント
+
+- `GET /health`: ヘルスチェック。Redisへの疎通確認を含み、正常なら200を返す
+
+## アーキテクチャ
+
+### パッケージ構成
+
+モノレポで以下の4パッケージに分割し、それぞれnpmに公開する。
+
+| パッケージ       | 役割                                                                                                       |
+| ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `@atcdn/core`    | メイン処理(パス解釈・DID解決・blob取得・CID検証・画像変換)を公開する。特定のHTTPフレームワークに依存しない |
+| `@atcdn/hono`    | coreをHonoアプリとして提供するアダプタ。`app.route()` でマウントできる                                     |
+| `@atcdn/express` | coreをExpressミドルウェア(Router)として提供するアダプタ                                                    |
+| `atcdn`          | CLI。`npx atcdn` でサーバーを起動できる。Honoアダプタを `@hono/node-server` で起動するだけの薄いラッパー   |
+
+- 依存方向は一方向(cli → hono → core、express → core)とし、coreはアダプタを知らない
+- プリセット定義・エラーマッピング・基本ガード等の仕様はすべてcoreに実装し、アダプタはHTTPフレームワークとの橋渡しに徹する。どのアダプタ経由でも同じ入出力仕様になる
+
+### 処理フロー
+
+1. パスをパースし、preset / did / cid / format を取り出す(不正なら400)
+2. DIDを解決してPDSのエンドポイントを得る
+   - `did:plc` → plc.directory、`did:web` → well-known
+   - 解決には `@atproto/identity` を使い、自前実装しない
+3. PDSの `com.atproto.sync.getBlob` からオリジナル画像を取得
+4. 取得中にCIDを検証(不一致なら404)
+5. sharpでプリセットに従いリサイズ・フォーマット変換
+6. `Cache-Control` を付けて返す
+
+### キャッシュ戦略
+
+キャッシュは2層に分けて考える。
+
+**変換済み画像**: サーバー自体はキャッシュを持たない。
+
+- 同一URLの中身はCIDにより不変なので、`public, max-age=31536000` を付与する
+- 実際のキャッシュはCloudflareやnginx等の前段CDN/リバースプロキシに委ねる
+- 画像データを持たないことで、水平スケールとデプロイが単純になる
+
+**DID解決結果**: Redisにキャッシュする(デフォルト・必須)。
+
+- DID解決を毎リクエストで行うとplc.directory等への負荷と遅延が大きいため
+- `@atproto/identity` の `DidCache` インターフェースに沿ったRedis実装を使い、複数インスタンス間でキャッシュを共有する
+- オプション(環境変数)でインメモリキャッシュ(`MemoryCache`)に切り替え可能。お試し起動や単一インスタンス運用向け
+
+### 依存性注入(DI)
+
+coreの内部実装には `@gyaku/di` を使う(APIの詳細は [references/gyaku-di.md](./references/gyaku-di.md) を参照)。
+
+- DID解決・blob取得・画像変換・キャッシュ等のコンポーネントをDIコンテナで組み立てる
+- DID解決キャッシュのRedis / インメモリ切り替えは、DIによる実装差し替えとして実現する
+- Redisクライアント等のリソース解放は `@gyaku/di` の `await using` によるライフサイクル管理に乗せる
+- DIはcore内部の実装詳細とし、公開APIには露出させない。アダプタやCLIからは通常のconfigオブジェクトを渡すだけで使える
+
+### 悪用対策(基本ガード)
+
+任意のDID/CIDを処理するオープンなプロキシであるため、以下を内蔵する。
+
+- **入力サイズ上限**: 取得するblobのサイズに上限を設ける(超過時はエラー)
+- **タイムアウト**: DID解決・blob取得のそれぞれにタイムアウトを設ける
+- **Content-Type検証**: 画像以外のblobは変換せず400を返す
+- **SSRF対策**: DID解決結果のPDSがプライベートIP・ループバック等に解決される場合は接続を遮断する
+
+レートリミットは内蔵せず、前段のCDN/リバースプロキシに委ねる。配信対象を絞る機能(DID・PDSのallowlist等)もv1では持たない(将来検討)。
+
+### 観測性
+
+- **ヘルスチェック**: `GET /health` を提供。Redis疎通確認を含む
+- **ログ**: pino等によるJSON構造化ログ(リクエストログ・エラーログ)を標準出力に出す
+- **メトリクス**: Prometheus等のメトリクスエンドポイントは内蔵しない(将来検討)
+
+## 技術スタック
+
+- 言語: TypeScript
+- ランタイム: Node.js
+- HTTP: フレームワーク非依存のcore + アダプタ(Hono / Express)。CLI・Dockerでの実行はHono + `@hono/node-server`
+- 画像処理: sharp
+- DID解決: `@atproto/identity`
+- DID解決キャッシュ: Redis(デフォルト)/ インメモリ(オプション)
+- DI: `@gyaku/di`(core内部のコンポーネント組み立てに使用)
+- ログ: pino等のJSON構造化ログ
+
+### 実行環境の選定理由
+
+本家と同じsharpを使うため、Node.js + Dockerで動かす。sharpはCloudflare Workersでは動作しない(公式WASMビルド `@img/sharp-wasm32` はマルチスレッドWasmが必要)ため、サーバーレスのエッジ環境は対象にしない。
+
+## 配布
+
+- **Dockerイメージ**: ghcr.io で配布。Redisと組み合わせて運用する前提(docker compose等)
+- **npmパッケージ**: パッケージ構成の4パッケージ(`@atcdn/core` / `@atcdn/hono` / `@atcdn/express` / `atcdn`)をそれぞれ公開する
+
+### 組み込みAPI
+
+- `@atcdn/core`: メイン処理(処理フローの1〜6)をフレームワーク非依存のAPIとして公開する。独自のフレームワークや環境に組み込みたい場合はこれを直接使う
+- `@atcdn/hono`: `createAtcdnApp(config)` がHonoアプリケーションを返す。Honoの `app.route()` でマウントできる
+- `@atcdn/express`: `createAtcdnRouter(config)` がExpressのRouterを返す。`app.use()` でマウントできる
+- `atcdn`(CLI): 環境変数で設定を受け取り、Honoアダプタを `@hono/node-server` で起動するだけの薄いラッパーとする
+
+coreが公開するのはメイン処理の入口までとし、それより細かい内部関数は公開APIにしない。
+
+## スコープ外
+
+以下は将来も含めて対象外とする。
+
+- 動画CDN(video.bsky.app 相当)
+- 外部リンクカードのサムネイルプロキシ(cardyb相当)
+- 独自プリセット・任意サイズ指定(`?w=100` のようなクエリパラメータ)
+- 変換済み画像のサーバー内キャッシュ(DID解決結果のキャッシュは対象内。上記キャッシュ戦略を参照)
+- レートリミット・認証
+- cdn.bsky.app とのバイト一致(互換性の基準は入出力仕様の互換まで)
+
+以下はv1では対象外だが、将来検討の余地がある。
+
+- 配信対象の制限(DID・PDSのallowlist)
+- Prometheus等のメトリクスエンドポイント
+
+## ライセンス
+
+AGPL-3.0
