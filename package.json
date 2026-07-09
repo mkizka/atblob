@@ -11,7 +11,9 @@
     "format": "pnpm -r format",
     "lint": "pnpm -r lint",
     "prepare": "husky",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test": "echo 'no test'",
+    "all": "run-s build typecheck format test"
   },
   "devDependencies": {
     "@mkizka/eslint-config": "^10.0.0",
@@ -21,6 +23,7 @@
     "eslint": "^10.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "npm-run-all2": "^9.0.2",
     "typescript": "^6.0.3"
   }
 }
