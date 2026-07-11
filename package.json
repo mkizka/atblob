@@ -7,13 +7,13 @@
   },
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "build": "pnpm -r build",
-    "format": "pnpm -r format",
-    "lint": "pnpm -r lint",
+    "build": "turbo run build",
+    "format": "turbo run format",
+    "lint": "turbo run lint",
     "prepare": "husky",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "turbo run typecheck",
     "test": "echo 'no test'",
-    "all": "run-s build typecheck format test"
+    "all": "turbo run build typecheck format test"
   },
   "devDependencies": {
     "@gunshi/docs": "0.36.0",
@@ -24,7 +24,7 @@
     "eslint": "^10.6.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
-    "npm-run-all2": "^9.0.2",
+    "turbo": "^2.10.4",
     "typescript": "^6.0.3"
   }
 }
