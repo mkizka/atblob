@@ -93,7 +93,7 @@ const command = define({
   },
   run: async (ctx) => {
     // prettier-ignore
-    const config  = {
+    const config = {
       didCache: ctx.values.didCache ?? env("DID_CACHE", didCacheSchema),
       redisUrl: ctx.values.redisUrl ?? env("REDIS_URL", stringSchema),
       maxBlobSize: ctx.values.maxBlobSize ?? env("MAX_BLOB_SIZE", numberSchema),
@@ -128,4 +128,5 @@ const command = define({
 await cli(process.argv.slice(2), command, {
   name: "atcdn",
   version: pkg.version,
+  renderHeader: null,
 });

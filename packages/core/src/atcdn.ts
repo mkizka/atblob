@@ -17,8 +17,7 @@ export const createAtcdn = async (config: AtcdnConfig = {}): Promise<Atcdn> => {
 
   installSsrfProtection();
 
-  let registry = createRegistry()
-    .value("redisUrl", resolved.redisUrl)
+  const base = createRegistry()
     .value("maxBlobSize", resolved.maxBlobSize)
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
@@ -27,12 +26,14 @@ export const createAtcdn = async (config: AtcdnConfig = {}): Promise<Atcdn> => {
       "blobFetcher",
       ["maxBlobSize", "blobFetchTimeout"],
       createBlobFetcher,
-    )
-    .service("didCache", ["redisUrl"], createRedisDidCache);
+    );
 
-  if (resolved.didCache === "memory") {
-    registry = registry.replaceService("didCache", createMemoryDidCache);
-  }
+  const registry =
+    resolved.didCache === "memory"
+      ? base.service("didCache", [], createMemoryDidCache)
+      : base
+          .value("redisUrl", resolved.redisUrl)
+          .service("didCache", ["redisUrl"], createRedisDidCache);
 
   const services = await registry
     .service(
