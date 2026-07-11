@@ -2,7 +2,7 @@
 
 atblob is a [cdn.bsky.app](https://cdn.bsky.app)-compatible image proxy server for atproto.
 
-It accepts the same URL paths as Bluesky's image CDN (`/img/{preset}/plain/{did}/{cid}@{format}`), so clients can switch to it just by swapping the hostname. See [docs/spec.md](../../docs/spec.md) for the full specification.
+It accepts the same URL paths as Bluesky's image CDN (`/img/{preset}/plain/{did}/{cid}@{format}`), so clients can switch to it just by swapping the hostname.
 
 ## Use cases
 
