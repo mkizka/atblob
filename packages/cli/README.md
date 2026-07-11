@@ -35,7 +35,7 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 | Option                  | Environment variable  | Description                                                                  | Default                 |
 | ----------------------- | --------------------- | ---------------------------------------------------------------------------- | ----------------------- |
 | `-p, --port`            | `PORT`                | Port number the server listens on                                            | `3000`                  |
-| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | -                       |
+| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | `redis`                 |
 | `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required unless `--did-cache` is `memory`) | -                       |
 | `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                            | `10485760` (10 MiB)     |
 | `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                        | `5000`                  |
