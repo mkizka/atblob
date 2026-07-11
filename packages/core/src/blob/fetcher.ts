@@ -1,5 +1,6 @@
 import type { Did } from "../did/did.js";
 import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
+import type { Logger } from "../logger.js";
 import { verifyCid } from "./cid.js";
 
 export type FetchedBlob = {
@@ -47,6 +48,7 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
+  logger: Logger;
 }): BlobFetcher => {
   const fetchBlob = async (
     pdsEndpoint: string,
@@ -66,6 +68,12 @@ export const createBlobFetcher = (deps: {
     try {
       response = await fetch(url, { signal: controller.signal });
     } catch (cause) {
+      deps.logger.error("failed to fetch blob from pds", {
+        pdsEndpoint,
+        did,
+        cid,
+        error: cause,
+      });
       throw new BadGatewayError(
         `failed to fetch blob from pds: ${pdsEndpoint}`,
         {
@@ -80,6 +88,12 @@ export const createBlobFetcher = (deps: {
       if (response.status >= 400 && response.status < 500) {
         throw new NotFoundError(`blob not found: did=${did} cid=${cid}`);
       }
+      deps.logger.error("upstream error fetching blob", {
+        pdsEndpoint,
+        did,
+        cid,
+        status: response.status,
+      });
       throw new BadGatewayError(
         `upstream error fetching blob: status=${response.status}`,
       );
@@ -101,6 +115,14 @@ export const createBlobFetcher = (deps: {
 
     const bytes = await readBodyWithLimit(response, deps.maxBlobSize);
     await verifyCid(cid, bytes);
+
+    deps.logger.debug("blob fetched", {
+      pdsEndpoint,
+      did,
+      cid,
+      contentType,
+      size: bytes.byteLength,
+    });
 
     return { bytes, contentType };
   };

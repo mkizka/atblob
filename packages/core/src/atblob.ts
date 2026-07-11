@@ -24,9 +24,10 @@ export const createAtblob = async (
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
+    .value("logger", resolved.logger)
     .service(
       "blobFetcher",
-      ["maxBlobSize", "blobFetchTimeout"],
+      ["maxBlobSize", "blobFetchTimeout", "logger"],
       createBlobFetcher,
     );
 
@@ -40,10 +41,10 @@ export const createAtblob = async (
   const services = await registry
     .service(
       "pdsResolver",
-      ["plcDirectoryUrl", "didResolveTimeout", "didCache"],
+      ["plcDirectoryUrl", "didResolveTimeout", "didCache", "logger"],
       createPdsResolver,
     )
-    .service("render", ["pdsResolver", "blobFetcher"], createRenderer)
+    .service("render", ["pdsResolver", "blobFetcher", "logger"], createRenderer)
     .resolve();
 
   return {

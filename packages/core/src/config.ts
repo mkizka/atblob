@@ -1,8 +1,11 @@
+import { createConsoleLogger, type Logger } from "./logger.js";
+
 type BaseAtblobConfig = {
   maxBlobSize: number;
   didResolveTimeout: number;
   blobFetchTimeout: number;
   plcDirectoryUrl: string;
+  logger: Logger;
 };
 
 type RedisAtblobConfig = BaseAtblobConfig & {
@@ -29,6 +32,7 @@ export const resolveConfig = (
     didResolveTimeout: config.didResolveTimeout ?? 5000,
     blobFetchTimeout: config.blobFetchTimeout ?? 15000,
     plcDirectoryUrl: config.plcDirectoryUrl ?? "https://plc.directory",
+    logger: config.logger ?? createConsoleLogger(),
   };
   if (config.didCache === "memory") {
     return { ...base, didCache: "memory" };
