@@ -13,7 +13,7 @@
     "lint": "turbo run lint",
     "prepare": "husky",
     "typecheck": "turbo run typecheck",
-    "test": "echo 'no test'",
+    "test": "turbo run test",
     "all": "turbo run build typecheck format test"
   },
   "devDependencies": {

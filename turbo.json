@@ -20,9 +20,6 @@
     "test": {
       "dependsOn": ["^build"],
       "outputs": []
-    },
-    "//#test": {
-      "cache": false
     }
   }
 }
