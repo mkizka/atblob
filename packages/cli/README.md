@@ -1,43 +1,49 @@
 # atblob
 
-[cdn.bsky.app](https://cdn.bsky.app) 互換の画像CDNサーバーを起動するCLI。
+atblob is a [cdn.bsky.app](https://cdn.bsky.app)-compatible image proxy server for atproto.
 
-Blueskyの画像CDNと同じURLパス(`/img/{preset}/plain/{did}/{cid}@{format}`)を受け付けるため、クライアント側はホスト名を差し替えるだけで動作します。仕様の詳細は [docs/spec.md](../../docs/spec.md) を参照してください。
+It accepts the same URL paths as Bluesky's image CDN (`/img/{preset}/plain/{did}/{cid}@{format}`), so clients can switch to it just by swapping the hostname. See [docs/spec.md](../../docs/spec.md) for the full specification.
 
-## インストール
+## Use cases
+
+- Building atproto applications that don't depend on Bluesky
+- Displaying images for accounts banned from Bluesky
+- Testing in a local development environment
+
+## Installation
 
 ```sh
 npm install -g atblob
 ```
 
-インストールせずに直接実行することもできます。
+You can also run it directly without installing.
 
 ```sh
 npx atblob
 ```
 
-## 使い方
+## Usage
 
 ```sh
 atblob --port 3000 --did-cache redis --redis-url redis://localhost:6379
 ```
 
-起動後、`SIGINT` / `SIGTERM` を受け取るとサーバーを閉じて終了します。
+Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
-## オプション
+## Options
 
-| オプション              | 環境変数              | 説明                                                                                 | デフォルト |
-| ----------------------- | --------------------- | ------------------------------------------------------------------------------------ | ---------- |
-| `-p, --port`            | `PORT`                | サーバーがリッスンするポート番号                                                     | `3000`     |
-| `--did-cache`           | `DID_CACHE`           | DID解決結果のキャッシュ先。`memory` または `redis`                                   | -          |
-| `--redis-url`           | `REDIS_URL`           | DIDキャッシュに使用するRedisのURL(`--did-cache` が未指定または `redis` の場合は必須) | -          |
-| `--max-blob-size`       | `MAX_BLOB_SIZE`       | 許可する最大blobサイズ(バイト)                                                       | -          |
-| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID解決のタイムアウト(ミリ秒)                                                        | -          |
-| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | blob取得のタイムアウト(ミリ秒)                                                       | -          |
-| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC DirectoryのURL                                                                   | -          |
+| Option                  | Environment variable  | Description                                                                  | Default |
+| ----------------------- | --------------------- | ---------------------------------------------------------------------------- | ------- |
+| `-p, --port`            | `PORT`                | Port number the server listens on                                            | `3000`  |
+| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | -       |
+| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required unless `--did-cache` is `memory`) | -       |
+| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                            | -       |
+| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                        | -       |
+| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                            | -       |
+| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                            | -       |
 
-コマンドライン引数は対応する環境変数より優先されます。
+Command-line arguments take precedence over the corresponding environment variables.
 
-## ライセンス
+## License
 
 AGPL-3.0
