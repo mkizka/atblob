@@ -93,7 +93,7 @@ const command = define({
   },
   run: async (ctx) => {
     // prettier-ignore
-    const config: AtcdnCliConfig = {
+    const config  = {
       didCache: ctx.values.didCache ?? env("DID_CACHE", didCacheSchema),
       redisUrl: ctx.values.redisUrl ?? env("REDIS_URL", stringSchema),
       maxBlobSize: ctx.values.maxBlobSize ?? env("MAX_BLOB_SIZE", numberSchema),
@@ -101,7 +101,16 @@ const command = define({
       blobFetchTimeout: ctx.values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
       plcDirectoryUrl: ctx.values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
       port: ctx.values.port ?? env("PORT", numberSchema, 3000),
-    };
+    } satisfies AtcdnCliConfig;
+
+    if (
+      (!config.didCache || config.didCache === "redis") &&
+      config.redisUrl === undefined
+    ) {
+      throw new Error(
+        '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
+      );
+    }
 
     await using app = await createAtcdnApp(config);
     const server = serve({ fetch: app.fetch, port: config.port });
