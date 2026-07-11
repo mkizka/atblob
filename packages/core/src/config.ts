@@ -1,16 +1,16 @@
-type BaseAtcdnConfig = {
+type BaseAtblobConfig = {
   maxBlobSize: number;
   didResolveTimeout: number;
   blobFetchTimeout: number;
   plcDirectoryUrl: string;
 };
 
-type RedisAtcdnConfig = BaseAtcdnConfig & {
+type RedisAtblobConfig = BaseAtblobConfig & {
   didCache: "redis";
   redisUrl: string;
 };
 
-type InMemoryAtcdnConfig = BaseAtcdnConfig & {
+type InMemoryAtblobConfig = BaseAtblobConfig & {
   didCache: "memory";
 };
 
@@ -18,13 +18,13 @@ type NonRequired<T> = {
   [K in keyof T]?: T[K] | undefined;
 };
 
-export type AtcdnConfig =
-  NonRequired<RedisAtcdnConfig> | NonRequired<InMemoryAtcdnConfig>;
+export type AtblobConfig =
+  NonRequired<RedisAtblobConfig> | NonRequired<InMemoryAtblobConfig>;
 
 export const resolveConfig = (
-  config: AtcdnConfig = {},
-): RedisAtcdnConfig | InMemoryAtcdnConfig => {
-  const base: BaseAtcdnConfig = {
+  config: AtblobConfig = {},
+): RedisAtblobConfig | InMemoryAtblobConfig => {
+  const base: BaseAtblobConfig = {
     maxBlobSize: config.maxBlobSize ?? 10 * 1024 * 1024,
     didResolveTimeout: config.didResolveTimeout ?? 5000,
     blobFetchTimeout: config.blobFetchTimeout ?? 15000,

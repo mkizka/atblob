@@ -2,14 +2,14 @@
 
 import events from "node:events";
 
-import { type AtcdnConfig, createAtcdnApp } from "@atcdn/hono";
+import { type AtblobConfig, createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import { cli, define } from "gunshi";
 import * as v from "valibot";
 
 import pkg from "../package.json" with { type: "json" };
 
-type AtcdnCliConfig = AtcdnConfig & {
+type AtblobCliConfig = AtblobConfig & {
   port: number;
 };
 
@@ -56,8 +56,8 @@ function env<T>(
 }
 
 const command = define({
-  name: "atcdn",
-  description: "Start a cdn.bsky.app-compatible image CDN server",
+  name: "atblob",
+  description: "Start a cdn.bsky.app-compatible image server",
   toKebab: true,
   args: {
     didCache: {
@@ -101,7 +101,7 @@ const command = define({
       blobFetchTimeout: ctx.values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
       plcDirectoryUrl: ctx.values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
       port: ctx.values.port ?? env("PORT", numberSchema, 3000),
-    } satisfies AtcdnCliConfig;
+    } satisfies AtblobCliConfig;
 
     if (
       (!config.didCache || config.didCache === "redis") &&
@@ -112,7 +112,7 @@ const command = define({
       );
     }
 
-    await using app = await createAtcdnApp(config);
+    await using app = await createAtblobApp(config);
     const server = serve({ fetch: app.fetch, port: config.port });
 
     await Promise.race([
@@ -126,7 +126,7 @@ const command = define({
 });
 
 await cli(process.argv.slice(2), command, {
-  name: "atcdn",
+  name: "atblob",
   version: pkg.version,
   renderHeader: null,
 });

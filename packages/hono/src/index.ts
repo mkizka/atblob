@@ -1,2 +1,2 @@
-export { createAtcdnApp } from "./app.js";
-export type { AtcdnConfig } from "@atcdn/core";
+export { createAtblobApp } from "./app.js";
+export type { AtblobConfig } from "@atblob/core";

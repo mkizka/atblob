@@ -2,7 +2,11 @@ import { isCid } from "../blob/cid.js";
 import type { BlobFetcher } from "../blob/fetcher.js";
 import { isDid } from "../did/did.js";
 import type { PdsResolver } from "../did/resolver.js";
-import { AtcdnHttpError, BadGatewayError, BadRequestError } from "../errors.js";
+import {
+  AtblobHttpError,
+  BadGatewayError,
+  BadRequestError,
+} from "../errors.js";
 import { isOutputFormat, isPresetName, PRESETS } from "../image/presets.js";
 import { transformImage } from "../image/transform.js";
 
@@ -60,7 +64,7 @@ export const createRenderer = (deps: {
         },
       };
     } catch (error) {
-      if (error instanceof AtcdnHttpError) {
+      if (error instanceof AtblobHttpError) {
         throw error;
       }
       throw new BadGatewayError("failed to fetch or transform blob", {

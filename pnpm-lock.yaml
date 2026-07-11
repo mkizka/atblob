@@ -44,7 +44,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@atcdn/hono':
+      '@atblob/hono':
         specifier: workspace:*
         version: link:../hono
       '@hono/node-server':
@@ -100,7 +100,7 @@ importers:
 
   packages/express:
     dependencies:
-      '@atcdn/core':
+      '@atblob/core':
         specifier: workspace:*
         version: link:../core
       express:
@@ -119,7 +119,7 @@ importers:
 
   packages/hono:
     dependencies:
-      '@atcdn/core':
+      '@atblob/core':
         specifier: workspace:*
         version: link:../core
       hono:

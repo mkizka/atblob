@@ -1,7 +1,7 @@
-export { type Atcdn, createAtcdn } from "./atcdn.js";
-export type { AtcdnConfig } from "./config.js";
+export { type Atblob, createAtblob } from "./atblob.js";
+export type { AtblobConfig } from "./config.js";
 export {
-  AtcdnHttpError,
+  AtblobHttpError,
   BadGatewayError,
   BadRequestError,
   NotFoundError,

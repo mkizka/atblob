@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-atcdn は Blueskyの画像CDN(cdn.bsky.app)を代替するOSS実装。同じURLパスを受け付け、ホスト名の差し替えだけで動くことが目標。
+atblob は Blueskyの画像CDN(cdn.bsky.app)を代替するOSS実装。同じURLパスを受け付け、ホスト名の差し替えだけで動くことが目標。
 
 ## ドキュメント
 

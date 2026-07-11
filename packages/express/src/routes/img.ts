@@ -1,4 +1,4 @@
-import type { Atcdn } from "@atcdn/core";
+import type { Atblob } from "@atblob/core";
 import type { RequestHandler } from "express";
 
 export const IMG_PATH = "/img/:preset/plain/:did/:cidAndFormat";
@@ -16,13 +16,13 @@ const splitCidAndFormat = (
   return { cid, format: rest.length > 0 ? rest.join("@") : undefined };
 };
 
-export const createImgHandler = (atcdn: Atcdn): RequestHandler<ImgParams> => {
+export const createImgHandler = (atblob: Atblob): RequestHandler<ImgParams> => {
   return async (req, res, next) => {
     try {
       const { preset, did, cidAndFormat } = req.params;
       const { cid, format } = splitCidAndFormat(cidAndFormat);
 
-      const result = await atcdn.render({
+      const result = await atblob.render({
         preset,
         did,
         cid,

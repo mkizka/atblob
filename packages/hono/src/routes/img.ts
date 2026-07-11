@@ -1,4 +1,4 @@
-import type { Atcdn } from "@atcdn/core";
+import type { Atblob } from "@atblob/core";
 import type { Env, Handler } from "hono";
 
 export const IMG_PATH = "/img/:preset/plain/:did/:cidAndFormat";
@@ -11,13 +11,13 @@ const splitCidAndFormat = (
 };
 
 export const createImgHandler = (
-  atcdn: Atcdn,
+  atblob: Atblob,
 ): Handler<Env, typeof IMG_PATH> => {
   return async (c) => {
     const { preset, did, cidAndFormat } = c.req.param();
     const { cid, format } = splitCidAndFormat(cidAndFormat);
 
-    const result = await atcdn.render({
+    const result = await atblob.render({
       preset,
       did,
       cid,

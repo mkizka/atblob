@@ -2,17 +2,19 @@ import { createRegistry } from "@gyaku/di";
 
 import { createBlobFetcher } from "./blob/fetcher.js";
 import { installSsrfProtection } from "./blob/ssrf.js";
-import { type AtcdnConfig, resolveConfig } from "./config.js";
+import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
 import { createPdsResolver } from "./did/resolver.js";
 import { createRenderer, type Renderer } from "./render/render.js";
 
-export type Atcdn = AsyncDisposable & {
+export type Atblob = AsyncDisposable & {
   render: Renderer;
 };
 
-export const createAtcdn = async (config: AtcdnConfig = {}): Promise<Atcdn> => {
+export const createAtblob = async (
+  config: AtblobConfig = {},
+): Promise<Atblob> => {
   const resolved = resolveConfig(config);
 
   installSsrfProtection();

@@ -1,18 +1,18 @@
-export abstract class AtcdnHttpError extends Error {
+export abstract class AtblobHttpError extends Error {
   abstract readonly status: 400 | 404 | 502;
 }
 
-export class BadRequestError extends AtcdnHttpError {
+export class BadRequestError extends AtblobHttpError {
   override readonly status = 400;
   override readonly name = "BadRequestError";
 }
 
-export class NotFoundError extends AtcdnHttpError {
+export class NotFoundError extends AtblobHttpError {
   override readonly status = 404;
   override readonly name = "NotFoundError";
 }
 
-export class BadGatewayError extends AtcdnHttpError {
+export class BadGatewayError extends AtblobHttpError {
   override readonly status = 502;
   override readonly name = "BadGatewayError";
 }
@@ -23,7 +23,7 @@ type ErrorResponse = {
 };
 
 export const toErrorResponse = (error: unknown): ErrorResponse => ({
-  status: error instanceof AtcdnHttpError ? error.status : 502,
+  status: error instanceof AtblobHttpError ? error.status : 502,
   headers: {
     "Cache-Control": "public, max-age=60",
   },

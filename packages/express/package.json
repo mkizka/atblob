@@ -1,5 +1,5 @@
 {
-  "name": "@atcdn/express",
+  "name": "@atblob/express",
   "version": "0.0.0",
   "type": "module",
   "license": "AGPL-3.0",
@@ -22,7 +22,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@atcdn/core": "workspace:*",
+    "@atblob/core": "workspace:*",
     "express": "^5.2.1"
   },
   "devDependencies": {

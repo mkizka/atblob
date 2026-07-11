@@ -3,7 +3,7 @@ import { Redis } from "ioredis";
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
-const KEY_PREFIX = "atcdn:did:";
+const KEY_PREFIX = "atblob:did:";
 
 type CacheEntry = { doc: DidDocument; updatedAt: number };
 
