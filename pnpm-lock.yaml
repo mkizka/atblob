@@ -97,12 +97,18 @@ importers:
         specifier: ^8.7.0
         version: 8.7.0
     devDependencies:
+      get-port:
+        specifier: ^7.2.0
+        version: 7.2.0
       prettier:
         specifier: ^3.8.1
         version: 3.9.4
       prettier-plugin-pkg:
         specifier: ^0.21.2
         version: 0.21.2(prettier@3.9.4)
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@24.13.2)(vite@8.1.4(@types/node@24.13.2)(yaml@2.9.0))
 
   packages/express:
     dependencies:
