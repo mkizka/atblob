@@ -14,7 +14,8 @@
     "prepare": "husky",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "all": "turbo run build typecheck format test"
+    "all": "turbo run build typecheck format test",
+    "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
