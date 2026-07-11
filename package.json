@@ -7,7 +7,7 @@
   },
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "atblob": "turbo run build --filter=atblob && node packages/cli/dist/index.js",
+    "atblob": "turbo run build --filter=@atblob/cli && node packages/cli/dist/index.js",
     "build": "turbo run build",
     "format": "turbo run format",
     "lint": "turbo run lint",

@@ -1,5 +1,5 @@
 {
-  "name": "atblob",
+  "name": "@atblob/cli",
   "version": "0.0.0",
   "type": "module",
   "license": "AGPL-3.0",
