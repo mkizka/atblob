@@ -15,7 +15,7 @@
     },
     "format": {
       "dependsOn": ["^build"],
-      "cache": false
+      "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],

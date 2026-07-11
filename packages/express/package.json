@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "format": "eslint --fix . && prettier --write .",
+    "format": "eslint --fix . && prettier --write --log-level warn .",
     "lint": "eslint . && prettier --check .",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
