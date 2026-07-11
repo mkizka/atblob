@@ -1,0 +1,8 @@
+This repository contains multiple packages with different licenses.
+
+- packages/cli — AGPL-3.0-only
+- packages/core — MIT
+- packages/express — MIT
+- packages/hono — MIT
+
+See each package's LICENSE file for details.
