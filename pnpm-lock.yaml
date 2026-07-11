@@ -10,37 +10,37 @@ importers:
   .:
     devDependencies:
       '@changesets/cli':
-        specifier: ^2.31.0
+        specifier: 2.31.0
         version: 2.31.0(@types/node@24.13.2)
       '@gunshi/docs':
         specifier: 0.36.0
         version: 0.36.0
       '@mkizka/eslint-config':
-        specifier: ^10.0.0
+        specifier: 10.0.0
         version: 10.0.0(@typescript-eslint/eslint-plugin@8.62.1(@typescript-eslint/parser@8.62.1(eslint@10.6.0)(typescript@6.0.3))(eslint@10.6.0)(typescript@6.0.3))(eslint@10.6.0)(typescript@6.0.3)
       '@tsconfig/node-lts':
-        specifier: ^24.0.0
+        specifier: 24.0.0
         version: 24.0.0
       '@tsconfig/strictest':
-        specifier: ^2.0.8
+        specifier: 2.0.8
         version: 2.0.8
       '@types/node':
-        specifier: ^24.13.2
+        specifier: 24.13.2
         version: 24.13.2
       eslint:
-        specifier: ^10.6.0
+        specifier: 10.6.0
         version: 10.6.0
       husky:
-        specifier: ^9.1.7
+        specifier: 9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: ^16.2.7
+        specifier: 16.4.0
         version: 16.4.0
       turbo:
-        specifier: ^2.10.4
+        specifier: 2.10.4
         version: 2.10.4
       typescript:
-        specifier: ^6.0.3
+        specifier: 6.0.3
         version: 6.0.3
 
   packages/cli:
@@ -49,29 +49,29 @@ importers:
         specifier: workspace:*
         version: link:../hono
       '@hono/node-server':
-        specifier: ^2.0.8
+        specifier: 2.0.8
         version: 2.0.8(hono@4.12.27)
       gunshi:
-        specifier: ^0.36.0
+        specifier: 0.36.0
         version: 0.36.0
       valibot:
-        specifier: ^1.4.2
+        specifier: 1.4.2
         version: 1.4.2(typescript@6.0.3)
     devDependencies:
       '@types/node':
-        specifier: ^24.13.2
+        specifier: 24.13.2
         version: 24.13.2
       get-port:
-        specifier: ^7.2.0
+        specifier: 7.2.0
         version: 7.2.0
       prettier:
-        specifier: ^3.8.1
+        specifier: 3.9.4
         version: 3.9.4
       prettier-plugin-pkg:
-        specifier: ^0.21.2
+        specifier: 0.21.2
         version: 0.21.2(prettier@3.9.4)
       vitest:
-        specifier: ^4.1.10
+        specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.2)(vite@8.1.4(@types/node@24.13.2)(yaml@2.9.0))
 
   packages/core:
@@ -99,16 +99,16 @@ importers:
         version: 8.7.0
     devDependencies:
       get-port:
-        specifier: ^7.2.0
+        specifier: 7.2.0
         version: 7.2.0
       prettier:
-        specifier: ^3.8.1
+        specifier: 3.9.4
         version: 3.9.4
       prettier-plugin-pkg:
-        specifier: ^0.21.2
+        specifier: 0.21.2
         version: 0.21.2(prettier@3.9.4)
       vitest:
-        specifier: ^4.1.10
+        specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.2)(vite@8.1.4(@types/node@24.13.2)(yaml@2.9.0))
 
   packages/express:
@@ -121,19 +121,19 @@ importers:
         version: 5.2.1
     devDependencies:
       '@types/express':
-        specifier: ^5.0.6
+        specifier: 5.0.6
         version: 5.0.6
       get-port:
-        specifier: ^7.2.0
+        specifier: 7.2.0
         version: 7.2.0
       prettier:
-        specifier: ^3.8.1
+        specifier: 3.9.4
         version: 3.9.4
       prettier-plugin-pkg:
-        specifier: ^0.21.2
+        specifier: 0.21.2
         version: 0.21.2(prettier@3.9.4)
       vitest:
-        specifier: ^4.1.10
+        specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.2)(vite@8.1.4(@types/node@24.13.2)(yaml@2.9.0))
 
   packages/hono:
@@ -146,16 +146,16 @@ importers:
         version: 4.12.27
     devDependencies:
       '@types/node':
-        specifier: ^24.13.2
+        specifier: 24.13.2
         version: 24.13.2
       prettier:
-        specifier: ^3.8.1
+        specifier: 3.9.4
         version: 3.9.4
       prettier-plugin-pkg:
-        specifier: ^0.21.2
+        specifier: 0.21.2
         version: 0.21.2(prettier@3.9.4)
       vitest:
-        specifier: ^4.1.10
+        specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.2)(vite@8.1.4(@types/node@24.13.2)(yaml@2.9.0))
 
 packages:

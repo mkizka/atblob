@@ -32,10 +32,10 @@
     "undici": "^8.7.0"
   },
   "devDependencies": {
-    "get-port": "^7.2.0",
-    "prettier": "^3.8.1",
-    "prettier-plugin-pkg": "^0.21.2",
-    "vitest": "^4.1.10"
+    "get-port": "7.2.0",
+    "prettier": "3.9.4",
+    "prettier-plugin-pkg": "0.21.2",
+    "vitest": "4.1.10"
   },
   "prettier": {
     "plugins": [
