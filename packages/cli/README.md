@@ -46,4 +46,4 @@ Command-line arguments take precedence over the corresponding environment variab
 
 ## License
 
-AGPL-3.0
+AGPL-3.0-only
