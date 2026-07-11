@@ -19,5 +19,3 @@ export const createAtcdnApp = async (config: AtcdnConfig = {}) => {
     [Symbol.asyncDispose]: atcdn[Symbol.asyncDispose],
   });
 };
-
-export type AtcdnHono = Awaited<ReturnType<typeof createAtcdnApp>>;
