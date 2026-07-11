@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "gyaku": {
+      "source": "mkizka/gyaku",
+      "sourceType": "github",
+      "skillPath": "skills/gyaku/SKILL.md",
+      "computedHash": "ca36692b6e8edc4234702969708a7159d72beac8ae3cdc36c924f47b08a58307"
+    }
+  }
+}
