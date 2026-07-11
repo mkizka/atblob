@@ -10,12 +10,12 @@ export type ImageRequestInput = {
   preset: string;
   did: string;
   cid: string;
-  format?: string;
+  format?: string | undefined;
 };
 
 export type RenderResult = {
   bytes: Uint8Array;
-  contentType: string;
+  headers: Record<string, string>;
 };
 
 export type Renderer = (input: ImageRequestInput) => Promise<RenderResult>;
@@ -52,7 +52,12 @@ export const createRenderer = (deps: {
 
       return {
         bytes: image.bytes,
-        contentType: image.contentType,
+        headers: {
+          "Cache-Control": "public, max-age=31536000",
+          "X-Content-Type-Options": "nosniff",
+          "Content-Security-Policy": "default-src 'none'; sandbox",
+          "Content-Type": image.contentType,
+        },
       };
     } catch (error) {
       if (error instanceof AtcdnHttpError) {

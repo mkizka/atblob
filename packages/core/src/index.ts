@@ -5,4 +5,5 @@ export {
   BadGatewayError,
   BadRequestError,
   NotFoundError,
+  toErrorResponse,
 } from "./errors.js";

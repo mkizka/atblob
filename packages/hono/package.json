@@ -25,6 +25,7 @@
     "hono": "^4.12.27"
   },
   "devDependencies": {
+    "@types/node": "^24.13.2",
     "prettier": "^3.8.1",
     "prettier-plugin-pkg": "^0.21.2"
   },

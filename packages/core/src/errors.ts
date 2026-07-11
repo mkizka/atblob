@@ -16,3 +16,15 @@ export class BadGatewayError extends AtcdnHttpError {
   override readonly status = 502;
   override readonly name = "BadGatewayError";
 }
+
+type ErrorResponse = {
+  status: 400 | 404 | 502;
+  headers: Record<string, string>;
+};
+
+export const toErrorResponse = (error: unknown): ErrorResponse => ({
+  status: error instanceof AtcdnHttpError ? error.status : 502,
+  headers: {
+    "Cache-Control": "public, max-age=60",
+  },
+});
