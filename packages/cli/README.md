@@ -32,15 +32,15 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
 ## Options
 
-| Option                  | Environment variable  | Description                                                                  | Default |
-| ----------------------- | --------------------- | ---------------------------------------------------------------------------- | ------- |
-| `-p, --port`            | `PORT`                | Port number the server listens on                                            | `3000`  |
-| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | -       |
-| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required unless `--did-cache` is `memory`) | -       |
-| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                            | -       |
-| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                        | -       |
-| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                            | -       |
-| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                            | -       |
+| Option                  | Environment variable  | Description                                                                  | Default                 |
+| ----------------------- | --------------------- | ---------------------------------------------------------------------------- | ----------------------- |
+| `-p, --port`            | `PORT`                | Port number the server listens on                                            | `3000`                  |
+| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | -                       |
+| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required unless `--did-cache` is `memory`) | -                       |
+| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                            | `10485760` (10 MiB)     |
+| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                        | `5000`                  |
+| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                            | `15000`                 |
+| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                            | `https://plc.directory` |
 
 Command-line arguments take precedence over the corresponding environment variables.
 
