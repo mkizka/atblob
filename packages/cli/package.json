@@ -10,9 +10,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "format": "eslint --fix . && prettier --write .",
     "lint": "eslint . && prettier --check .",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
@@ -23,8 +24,10 @@
   },
   "devDependencies": {
     "@types/node": "^24.13.2",
+    "get-port": "^7.2.0",
     "prettier": "^3.8.1",
-    "prettier-plugin-pkg": "^0.21.2"
+    "prettier-plugin-pkg": "^0.21.2",
+    "vitest": "^4.1.10"
   },
   "prettier": {
     "plugins": [
