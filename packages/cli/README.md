@@ -22,6 +22,14 @@ You can also run it directly without installing.
 npx @atblob/cli
 ```
 
+A Docker image is also published to GHCR.
+
+```sh
+docker run -p 3000:3000 -e DID_CACHE=memory ghcr.io/mkizka/atblob:latest
+```
+
+Tags matching the `@atblob/cli` package version (e.g. `1.2.3`) are published alongside `latest`.
+
 ## Usage
 
 ```sh
