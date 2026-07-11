@@ -17,6 +17,7 @@
     "all": "turbo run build typecheck format test"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@gunshi/docs": "0.36.0",
     "@mkizka/eslint-config": "^10.0.0",
     "@tsconfig/node-lts": "^24.0.0",
