@@ -1,6 +1,6 @@
 import events from "node:events";
 
-import { createAtblobApp, createConsoleLogger } from "@atblob/hono";
+import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import { cli, define } from "gunshi";
 
@@ -45,22 +45,18 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       },
     },
     run: async (ctx) => {
-      const logger = createConsoleLogger();
       const config = buildConfig(ctx.values, processEnv);
 
-      await using app = await createAtblobApp({ ...config, logger });
+      await using app = await createAtblobApp(config);
       const server = serve({ fetch: app.fetch, port: config.port });
-      logger.info("server started", { port: config.port });
 
       await Promise.race([
         events.once(process, "SIGINT"),
         events.once(process, "SIGTERM"),
       ]);
-      logger.info("server stopping");
       const closed = events.once(server, "close");
       server.close();
       await closed;
-      logger.info("server stopped");
     },
   });
 

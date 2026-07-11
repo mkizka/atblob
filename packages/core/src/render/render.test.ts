@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import type { BlobFetcher } from "../blob/fetcher.js";
 import type { PdsResolver } from "../did/resolver.js";
 import { BadGatewayError, BadRequestError } from "../errors.js";
-import { createNoopLogger } from "../logger.js";
 import { createRenderer } from "./render.js";
 
 const VALID_DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
@@ -31,8 +30,6 @@ const fakeBlobFetcher = (fetchBlob: BlobFetcher["fetchBlob"]): BlobFetcher => ({
   fetchBlob,
 });
 
-const noopLogger = createNoopLogger();
-
 describe("createRenderer", () => {
   it("presetが未知の場合はBadRequestErrorになる", async () => {
     const render = createRenderer({
@@ -40,7 +37,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
-      logger: noopLogger,
     });
 
     await expect(
@@ -54,7 +50,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
-      logger: noopLogger,
     });
 
     await expect(
@@ -68,7 +63,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
-      logger: noopLogger,
     });
 
     await expect(
@@ -82,7 +76,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
-      logger: noopLogger,
     });
 
     await expect(
@@ -102,7 +95,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() =>
         Promise.resolve({ bytes, contentType: "image/png" }),
       ),
-      logger: noopLogger,
     });
 
     const result = await render({
@@ -127,7 +119,6 @@ describe("createRenderer", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
-      logger: noopLogger,
     });
 
     await expect(

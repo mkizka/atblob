@@ -8,11 +8,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { Did } from "../did/did.js";
 import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
-import { createNoopLogger } from "../logger.js";
 import { createBlobFetcher } from "./fetcher.js";
 
 const DID: Did = "did:plc:z72i7hdynmk6r22z27h6tvur";
-const noopLogger = createNoopLogger();
 
 const cidFor = async (bytes: Uint8Array): Promise<string> => {
   const digest = await sha256.digest(bytes);
@@ -54,7 +52,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
     const result = await fetcher.fetchBlob(server.url, DID, cid);
 
@@ -74,7 +71,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, wrongCid)).rejects.toThrow(
@@ -92,7 +88,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -110,7 +105,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -128,7 +122,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -149,7 +142,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -167,7 +159,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -179,7 +170,6 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
-      logger: noopLogger,
     });
 
     await expect(
