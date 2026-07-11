@@ -13,13 +13,13 @@ It accepts the same URL paths as Bluesky's image CDN (`/img/{preset}/plain/{did}
 ## Installation
 
 ```sh
-npm install -g atblob
+npm install -g @atblob/cli
 ```
 
 You can also run it directly without installing.
 
 ```sh
-npx atblob
+npx @atblob/cli
 ```
 
 ## Usage
