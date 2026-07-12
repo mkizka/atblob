@@ -6,10 +6,12 @@ import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
 import { createPdsResolver } from "./did/resolver.js";
+import { createCheckHealth, type HealthCheck } from "./health.js";
 import { createRenderFn, type RenderFn } from "./render/render.js";
 
 export type Renderer = AsyncDisposable & {
   render: RenderFn;
+  checkHealth: HealthCheck;
 };
 
 export const createRenderer = async (
@@ -45,10 +47,12 @@ export const createRenderer = async (
       createPdsResolver,
     )
     .service("render", ["pdsResolver", "blobFetcher"], createRenderFn)
+    .service("checkHealth", ["didCache"], createCheckHealth)
     .resolve();
 
   return {
     render: services.render,
+    checkHealth: services.checkHealth,
     [Symbol.asyncDispose]: services[Symbol.asyncDispose],
   };
 };

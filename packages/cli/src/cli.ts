@@ -102,10 +102,19 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using renderer = await createRenderer(config);
   const app = new Hono();
   app.use(logger(config.logger));
+
+  await using renderer = await createRenderer(config);
   app.use(atblob(renderer));
+
+  app.get("/health", async (c) => {
+    const result = await renderer.checkHealth();
+    return c.json(
+      { version: pkg.version, ...result },
+      result.status === "ok" ? 200 : 503,
+    );
+  });
 
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
     config.logger.info(

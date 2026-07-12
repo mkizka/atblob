@@ -12,6 +12,7 @@ const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 const fakeRenderer = (render: Renderer["render"]): Renderer => ({
   render,
+  checkHealth: () => Promise.resolve({ status: "ok" }),
   [Symbol.asyncDispose]: () => Promise.resolve(),
 });
 
