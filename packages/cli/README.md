@@ -40,9 +40,7 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
 ## Endpoints
 
-```
-GET /img/{preset}/plain/{did}/{cid}@{format}
-```
+### `GET /img/{preset}/plain/{did}/{cid}@{format}`
 
 | Preset             | Size      | Fit    |
 | ------------------ | --------- | ------ |
@@ -54,9 +52,7 @@ GET /img/{preset}/plain/{did}/{cid}@{format}
 
 `{format}` is optional (`jpeg`, `jpg`, `png`, or `webp`; defaults to `webp`).
 
-```
-GET /health
-```
+### `GET /health`
 
 Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` status.
 
