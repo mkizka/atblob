@@ -1,5 +1,11 @@
 # @atblob/cli
 
+## 0.0.2
+
+### Patch Changes
+
+- @atblob/hono@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes
