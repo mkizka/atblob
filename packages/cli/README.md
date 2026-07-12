@@ -38,41 +38,27 @@ atblob --port 3000 --did-cache redis --redis-url redis://localhost:6379
 
 Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
-## Path format
+## Endpoints
 
 ```
-/img/{preset}/plain/{did}/{cid}@{format}
+GET /img/{preset}/plain/{did}/{cid}@{format}
 ```
 
-- `{preset}` — one of the following presets:
+| Preset             | Size      | Fit    |
+| ------------------ | --------- | ------ |
+| `avatar`           | 1000x1000 | cover  |
+| `avatar_thumbnail` | 128x128   | cover  |
+| `banner`           | 3000x1000 | cover  |
+| `feed_thumbnail`   | 2000x2000 | inside |
+| `feed_fullsize`    | 1000x1000 | inside |
 
-  | Preset             | Size (max) | Fit      |
-  | ------------------ | ---------- | -------- |
-  | `avatar`           | 1000x1000  | `cover`  |
-  | `avatar_thumbnail` | 128x128    | `cover`  |
-  | `banner`           | 3000x1000  | `cover`  |
-  | `feed_thumbnail`   | 2000x2000  | `inside` |
-  | `feed_fullsize`    | 1000x1000  | `inside` |
-
-  `cover` crops the image to exactly fill the size; `inside` resizes it to fit within the size while preserving the aspect ratio. Images are never upscaled beyond their original size.
-
-- `{did}` — the actor's DID (`did:plc:...` or `did:web:...`)
-- `{cid}` — the CID of the blob
-- `{format}` — optional. One of `jpeg`, `jpg`, `png`, or `webp`. Defaults to the preset's own format (`webp`) when omitted.
-
-## Health check
+`{format}` is optional (`jpeg`, `jpg`, `png`, or `webp`; defaults to `webp`).
 
 ```
 GET /health
 ```
 
-Returns the server version and the DID cache's health status.
-
-```json
-{ "version": "1.2.3", "status": "ok" }
-```
-
-Responds with `200` when healthy, or `503` and `{ "status": "error", "error": "..." }` when the DID cache (e.g. Redis) is unreachable.
+Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` status.
 
 ## Options
 
