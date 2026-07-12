@@ -13,7 +13,7 @@ const createApp = (render: Atblob["render"]) => {
     [Symbol.asyncDispose]: () => Promise.resolve(),
   };
   const app = new Hono();
-  app.on(["GET", "HEAD"], IMG_PATH, createImgHandler(atblob));
+  app.get(IMG_PATH, createImgHandler(atblob));
   return app;
 };
 
