@@ -16,7 +16,7 @@ describe("createConsoleLogger", () => {
     "%sはlevel・message・fieldsを含むJSONを出力する",
     (level, _consoleMethodLabel) => {
       const spy = vi.spyOn(console, level).mockImplementation(() => undefined);
-      const logger = createConsoleLogger({ level: "debug" });
+      const logger = createConsoleLogger({ level: "debug", format: "json" });
 
       logger[level]("something happened", { did: "did:plc:example" });
 
@@ -32,12 +32,38 @@ describe("createConsoleLogger", () => {
 
   it("fieldsを省略した場合もmessageのみのJSONを出力する", () => {
     const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
-    const logger = createConsoleLogger();
+    const logger = createConsoleLogger({ format: "json" });
 
     logger.info("no fields");
 
     const output: unknown = JSON.parse(String(spy.mock.calls[0]?.[0]));
     expect(output).toMatchObject({ level: "info", message: "no fields" });
+  });
+
+  it("formatを指定しない場合はpretty形式で出力する", () => {
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    const logger = createConsoleLogger();
+
+    logger.info("something happened", { did: "did:plc:example" });
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    const line = String(spy.mock.calls[0]?.[0]);
+    expect(line).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z INFO {2}something happened did=did:plc:example$/,
+    );
+  });
+
+  it("formatにprettyを指定するとlevel・message・fieldsを読みやすい形式で出力する", () => {
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const logger = createConsoleLogger({ format: "pretty" });
+
+    logger.warn("no fields");
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    const line = String(spy.mock.calls[0]?.[0]);
+    expect(line).toMatch(
+      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z WARN {2}no fields$/,
+    );
   });
 
   it("levelを指定しない場合はinfo未満(debug)を出力しない", () => {

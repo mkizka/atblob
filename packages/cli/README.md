@@ -50,6 +50,7 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 | `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                            | `15000`                 |
 | `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                            | `https://plc.directory` |
 | `--log-level`           | `LOG_LEVEL`           | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent`   | `info`                  |
+| `--log-format`          | `LOG_FORMAT`          | Log output format. `json` or `pretty`                                        | `pretty`                |
 
 Command-line arguments take precedence over the corresponding environment variables.
 

@@ -26,21 +26,49 @@ const consoleLog: Record<Level, (line: string) => void> = {
   error: (line) => console.error(line),
 };
 
-export const createConsoleLogger = (options?: { level?: LogLevel }): Logger => {
+export type LogFormat = "json" | "pretty";
+
+const formatJson = (
+  level: Level,
+  message: string,
+  fields?: LogFields,
+): string =>
+  JSON.stringify({
+    level,
+    time: new Date().toISOString(),
+    message,
+    ...fields,
+  });
+
+const formatFieldValue = (value: unknown): string =>
+  typeof value === "string" ? value : JSON.stringify(value);
+
+const formatPretty = (
+  level: Level,
+  message: string,
+  fields?: LogFields,
+): string => {
+  const time = new Date().toISOString();
+  const fieldsText = fields
+    ? Object.entries(fields)
+        .map(([key, value]) => ` ${key}=${formatFieldValue(value)}`)
+        .join("")
+    : "";
+  return `${time} ${level.toUpperCase().padEnd(5)} ${message}${fieldsText}`;
+};
+
+export const createConsoleLogger = (options?: {
+  level?: LogLevel;
+  format?: LogFormat;
+}): Logger => {
   const threshold = LEVEL_PRIORITY[options?.level ?? "info"];
+  const format = options?.format === "json" ? formatJson : formatPretty;
 
   const write = (level: Level, message: string, fields?: LogFields): void => {
     if (LEVEL_PRIORITY[level] < threshold) {
       return;
     }
-    consoleLog[level](
-      JSON.stringify({
-        level,
-        time: new Date().toISOString(),
-        message,
-        ...fields,
-      }),
-    );
+    consoleLog[level](format(level, message, fields));
   };
 
   return {

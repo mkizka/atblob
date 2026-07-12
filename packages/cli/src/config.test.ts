@@ -98,6 +98,34 @@ describe("buildConfig", () => {
     );
   });
 
+  it("logFormatを指定しない場合はpretty形式のロガーになる", () => {
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    const config = buildConfig({ didCache: "memory" }, {});
+    config.logger.info("hello");
+
+    expect(String(spy.mock.calls[0]?.[0])).not.toMatch(/^\{/);
+  });
+
+  it("logFormatにjsonを指定するとJSON形式のロガーになる", () => {
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    const config = buildConfig({ didCache: "memory", logFormat: "json" }, {});
+    config.logger.info("hello");
+
+    expect(() => {
+      JSON.parse(String(spy.mock.calls[0]?.[0]));
+    }).not.toThrow();
+  });
+
+  it("logFormatが不正な値の場合はエラーになる", () => {
+    expect(() =>
+      buildConfig({}, { DID_CACHE: "memory", LOG_FORMAT: "yaml" }),
+    ).toThrow(
+      "environment variable LOG_FORMAT must be one of: json, pretty: yaml",
+    );
+  });
+
   it("環境変数の値が数値として不正な場合はエラーになる", () => {
     expect(() => buildConfig({}, { PORT: "not-a-number" })).toThrow(
       "environment variable PORT must be a number: not-a-number",

@@ -9,6 +9,7 @@ import {
   buildConfig,
   DID_CACHE_CHOICES,
   type Env,
+  LOG_FORMAT_CHOICES,
   LOG_LEVEL_CHOICES,
 } from "./config.js";
 
@@ -52,6 +53,11 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
         type: "enum",
         choices: LOG_LEVEL_CHOICES,
         description: "Minimum log level to output",
+      },
+      logFormat: {
+        type: "enum",
+        choices: LOG_FORMAT_CHOICES,
+        description: "Log output format",
       },
     },
     run: async (ctx) => {
