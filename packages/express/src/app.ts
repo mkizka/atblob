@@ -1,14 +1,14 @@
-import { type AtblobConfig, createAtblob, toErrorResponse } from "@atblob/core";
+import {
+  type AtblobConfig,
+  createAtblob,
+  logError,
+  toErrorResponse,
+} from "@atblob/core";
 import express, { type ErrorRequestHandler, type Express } from "express";
 
 import { createImgHandler, IMG_PATH } from "./routes/img.js";
 
 type AtblobExpress = Express & AsyncDisposable;
-
-const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
-  const { status, headers } = toErrorResponse(error);
-  res.status(status).set(headers).end();
-};
 
 export const createAtblobApp = async (
   config: AtblobConfig = {},
@@ -16,6 +16,12 @@ export const createAtblobApp = async (
   const atblob = await createAtblob(config);
 
   const imgHandler = createImgHandler(atblob);
+
+  const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
+    logError(atblob.logger, error);
+    const { status, headers } = toErrorResponse(error);
+    res.status(status).set(headers).end();
+  };
 
   const app = express();
   app.get(IMG_PATH, imgHandler);

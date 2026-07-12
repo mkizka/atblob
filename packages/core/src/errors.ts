@@ -1,3 +1,5 @@
+import type { Logger } from "./logger.js";
+
 export abstract class AtblobHttpError extends Error {
   abstract readonly status: 400 | 404 | 502;
 }
@@ -28,3 +30,10 @@ export const toErrorResponse = (error: unknown): ErrorResponse => ({
     "Cache-Control": "public, max-age=60",
   },
 });
+
+export const logError = (logger: Logger, error: unknown): void => {
+  logger.error(error instanceof Error ? error.message : "Unknown error", {
+    name: error instanceof Error ? error.name : undefined,
+    stack: error instanceof Error ? error.stack : undefined,
+  });
+};

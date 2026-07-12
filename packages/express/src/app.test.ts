@@ -1,8 +1,9 @@
 import type { Server } from "node:http";
 import http from "node:http";
 
+import { createNoopLogger } from "@atblob/core";
 import getPort from "get-port";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createAtblobApp } from "./app.js";
 
@@ -86,5 +87,21 @@ describe("createAtblobApp", () => {
     );
 
     expect(response.status).toBe(400);
+  });
+
+  it("エラー発生時はloggerにエラーログを出力する", async () => {
+    const logger = createNoopLogger();
+    const errorSpy = vi.spyOn(logger, "error");
+    await using app = await createAtblobApp({ didCache: "memory", logger });
+    const server = await startServer(app);
+    close = server.close;
+
+    await request(server.port, `/img/unknown-preset/plain/${DID}/${CID}`);
+
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ name: "BadRequestError" }),
+    );
   });
 });

@@ -1,4 +1,4 @@
-import type { Atblob } from "@atblob/core";
+import { type Atblob, createNoopLogger } from "@atblob/core";
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
@@ -10,6 +10,7 @@ const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 const createApp = (render: Atblob["render"]) => {
   const atblob: Atblob = {
     render,
+    logger: createNoopLogger(),
     [Symbol.asyncDispose]: () => Promise.resolve(),
   };
   const app = new Hono();

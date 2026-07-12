@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { createNoopLogger } from "@atblob/core";
+import { describe, expect, it, vi } from "vitest";
 
 import { createAtblobApp } from "./app.js";
 
@@ -42,5 +43,23 @@ describe("createAtblobApp", () => {
 
     expect(res.status).toBe(400);
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
+  });
+
+  it("エラー発生時はレスポンスにスタックトレースを含めず、loggerにエラーログを出力する", async () => {
+    const logger = createNoopLogger();
+    const errorSpy = vi.spyOn(logger, "error");
+    await using app = await createAtblobApp({ didCache: "memory", logger });
+
+    const res = await app.request(
+      `/img/unknown-preset/plain/${VALID_DID}/${VALID_CID}`,
+    );
+    const body = await res.text();
+
+    expect(body).toBe("");
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({ name: "BadRequestError" }),
+    );
   });
 });

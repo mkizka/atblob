@@ -1,11 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   BadGatewayError,
   BadRequestError,
+  logError,
   NotFoundError,
   toErrorResponse,
 } from "./errors.js";
+import { createNoopLogger } from "./logger.js";
 
 describe("toErrorResponse", () => {
   it("BadRequestErrorはstatus 400になる", () => {
@@ -43,6 +45,33 @@ describe("toErrorResponse", () => {
 
     expect(response.headers).toEqual({
       "Cache-Control": "public, max-age=60",
+    });
+  });
+});
+
+describe("logError", () => {
+  it("Errorインスタンスの場合はmessage・name・stackをログに出力する", () => {
+    const logger = createNoopLogger();
+    const errorSpy = vi.spyOn(logger, "error");
+    const error = new BadRequestError("bad request");
+
+    logError(logger, error);
+
+    expect(errorSpy).toHaveBeenCalledWith("bad request", {
+      name: "BadRequestError",
+      stack: error.stack,
+    });
+  });
+
+  it("Errorインスタンスでない値の場合もログに出力する", () => {
+    const logger = createNoopLogger();
+    const errorSpy = vi.spyOn(logger, "error");
+
+    logError(logger, "not an error");
+
+    expect(errorSpy).toHaveBeenCalledWith("Unknown error", {
+      name: undefined,
+      stack: undefined,
     });
   });
 });
