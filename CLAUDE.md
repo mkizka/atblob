@@ -2,21 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-atblob は Blueskyの画像CDN(cdn.bsky.app)を代替するOSS実装。同じURLパスを受け付け、ホスト名の差し替えだけで動くことが目標。
+atblob is an OSS implementation that replaces Bluesky's image CDN (cdn.bsky.app). The goal is to accept the same URL paths and work with only a hostname swap.
 
-## ドキュメント
+## Implementation rules
 
-- [docs/spec.md](docs/spec.md)
-  - 仕様について不明点がある時に読む
-
-## 実装ルール
-
-変更後は以下のコマンドを実行して必ず検証を行うこと。
+After making changes, always run the following command to verify them.
 
 ```sh
-$ pnpm all # build typecheck format testを実行する
+$ pnpm all # runs build, typecheck, format, and test
 ```
 
-## CLI Development
+## Commit messages and PR titles
 
-When creating command-line interfaces, use the `use-gunshi-cli` skill.
+Write commit messages and PR titles in English.

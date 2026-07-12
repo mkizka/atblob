@@ -23,9 +23,6 @@ export const createImgHandler = (
       cid,
       format,
     });
-    if (c.req.method === "HEAD") {
-      return c.body(null, 200, result.headers);
-    }
     return c.body(new Uint8Array(result.bytes), 200, result.headers);
   };
 };

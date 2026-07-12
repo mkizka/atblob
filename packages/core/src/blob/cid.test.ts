@@ -11,30 +11,30 @@ const cidFor = async (bytes: Uint8Array): Promise<string> => {
 };
 
 describe("isCid", () => {
-  it("有効なCIDの文字列を受け入れる", async () => {
+  it("accepts a valid CID string", async () => {
     const cid = await cidFor(new TextEncoder().encode("hello"));
 
     expect(isCid(cid)).toBe(true);
   });
 
-  it("CIDとして不正な文字列は拒否する", () => {
+  it("rejects a string that is invalid as a CID", () => {
     expect(isCid("not-a-cid")).toBe(false);
   });
 
-  it("空文字は拒否する", () => {
+  it("rejects an empty string", () => {
     expect(isCid("")).toBe(false);
   });
 });
 
 describe("verifyCid", () => {
-  it("bytesから計算したハッシュがCIDと一致する場合は成功する", async () => {
+  it("succeeds when the hash computed from bytes matches the CID", async () => {
     const bytes = new TextEncoder().encode("hello");
     const cid = await cidFor(bytes);
 
     await expect(verifyCid(cid, bytes)).resolves.toBeUndefined();
   });
 
-  it("bytesがCIDと一致しない場合はNotFoundErrorになる", async () => {
+  it("results in NotFoundError when bytes do not match the CID", async () => {
     const cid = await cidFor(new TextEncoder().encode("hello"));
     const otherBytes = new TextEncoder().encode("world");
 

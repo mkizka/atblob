@@ -13,7 +13,7 @@ describe("createConsoleLogger", () => {
     ["warn", "console.warn" as const],
     ["error", "console.error" as const],
   ] as const)(
-    "%sはlevel・message・fieldsを含むJSONを出力する",
+    "%s outputs JSON containing level, message, and fields",
     (level, _consoleMethodLabel) => {
       const spy = vi.spyOn(console, level).mockImplementation(() => undefined);
       const logger = createConsoleLogger({ level: "debug", format: "json" });
@@ -30,7 +30,7 @@ describe("createConsoleLogger", () => {
     },
   );
 
-  it("fieldsを省略した場合もmessageのみのJSONを出力する", () => {
+  it("outputs JSON with only message when fields is omitted", () => {
     const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
     const logger = createConsoleLogger({ format: "json" });
 
@@ -40,7 +40,7 @@ describe("createConsoleLogger", () => {
     expect(output).toMatchObject({ level: "info", message: "no fields" });
   });
 
-  it("formatを指定しない場合はpretty形式で出力する", () => {
+  it("outputs pretty-formatted text when format is not specified", () => {
     const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
     const logger = createConsoleLogger();
 
@@ -53,7 +53,7 @@ describe("createConsoleLogger", () => {
     );
   });
 
-  it("formatにprettyを指定するとlevel・message・fieldsを読みやすい形式で出力する", () => {
+  it("outputs level, message, and fields in a readable format when format is pretty", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const logger = createConsoleLogger({ format: "pretty" });
 
@@ -66,7 +66,7 @@ describe("createConsoleLogger", () => {
     );
   });
 
-  it("levelを指定しない場合はinfo未満(debug)を出力しない", () => {
+  it("does not output below info (debug) when level is not specified", () => {
     const debugSpy = vi
       .spyOn(console, "debug")
       .mockImplementation(() => undefined);
@@ -82,7 +82,7 @@ describe("createConsoleLogger", () => {
     expect(infoSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("levelにwarnを指定するとdebug・infoを出力しない", () => {
+  it("does not output debug or info when level is set to warn", () => {
     const debugSpy = vi
       .spyOn(console, "debug")
       .mockImplementation(() => undefined);
@@ -103,7 +103,7 @@ describe("createConsoleLogger", () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 
-  it("levelにsilentを指定すると何も出力しない", () => {
+  it("outputs nothing when level is set to silent", () => {
     const spies = (["debug", "info", "warn", "error"] as const).map((level) =>
       vi.spyOn(console, level).mockImplementation(() => undefined),
     );
@@ -121,7 +121,7 @@ describe("createConsoleLogger", () => {
 });
 
 describe("createNoopLogger", () => {
-  it("何も出力しない", () => {
+  it("outputs nothing", () => {
     const spies = (["debug", "info", "warn", "error"] as const).map((level) =>
       vi.spyOn(console, level).mockImplementation(() => undefined),
     );

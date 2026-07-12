@@ -31,7 +31,7 @@ const fakeBlobFetcher = (fetchBlob: BlobFetcher["fetchBlob"]): BlobFetcher => ({
 });
 
 describe("createRenderer", () => {
-  it("presetが未知の場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when preset is unknown", async () => {
     const render = createRenderer({
       pdsResolver: fakePdsResolver(),
       blobFetcher: fakeBlobFetcher(() => {
@@ -44,7 +44,7 @@ describe("createRenderer", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
-  it("didが不正な場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when did is invalid", async () => {
     const render = createRenderer({
       pdsResolver: fakePdsResolver(),
       blobFetcher: fakeBlobFetcher(() => {
@@ -57,7 +57,7 @@ describe("createRenderer", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
-  it("cidが不正な場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when cid is invalid", async () => {
     const render = createRenderer({
       pdsResolver: fakePdsResolver(),
       blobFetcher: fakeBlobFetcher(() => {
@@ -70,7 +70,7 @@ describe("createRenderer", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
-  it("formatが未対応の場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when format is unsupported", async () => {
     const render = createRenderer({
       pdsResolver: fakePdsResolver(),
       blobFetcher: fakeBlobFetcher(() => {
@@ -88,7 +88,7 @@ describe("createRenderer", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
-  it("正常な入力の場合は画像とヘッダーを返す", async () => {
+  it("returns the image and headers for valid input", async () => {
     const bytes = await createImageBytes();
     const render = createRenderer({
       pdsResolver: fakePdsResolver(),
@@ -111,7 +111,7 @@ describe("createRenderer", () => {
     });
   });
 
-  it("did解決に失敗した場合はBadGatewayErrorになる", async () => {
+  it("results in BadGatewayError when did resolution fails", async () => {
     const render = createRenderer({
       pdsResolver: fakePdsResolver(() =>
         Promise.reject(new Error("resolve failed")),

@@ -46,7 +46,7 @@ async function startCli(
 }
 
 describe("runCli", () => {
-  it("GETリクエストに実際のHTTPサーバーとして応答する", async () => {
+  it("responds as an actual HTTP server to GET requests", async () => {
     const { port, running } = await startCli();
 
     const response = await request(port, "GET");
@@ -56,7 +56,7 @@ describe("runCli", () => {
     await running;
   });
 
-  it("HEADリクエストにも応答する", async () => {
+  it("also responds to HEAD requests", async () => {
     const { port, running } = await startCli();
 
     const response = await request(port, "HEAD");
@@ -66,7 +66,7 @@ describe("runCli", () => {
     await running;
   });
 
-  it("SIGINTを受け取るとサーバーを閉じてポートを解放する", async () => {
+  it("closes the server and releases the port on SIGINT", async () => {
     const { port, running } = await startCli();
 
     process.emit("SIGINT");
@@ -75,7 +75,7 @@ describe("runCli", () => {
     await expect(request(port)).rejects.toThrow();
   });
 
-  it("SIGTERMを受け取ってもサーバーを閉じてポートを解放する", async () => {
+  it("also closes the server and releases the port on SIGTERM", async () => {
     const { port, running } = await startCli();
 
     process.emit("SIGTERM");
@@ -84,7 +84,7 @@ describe("runCli", () => {
     await expect(request(port)).rejects.toThrow();
   });
 
-  it("--portを指定しない場合はPORT環境変数の値でリッスンする", async () => {
+  it("listens on the PORT environment variable value when --port is not specified", async () => {
     const port = await getPort();
     const running = runCli(["--did-cache", "memory"], {
       PORT: String(port),
@@ -98,9 +98,41 @@ describe("runCli", () => {
     await running;
   });
 
-  it("did-cacheがredisでredis-urlが無い場合はサーバーを起動せずエラーになる", async () => {
+  it("throws without starting the server when did-cache is redis and redis-url is missing", async () => {
     await expect(runCli(["--did-cache", "redis"], {})).rejects.toThrow(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
+  });
+
+  it("logs a structured access log entry for each request", async () => {
+    const infoSpy = vi
+      .spyOn(console, "info")
+      .mockImplementation(() => undefined);
+    const { port, running } = await startCli(["--log-format", "json"]);
+    infoSpy.mockClear();
+
+    await request(port, "GET", "/some-path");
+
+    const outputs: unknown[] = infoSpy.mock.calls.map((call) => {
+      const parsed: unknown = JSON.parse(String(call[0]));
+      return parsed;
+    });
+    const accessLog = outputs.find(
+      (output) =>
+        typeof output === "object" &&
+        output !== null &&
+        "message" in output &&
+        output.message === "access",
+    );
+    expect(accessLog).toMatchObject({
+      method: "GET",
+      path: "/some-path",
+      status: 404,
+      durationMs: expect.any(Number),
+    });
+
+    process.emit("SIGINT");
+    await running;
+    infoSpy.mockRestore();
   });
 });

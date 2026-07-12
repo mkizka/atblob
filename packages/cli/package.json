@@ -19,7 +19,8 @@
   "dependencies": {
     "@atblob/hono": "workspace:*",
     "@hono/node-server": "2.0.8",
-    "gunshi": "0.36.0",
+    "arg": "5.0.2",
+    "hono": "4.12.27",
     "valibot": "1.4.2"
   },
   "devDependencies": {
