@@ -21,8 +21,10 @@ type NonRequired<T> = {
   [K in keyof T]?: T[K] | undefined;
 };
 
-export type AtblobConfig =
-  NonRequired<RedisAtblobConfig> | NonRequired<InMemoryAtblobConfig>;
+export type AtblobConfig = NonRequired<BaseAtblobConfig> & {
+  didCache?: "redis" | "memory" | undefined;
+  redisUrl?: string | undefined;
+};
 
 export const resolveConfig = (
   config: AtblobConfig = {},
@@ -34,12 +36,11 @@ export const resolveConfig = (
     plcDirectoryUrl: config.plcDirectoryUrl ?? "https://plc.directory",
     logger: config.logger ?? createConsoleLogger(),
   };
-  if (config.didCache !== "redis") {
-    return { ...base, didCache: "memory" };
+  if (config.redisUrl !== undefined) {
+    return { ...base, didCache: "redis", redisUrl: config.redisUrl };
   }
-  const redisUrl = "redisUrl" in config ? config.redisUrl : undefined;
-  if (redisUrl === undefined) {
+  if (config.didCache === "redis") {
     throw new Error('redisUrl is required when didCache is "redis"');
   }
-  return { ...base, didCache: "redis", redisUrl };
+  return { ...base, didCache: "memory" };
 };

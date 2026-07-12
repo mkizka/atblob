@@ -48,6 +48,29 @@ describe("resolveConfig", () => {
     );
   });
 
+  it("uses redis when redisUrl is specified even if didCache is memory", () => {
+    const config = resolveConfig({
+      didCache: "memory",
+      redisUrl: "redis://localhost:6379",
+    });
+
+    expect(config).toMatchObject({
+      didCache: "redis",
+      redisUrl: "redis://localhost:6379",
+    });
+  });
+
+  it("uses redis when redisUrl is specified and didCache is omitted", () => {
+    const config = resolveConfig({
+      redisUrl: "redis://localhost:6379",
+    });
+
+    expect(config).toMatchObject({
+      didCache: "redis",
+      redisUrl: "redis://localhost:6379",
+    });
+  });
+
   it("defaults to memory when config is omitted", () => {
     const config = resolveConfig();
 
