@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { runCli } from "./cli.js";
+import { runCliEntrypoint } from "./cli.js";
 
-await runCli(process.argv.slice(2), process.env);
+process.exitCode = await runCliEntrypoint(process.argv.slice(2), process.env);

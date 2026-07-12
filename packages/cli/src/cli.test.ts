@@ -3,7 +3,7 @@ import http from "node:http";
 import getPort from "get-port";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { runCli } from "./cli.js";
+import { runCli, runCliEntrypoint } from "./cli.js";
 
 const VALID_DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
@@ -140,5 +140,57 @@ describe("runCli", () => {
 
     process.emit("SIGINT");
     await running;
+  });
+});
+
+describe("runCliEntrypoint", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("正常終了時は0を返す", async () => {
+    const port = await getPort();
+    const running = runCliEntrypoint(
+      ["--port", String(port), "--did-cache", "memory"],
+      {},
+    );
+    await waitForServer(port);
+
+    process.emit("SIGINT");
+
+    await expect(running).resolves.toBe(0);
+  });
+
+  it("不正な引数を渡した場合はスタックトレースを流さずログに記録し1を返す", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    const exitCode = await runCliEntrypoint(
+      ["--did-cache", "invalid-value"],
+      {},
+    );
+
+    expect(exitCode).toBe(1);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    const output: unknown = JSON.parse(String(errorSpy.mock.calls[0]?.[0]));
+    expect(output).toMatchObject({ level: "error" });
+  });
+
+  it("redis-urlが無い場合もスタックトレースを流さずログに記録し1を返す", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+
+    const exitCode = await runCliEntrypoint(["--did-cache", "redis"], {});
+
+    expect(exitCode).toBe(1);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    const output: unknown = JSON.parse(String(errorSpy.mock.calls[0]?.[0]));
+    expect(output).toMatchObject({
+      level: "error",
+      message:
+        '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
+    });
   });
 });
