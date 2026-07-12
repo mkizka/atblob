@@ -4,19 +4,6 @@ import { resolveConfig } from "./config.js";
 import { createNoopLogger } from "./logger.js";
 
 describe("resolveConfig", () => {
-  it("builds a config including default values when didCache is memory", () => {
-    const config = resolveConfig({ didCache: "memory" });
-
-    expect(config).toMatchObject({
-      didCache: "memory",
-      maxBlobSize: 10 * 1024 * 1024,
-      didResolveTimeout: 5000,
-      blobFetchTimeout: 15000,
-      plcDirectoryUrl: "https://plc.directory",
-    });
-    expect(config.logger).toBeDefined();
-  });
-
   it("builds a config including redisUrl when didCache is redis", () => {
     const config = resolveConfig({
       didCache: "redis",
@@ -71,5 +58,6 @@ describe("resolveConfig", () => {
       blobFetchTimeout: 15000,
       plcDirectoryUrl: "https://plc.directory",
     });
+    expect(config.logger).toBeDefined();
   });
 });

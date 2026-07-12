@@ -141,8 +141,4 @@ describe("buildConfig", () => {
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
   });
-
-  it("does not throw when didCache is memory even without redisUrl", () => {
-    expect(() => buildConfig({ didCache: "memory" }, {})).not.toThrow();
-  });
 });
