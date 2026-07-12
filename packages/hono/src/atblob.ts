@@ -1,28 +1,37 @@
 import type { Renderer } from "@atblob/core";
 import { toErrorResponse } from "@atblob/core";
-import { Hono, type MiddlewareHandler } from "hono";
+import type { MiddlewareHandler } from "hono";
 
-import { createImgHandler, IMG_PATH } from "./routes/img.js";
+const IMG_PATTERN = /^\/img\/([^/]+)\/plain\/([^/]+)\/([^/]+)$/;
 
-// Hono has no Express-Router-like concept of a sub-app that falls through to
-// the parent's next middleware on an unmatched route, so we mark our own
-// "no route matched" response and use that to decide whether to call next().
-const PASSTHROUGH_HEADER = "X-Atblob-Passthrough";
+const splitCidAndFormat = (
+  cidAndFormat: string,
+): { cid: string; format: string | undefined } => {
+  const [cid = "", ...rest] = cidAndFormat.split("@");
+  return { cid, format: rest.length > 0 ? rest.join("@") : undefined };
+};
 
 export const atblob = (renderer: Renderer): MiddlewareHandler => {
-  const router = new Hono();
-  router.get(IMG_PATH, createImgHandler(renderer));
-  router.notFound((c) => c.body(null, 404, { [PASSTHROUGH_HEADER]: "1" }));
-  router.onError((error, c) => {
-    const { status, headers } = toErrorResponse(error);
-    return c.body(null, status, headers);
-  });
-
   return async (c, next) => {
-    const res = await router.fetch(c.req.raw);
-    if (res.headers.has(PASSTHROUGH_HEADER)) {
+    if (c.req.method !== "GET" && c.req.method !== "HEAD") {
       return next();
     }
-    return res;
+    const match = IMG_PATTERN.exec(c.req.path);
+    if (!match) {
+      return next();
+    }
+    const [, preset = "", did = "", cidAndFormat = ""] = match;
+    const { cid, format } = splitCidAndFormat(cidAndFormat);
+
+    try {
+      const result = await renderer.render({ preset, did, cid, format });
+      if (c.req.method === "HEAD") {
+        return c.body(null, 200, result.headers);
+      }
+      return c.body(new Uint8Array(result.bytes), 200, result.headers);
+    } catch (error) {
+      const { status, headers } = toErrorResponse(error);
+      return c.body(null, status, headers);
+    }
   };
 };
