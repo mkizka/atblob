@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import type { Logger } from "@atblob/core";
+import { describe, expect, it, vi } from "vitest";
 
 import { createAtblobApp } from "./app.js";
 
@@ -42,5 +43,28 @@ describe("createAtblobApp", () => {
 
     expect(res.status).toBe(400);
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
+  });
+
+  it("リクエストごとにアクセスログを出力する", async () => {
+    const info = vi.fn<Logger["info"]>();
+    const logger: Logger = {
+      debug: vi.fn(),
+      info,
+      warn: vi.fn(),
+      error: vi.fn(),
+    };
+    await using app = await createAtblobApp({ didCache: "memory", logger });
+
+    await app.request("/not-found");
+
+    expect(info).toHaveBeenCalledWith(
+      "access",
+      expect.objectContaining({
+        method: "GET",
+        path: "/not-found",
+        status: 404,
+        durationMs: expect.any(Number),
+      }),
+    );
   });
 });
