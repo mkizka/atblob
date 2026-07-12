@@ -1,5 +1,22 @@
 # @atblob/cli
 
+## 0.1.0
+
+### Minor Changes
+
+- 3454b60: Add a health check. `Renderer#checkHealth()` reports whether the configured DID cache is reachable, and the CLI exposes it at `GET /health`.
+- 73fc00c: Default `didCache` to `memory` instead of requiring `redis` to be configured explicitly
+
+### Patch Changes
+
+- fd85a10: Default the Docker image's log format to JSON
+- Updated dependencies [7604c31]
+- Updated dependencies [1efdf19]
+- Updated dependencies [3454b60]
+- Updated dependencies [73fc00c]
+  - @atblob/core@0.1.0
+  - @atblob/hono@0.1.0
+
 ## 0.0.2
 
 ### Patch Changes
