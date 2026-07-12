@@ -1,6 +1,7 @@
 import { type AtblobConfig, createAtblob, toErrorResponse } from "@atblob/core";
 import express, { type ErrorRequestHandler, type Express } from "express";
 
+import { createHealthHandler, HEALTH_PATH } from "./routes/health.js";
 import { createImgHandler, IMG_PATH } from "./routes/img.js";
 
 type AtblobExpress = Express & AsyncDisposable;
@@ -20,6 +21,7 @@ export const createAtblobApp = async (
   const app = express();
   app.get(IMG_PATH, imgHandler);
   app.head(IMG_PATH, imgHandler);
+  app.get(HEALTH_PATH, createHealthHandler(atblob));
   app.use(handleError);
 
   return Object.assign(app, {

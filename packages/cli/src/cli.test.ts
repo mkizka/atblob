@@ -56,6 +56,16 @@ describe("runCli", () => {
     await running;
   });
 
+  it("responds to GET /img/health with 200 without any extra cli wiring", async () => {
+    const { port, running } = await startCli();
+
+    const response = await request(port, "GET", "/img/health");
+    expect(response.status).toBe(200);
+
+    process.emit("SIGINT");
+    await running;
+  });
+
   it("also responds to HEAD requests", async () => {
     const { port, running } = await startCli();
 

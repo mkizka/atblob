@@ -87,4 +87,14 @@ describe("createAtblobApp", () => {
 
     expect(response.status).toBe(400);
   });
+
+  it("a GET request to /img/health results in 200 when the did cache needs no external checks", async () => {
+    await using app = await createAtblobApp({ didCache: "memory" });
+    const server = await startServer(app);
+    close = server.close;
+
+    const response = await request(server.port, "/img/health");
+
+    expect(response.status).toBe(200);
+  });
 });

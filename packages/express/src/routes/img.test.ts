@@ -12,6 +12,7 @@ const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 const fakeAtblob = (render: Atblob["render"]): Atblob => ({
   render,
+  checkHealth: () => Promise.resolve({ status: "ok", checks: {} }),
   [Symbol.asyncDispose]: () => Promise.resolve(),
 });
 

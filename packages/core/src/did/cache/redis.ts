@@ -1,6 +1,7 @@
 import type { CacheResult, DidCache, DidDocument } from "@atproto/identity";
 import { Redis } from "ioredis";
 
+import type { HealthCheck } from "../../health.js";
 import type { Logger } from "../../logger.js";
 
 const HOUR = 60 * 60 * 1000;
@@ -32,7 +33,7 @@ export const createRedisDidCache = (
   deps: { redisUrl: string; logger: Logger },
   staleTTL = HOUR,
   maxTTL = DAY,
-): DidCache => {
+): DidCache & AsyncDisposable & { checkHealth: HealthCheck } => {
   const redis = new Redis(deps.redisUrl, { lazyConnect: true });
 
   const cacheDid = async (did: string, doc: DidDocument): Promise<void> => {
@@ -40,10 +41,13 @@ export const createRedisDidCache = (
     await redis.set(KEY_PREFIX + did, JSON.stringify(entry), "PX", maxTTL);
   };
 
-  const cache: DidCache & AsyncDisposable = {
+  const cache: DidCache & AsyncDisposable & { checkHealth: HealthCheck } = {
     [Symbol.asyncDispose]: async () => {
       await redis.quit();
       deps.logger.info("redis did cache disconnected");
+    },
+    checkHealth: async () => {
+      await redis.ping();
     },
     cacheDid,
     refreshCache: async (did, getDoc) => {

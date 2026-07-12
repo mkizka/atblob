@@ -10,6 +10,7 @@ const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 const createApp = (render: Atblob["render"]) => {
   const atblob: Atblob = {
     render,
+    checkHealth: () => Promise.resolve({ status: "ok", checks: {} }),
     [Symbol.asyncDispose]: () => Promise.resolve(),
   };
   const app = new Hono();

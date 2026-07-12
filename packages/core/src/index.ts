@@ -7,6 +7,7 @@ export {
   NotFoundError,
   toErrorResponse,
 } from "./errors.js";
+export type { HealthCheckResult, HealthCheckStatus } from "./health.js";
 export {
   createConsoleLogger,
   createNoopLogger,

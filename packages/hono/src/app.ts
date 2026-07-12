@@ -1,6 +1,7 @@
 import { type AtblobConfig, createAtblob, toErrorResponse } from "@atblob/core";
 import { Hono } from "hono";
 
+import { createHealthHandler, HEALTH_PATH } from "./routes/health.js";
 import { createImgHandler, IMG_PATH } from "./routes/img.js";
 
 export const createAtblobApp = async (config: AtblobConfig = {}) => {
@@ -8,6 +9,7 @@ export const createAtblobApp = async (config: AtblobConfig = {}) => {
 
   const app = new Hono();
   app.get(IMG_PATH, createImgHandler(atblob));
+  app.get(HEALTH_PATH, createHealthHandler(atblob));
   app.onError((error, c) => {
     const { status, headers } = toErrorResponse(error);
     return c.body(null, status, headers);
