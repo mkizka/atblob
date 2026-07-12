@@ -103,4 +103,36 @@ describe("runCli", () => {
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
   });
+
+  it("logs a structured access log entry for each request", async () => {
+    const infoSpy = vi
+      .spyOn(console, "info")
+      .mockImplementation(() => undefined);
+    const { port, running } = await startCli();
+    infoSpy.mockClear();
+
+    await request(port, "GET", "/some-path");
+
+    const outputs: unknown[] = infoSpy.mock.calls.map((call) => {
+      const parsed: unknown = JSON.parse(String(call[0]));
+      return parsed;
+    });
+    const accessLog = outputs.find(
+      (output) =>
+        typeof output === "object" &&
+        output !== null &&
+        "message" in output &&
+        output.message === "access",
+    );
+    expect(accessLog).toMatchObject({
+      method: "GET",
+      path: "/some-path",
+      status: 404,
+      durationMs: expect.any(Number),
+    });
+
+    process.emit("SIGINT");
+    await running;
+    infoSpy.mockRestore();
+  });
 });
