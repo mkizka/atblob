@@ -13,12 +13,12 @@ const createApp = (render: Atblob["render"]) => {
     [Symbol.asyncDispose]: () => Promise.resolve(),
   };
   const app = new Hono();
-  app.on(["GET", "HEAD"], IMG_PATH, createImgHandler(atblob));
+  app.get(IMG_PATH, createImgHandler(atblob));
   return app;
 };
 
 describe("createImgHandler", () => {
-  it("GETリクエストで画像バイト列とヘッダーを返す", async () => {
+  it("returns image bytes and headers for a GET request", async () => {
     const bytes = new Uint8Array([1, 2, 3]);
     const render = vi.fn().mockResolvedValue({
       bytes,
@@ -41,7 +41,7 @@ describe("createImgHandler", () => {
     });
   });
 
-  it("HEADリクエストではヘッダーのみでボディを返さない", async () => {
+  it("returns only headers and no body for a HEAD request", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array([1, 2, 3]),
       headers: { "Content-Type": "image/webp" },
@@ -58,7 +58,7 @@ describe("createImgHandler", () => {
     expect((await res.arrayBuffer()).byteLength).toBe(0);
   });
 
-  it("cidAndFormatに@が含まれる場合はcidとformatに分割してrenderへ渡す", async () => {
+  it("splits cidAndFormat into cid and format and passes them to render when it contains @", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array(),
       headers: {},
@@ -75,7 +75,7 @@ describe("createImgHandler", () => {
     });
   });
 
-  it("cidAndFormatに@が複数含まれる場合は最初の@以降をformatとして扱う", async () => {
+  it("treats everything after the first @ as format when cidAndFormat contains multiple @", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array(),
       headers: {},

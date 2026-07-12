@@ -6,7 +6,7 @@ const VALID_DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 describe("createAtblobApp", () => {
-  it("未定義のルートには404を返す", async () => {
+  it("returns 404 for an undefined route", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
 
     const res = await app.request("/not-found");
@@ -14,7 +14,7 @@ describe("createAtblobApp", () => {
     expect(res.status).toBe(404);
   });
 
-  it("presetが不正な場合はBadRequestErrorに対応する400を返す", async () => {
+  it("returns 400 for BadRequestError when preset is invalid", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
 
     const res = await app.request(
@@ -26,7 +26,7 @@ describe("createAtblobApp", () => {
     expect((await res.arrayBuffer()).byteLength).toBe(0);
   });
 
-  it("didが不正な場合はBadRequestErrorに対応する400を返す", async () => {
+  it("returns 400 for BadRequestError when did is invalid", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
 
     const res = await app.request(`/img/avatar/plain/invalid-did/${VALID_CID}`);
@@ -35,7 +35,7 @@ describe("createAtblobApp", () => {
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
   });
 
-  it("cidが不正な場合はBadRequestErrorに対応する400を返す", async () => {
+  it("returns 400 for BadRequestError when cid is invalid", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
 
     const res = await app.request(`/img/avatar/plain/${VALID_DID}/invalid-cid`);

@@ -8,37 +8,37 @@ import {
 } from "./errors.js";
 
 describe("toErrorResponse", () => {
-  it("BadRequestErrorはstatus 400になる", () => {
+  it("BadRequestError results in status 400", () => {
     const response = toErrorResponse(new BadRequestError("bad request"));
 
     expect(response.status).toBe(400);
   });
 
-  it("NotFoundErrorはstatus 404になる", () => {
+  it("NotFoundError results in status 404", () => {
     const response = toErrorResponse(new NotFoundError("not found"));
 
     expect(response.status).toBe(404);
   });
 
-  it("BadGatewayErrorはstatus 502になる", () => {
+  it("BadGatewayError results in status 502", () => {
     const response = toErrorResponse(new BadGatewayError("bad gateway"));
 
     expect(response.status).toBe(502);
   });
 
-  it("AtblobHttpError以外のエラーはstatus 502になる", () => {
+  it("errors other than AtblobHttpError result in status 502", () => {
     const response = toErrorResponse(new Error("unexpected"));
 
     expect(response.status).toBe(502);
   });
 
-  it("エラー以外の値が渡された場合もstatus 502になる", () => {
+  it("also results in status 502 when a non-error value is passed", () => {
     const response = toErrorResponse("not an error");
 
     expect(response.status).toBe(502);
   });
 
-  it("Cache-Controlヘッダーを常に付与する", () => {
+  it("always attaches a Cache-Control header", () => {
     const response = toErrorResponse(new NotFoundError("not found"));
 
     expect(response.headers).toEqual({

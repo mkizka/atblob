@@ -7,7 +7,7 @@ export const createAtblobApp = async (config: AtblobConfig = {}) => {
   const atblob = await createAtblob(config);
 
   const app = new Hono();
-  app.on(["GET", "HEAD"], IMG_PATH, createImgHandler(atblob));
+  app.get(IMG_PATH, createImgHandler(atblob));
   app.onError((error, c) => {
     const { status, headers } = toErrorResponse(error);
     return c.body(null, status, headers);
