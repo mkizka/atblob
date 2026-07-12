@@ -1,9 +1,30 @@
 import http from "node:http";
 
 import getPort from "get-port";
-import { describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 
 import { runCli } from "./cli.js";
+
+let infoSpy: MockInstance<typeof console.info>;
+
+beforeEach(() => {
+  infoSpy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+  vi.spyOn(console, "debug").mockImplementation(() => undefined);
+  vi.spyOn(console, "warn").mockImplementation(() => undefined);
+  vi.spyOn(console, "error").mockImplementation(() => undefined);
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function request(
   port: number,
@@ -115,9 +136,6 @@ describe("runCli", () => {
   });
 
   it("logs a structured access log entry for each request", async () => {
-    const infoSpy = vi
-      .spyOn(console, "info")
-      .mockImplementation(() => undefined);
     const { port, running } = await startCli(["--log-format", "json"]);
     infoSpy.mockClear();
 
@@ -143,6 +161,5 @@ describe("runCli", () => {
 
     process.emit("SIGINT");
     await running;
-    infoSpy.mockRestore();
   });
 });
