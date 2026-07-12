@@ -1,1 +1,1 @@
-export { createAtblobApp } from "./app.js";
+export { atblob } from "./atblob.js";
