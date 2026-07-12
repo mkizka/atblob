@@ -1,3 +1,4 @@
+import { createAtblob } from "@atblob/core";
 import { describe, expect, it } from "vitest";
 
 import { createAtblobApp } from "./app.js";
@@ -7,7 +8,8 @@ const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 describe("createAtblobApp", () => {
   it("returns 404 for an undefined route", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
 
     const res = await app.request("/not-found");
 
@@ -15,7 +17,8 @@ describe("createAtblobApp", () => {
   });
 
   it("returns 400 for BadRequestError when preset is invalid", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
 
     const res = await app.request(
       `/img/unknown-preset/plain/${VALID_DID}/${VALID_CID}`,
@@ -27,7 +30,8 @@ describe("createAtblobApp", () => {
   });
 
   it("returns 400 for BadRequestError when did is invalid", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
 
     const res = await app.request(`/img/avatar/plain/invalid-did/${VALID_CID}`);
 
@@ -36,7 +40,8 @@ describe("createAtblobApp", () => {
   });
 
   it("returns 400 for BadRequestError when cid is invalid", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
 
     const res = await app.request(`/img/avatar/plain/${VALID_DID}/invalid-cid`);
 

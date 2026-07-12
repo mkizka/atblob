@@ -1,6 +1,7 @@
 import type { Server } from "node:http";
 import http from "node:http";
 
+import { createAtblob } from "@atblob/core";
 import getPort from "get-port";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -30,7 +31,7 @@ function request(
 }
 
 const startServer = async (
-  app: Awaited<ReturnType<typeof createAtblobApp>>,
+  app: ReturnType<typeof createAtblobApp>,
 ): Promise<{ port: number; close: () => Promise<void> }> => {
   const port = await getPort();
   const server: Server = app.listen(port, "127.0.0.1");
@@ -51,7 +52,8 @@ describe("createAtblobApp", () => {
   });
 
   it("a GET request to a nonexistent path results in 404", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
     const server = await startServer(app);
     close = server.close;
 
@@ -61,7 +63,8 @@ describe("createAtblobApp", () => {
   });
 
   it("a GET request with an invalid preset results in 400 as BadRequestError", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
     const server = await startServer(app);
     close = server.close;
 
@@ -75,7 +78,8 @@ describe("createAtblobApp", () => {
   });
 
   it("a HEAD request with an invalid preset likewise results in 400", async () => {
-    await using app = await createAtblobApp({ didCache: "memory" });
+    await using atblob = await createAtblob({ didCache: "memory" });
+    const app = createAtblobApp(atblob);
     const server = await startServer(app);
     close = server.close;
 

@@ -1,11 +1,10 @@
-import { type AtblobConfig, createAtblob, toErrorResponse } from "@atblob/core";
+import type { Atblob } from "@atblob/core";
+import { toErrorResponse } from "@atblob/core";
 import { Hono } from "hono";
 
 import { createImgHandler, IMG_PATH } from "./routes/img.js";
 
-export const createAtblobApp = async (config: AtblobConfig = {}) => {
-  const atblob = await createAtblob(config);
-
+export const createAtblobApp = (atblob: Atblob) => {
   const app = new Hono();
   app.get(IMG_PATH, createImgHandler(atblob));
   app.onError((error, c) => {
@@ -13,7 +12,5 @@ export const createAtblobApp = async (config: AtblobConfig = {}) => {
     return c.body(null, status, headers);
   });
 
-  return Object.assign(app, {
-    [Symbol.asyncDispose]: atblob[Symbol.asyncDispose],
-  });
+  return app;
 };

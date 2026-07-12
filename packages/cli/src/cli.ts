@@ -1,6 +1,7 @@
 import events from "node:events";
 
-import { createAtblobApp, type Logger } from "@atblob/hono";
+import { createAtblob, type Logger } from "@atblob/core";
+import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import arg from "arg";
 import { Hono, type MiddlewareHandler } from "hono";
@@ -101,7 +102,8 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using atblobApp = await createAtblobApp(config);
+  await using atblob = await createAtblob(config);
+  const atblobApp = createAtblobApp(atblob);
   const app = new Hono();
   app.use(logger(config.logger));
   app.route("/", atblobApp);
