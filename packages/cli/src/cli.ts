@@ -105,14 +105,15 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   await using renderer = await createRenderer(config);
   const app = new Hono();
   app.use(logger(config.logger));
-  app.get("/img/health", async (c) => {
+  app.use(atblob(renderer));
+
+  app.get("/health", async (c) => {
     const result = await renderer.checkHealth();
     return c.json(
       { version: pkg.version, ...result },
       result.status === "ok" ? 200 : 503,
     );
   });
-  app.use(atblob(renderer));
 
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
     config.logger.info(
