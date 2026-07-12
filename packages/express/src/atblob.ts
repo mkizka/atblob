@@ -9,9 +9,6 @@ const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
   res.status(status).set(headers).end();
 };
 
-// An Express Router calls next() on its own when no route inside it
-// matches, so mounting it via app.use() naturally falls through to
-// whatever else the consumer's app defines.
 export const atblob = (renderer: Renderer): Router => {
   const imgHandler = createImgHandler(renderer);
 
