@@ -60,6 +60,20 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 - `{cid}` — the CID of the blob
 - `{format}` — optional. One of `jpeg`, `jpg`, `png`, or `webp`. Defaults to the preset's own format (`webp`) when omitted.
 
+## Health check
+
+```
+GET /health
+```
+
+Returns the server version and the DID cache's health status.
+
+```json
+{ "version": "1.2.3", "status": "ok" }
+```
+
+Responds with `200` when healthy, or `503` and `{ "status": "error", "error": "..." }` when the DID cache (e.g. Redis) is unreachable.
+
 ## Options
 
 | Option                  | Environment variable  | Description                                                                | Default                 |
