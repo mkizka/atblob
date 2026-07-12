@@ -1,9 +1,8 @@
 import type { Renderer } from "@atblob/core";
 import { toErrorResponse } from "@atblob/core";
 import type { MiddlewareHandler } from "hono";
-import { PatternRouter } from "hono/router/pattern-router";
 
-const IMG_PATH = "/img/:preset/plain/:did/:cidAndFormat";
+const IMG_PATTERN = /^\/img\/([^/]+)\/plain\/([^/]+)\/([^/]+)$/;
 
 const splitCidAndFormat = (
   cidAndFormat: string,
@@ -13,25 +12,15 @@ const splitCidAndFormat = (
 };
 
 export const atblob = (renderer: Renderer): MiddlewareHandler => {
-  const router = new PatternRouter<true>();
-  router.add("GET", IMG_PATH, true);
-  router.add("HEAD", IMG_PATH, true);
-
   return async (c, next) => {
-    // PatternRouter always returns the single-element [handlers] form of
-    // Result<T>, never the RegExpRouter-style [handlers, paramStash] form,
-    // but the shared Router<T> interface types match() as a union of both.
-    const matchResult = router.match(c.req.method, c.req.path);
-    if (matchResult.length !== 1) {
+    if (c.req.method !== "GET" && c.req.method !== "HEAD") {
       return next();
     }
-    const [handlers] = matchResult;
-    const matched = handlers[0];
-    if (!matched) {
+    const match = IMG_PATTERN.exec(c.req.path);
+    if (!match) {
       return next();
     }
-    const [, params] = matched;
-    const { preset = "", did = "", cidAndFormat = "" } = params;
+    const [, preset = "", did = "", cidAndFormat = ""] = match;
     const { cid, format } = splitCidAndFormat(cidAndFormat);
 
     try {
