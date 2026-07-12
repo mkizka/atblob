@@ -1,21 +1,30 @@
 import http from "node:http";
 
 import getPort from "get-port";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { runCli } from "./cli.js";
+
+const VALID_DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
+const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 function request(
   port: number,
   method: "GET" | "HEAD" = "GET",
   path = "/",
-): Promise<{ status: number }> {
+): Promise<{ status: number; body: string }> {
   return new Promise((resolve, reject) => {
     const req = http.request(
       { host: "127.0.0.1", port, path, method },
       (res) => {
-        res.resume();
-        resolve({ status: res.statusCode ?? 0 });
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => chunks.push(chunk));
+        res.on("end", () => {
+          resolve({
+            status: res.statusCode ?? 0,
+            body: Buffer.concat(chunks).toString(),
+          });
+        });
       },
     );
     req.on("error", reject);
@@ -46,6 +55,10 @@ async function startCli(
 }
 
 describe("runCli", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("GETリクエストに実際のHTTPサーバーとして応答する", async () => {
     const { port, running } = await startCli();
 
@@ -102,5 +115,30 @@ describe("runCli", () => {
     await expect(runCli(["--did-cache", "redis"], {})).rejects.toThrow(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
+  });
+
+  it("エラー発生時はレスポンスにスタックトレースを含めず、標準エラー出力にログを記録する", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    const { port, running } = await startCli();
+
+    const response = await request(
+      port,
+      "GET",
+      `/img/unknown-preset/plain/${VALID_DID}/${VALID_CID}`,
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.body).toBe("");
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    const output: unknown = JSON.parse(String(errorSpy.mock.calls[0]?.[0]));
+    expect(output).toMatchObject({
+      level: "error",
+      name: "BadRequestError",
+    });
+
+    process.emit("SIGINT");
+    await running;
   });
 });

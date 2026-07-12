@@ -1,6 +1,6 @@
 import type { Server } from "node:http";
 
-import { type Atblob, createNoopLogger } from "@atblob/core";
+import type { Atblob } from "@atblob/core";
 import express, { type ErrorRequestHandler } from "express";
 import getPort from "get-port";
 import { afterEach, describe, expect, it } from "vitest";
@@ -12,7 +12,6 @@ const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
 const fakeAtblob = (render: Atblob["render"]): Atblob => ({
   render,
-  logger: createNoopLogger(),
   [Symbol.asyncDispose]: () => Promise.resolve(),
 });
 

@@ -4,7 +4,6 @@ export {
   AtblobHttpError,
   BadGatewayError,
   BadRequestError,
-  logError,
   NotFoundError,
   toErrorResponse,
 } from "./errors.js";

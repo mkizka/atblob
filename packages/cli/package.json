@@ -17,6 +17,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@atblob/core": "workspace:*",
     "@atblob/hono": "workspace:*",
     "@hono/node-server": "2.0.8",
     "gunshi": "0.36.0",

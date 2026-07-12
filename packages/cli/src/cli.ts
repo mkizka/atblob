@@ -1,5 +1,6 @@
 import events from "node:events";
 
+import { toErrorResponse } from "@atblob/core";
 import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import { cli, define } from "gunshi";
@@ -59,6 +60,14 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       const label = `atblob v${pkg.version}`;
 
       await using app = await createAtblobApp(config);
+      app.onError((error, c) => {
+        config.logger.error(error.message, {
+          name: error.name,
+          stack: error.stack,
+        });
+        const { status, headers } = toErrorResponse(error);
+        return c.body(null, status, headers);
+      });
       const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
         config.logger.info(
           `${label} server started on http://${info.address}:${info.port}`,
