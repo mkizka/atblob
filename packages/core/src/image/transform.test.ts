@@ -26,7 +26,7 @@ const basePreset: Preset = {
 };
 
 describe("transformImage", () => {
-  it("presetの幅と高さにリサイズする", async () => {
+  it("resizes to the preset's width and height", async () => {
     const input = await createImage(400, 300);
 
     const result = await transformImage(input, basePreset, "webp");
@@ -36,7 +36,7 @@ describe("transformImage", () => {
     expect(metadata.height).toBe(100);
   });
 
-  it("minがtrueの場合は元画像より拡大しない", async () => {
+  it("does not upscale beyond the original image when min is true", async () => {
     const input = await createImage(50, 50);
 
     const result = await transformImage(input, basePreset, "webp");
@@ -52,7 +52,7 @@ describe("transformImage", () => {
     ["webp", "image/webp"],
     ["png", "image/png"],
   ] as const)(
-    "formatが%sの場合contentTypeは%s",
+    "contentType is %s when format is %s",
     async (format, contentType) => {
       const input = await createImage(100, 100);
 
@@ -62,7 +62,7 @@ describe("transformImage", () => {
     },
   );
 
-  it("不正な画像データはBadRequestErrorになる", async () => {
+  it("invalid image data results in BadRequestError", async () => {
     const input = new Uint8Array([1, 2, 3]);
 
     await expect(transformImage(input, basePreset, "webp")).rejects.toThrow(
