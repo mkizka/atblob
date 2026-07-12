@@ -18,6 +18,7 @@ RUN pnpm deploy --filter=@atblob/cli --prod /app/deploy
 FROM gcr.io/distroless/nodejs24-debian12:nonroot AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV LOG_FORMAT=json
 COPY --from=builder /app/deploy .
 
 EXPOSE 3000
