@@ -22,16 +22,20 @@ export type AtblobCliConfig = AtblobConfig & {
   logger: Logger;
 };
 
-export type CliArgValues = {
-  didCache?: (typeof DID_CACHE_CHOICES)[number];
-  redisUrl?: string;
-  maxBlobSize?: number;
-  didResolveTimeout?: number;
-  blobFetchTimeout?: number;
-  plcDirectoryUrl?: string;
-  port?: number;
-  logLevel?: (typeof LOG_LEVEL_CHOICES)[number];
+type NonRequired<T> = {
+  [K in keyof T]?: T[K] | undefined;
 };
+
+export type CliArgValues = NonRequired<{
+  didCache: (typeof DID_CACHE_CHOICES)[number];
+  redisUrl: string;
+  maxBlobSize: number;
+  didResolveTimeout: number;
+  blobFetchTimeout: number;
+  plcDirectoryUrl: string;
+  port: number;
+  logLevel: (typeof LOG_LEVEL_CHOICES)[number];
+}>;
 
 const numberSchema = v.pipe(
   v.string(),

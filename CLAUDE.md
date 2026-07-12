@@ -16,7 +16,3 @@ atblob は Blueskyの画像CDN(cdn.bsky.app)を代替するOSS実装。同じURL
 ```sh
 $ pnpm all # build typecheck format testを実行する
 ```
-
-## CLI Development
-
-When creating command-line interfaces, use the `use-gunshi-cli` skill.
