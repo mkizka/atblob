@@ -47,12 +47,11 @@ export const createAtblob = async (
       createPdsResolver,
     )
     .service("render", ["pdsResolver", "blobFetcher"], createRenderer)
-    .service("checkHealth", ["didCache"], (deps) => deps.didCache.checkHealth)
     .resolve();
 
   return {
     render: services.render,
-    checkHealth: services.checkHealth,
+    checkHealth: () => services.didCache.checkHealth(),
     [Symbol.asyncDispose]: services[Symbol.asyncDispose],
   };
 };
