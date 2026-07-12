@@ -3,6 +3,8 @@ import events from "node:events";
 import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import { cli, define } from "gunshi";
+import { Hono } from "hono";
+import { logger as honoLogger } from "hono/logger";
 
 import pkg from "../package.json" with { type: "json" };
 import {
@@ -58,31 +60,16 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       const config = buildConfig(ctx.values, processEnv);
       const label = `atblob v${pkg.version}`;
 
-      await using app = await createAtblobApp(config);
-      const fetchWithAccessLog: typeof app.fetch = async (
-        request,
-        bindings,
-        executionCtx,
-      ) => {
-        const start = Date.now();
-        const response = await app.fetch(request, bindings, executionCtx);
-        config.logger.info("access", {
-          method: request.method,
-          path: new URL(request.url).pathname,
-          status: response.status,
-          durationMs: Date.now() - start,
-        });
-        return response;
-      };
+      await using atblobApp = await createAtblobApp(config);
+      const app = new Hono();
+      app.use(honoLogger());
+      app.route("/", atblobApp);
 
-      const server = serve(
-        { fetch: fetchWithAccessLog, port: config.port },
-        (info) => {
-          config.logger.info(
-            `${label} server started on http://${info.address}:${info.port}`,
-          );
-        },
-      );
+      const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
+        config.logger.info(
+          `${label} server started on http://${info.address}:${info.port}`,
+        );
+      });
 
       await Promise.race([
         events.once(process, "SIGINT"),

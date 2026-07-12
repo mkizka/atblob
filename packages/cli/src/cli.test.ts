@@ -104,35 +104,22 @@ describe("runCli", () => {
     );
   });
 
-  it("リクエストごとにアクセスログを出力する", async () => {
-    const infoSpy = vi
-      .spyOn(console, "info")
-      .mockImplementation(() => undefined);
+  it("リクエストごとにhono標準のアクセスログを出力する", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
     const { port, running } = await startCli();
-    infoSpy.mockClear();
+    logSpy.mockClear();
 
     await request(port, "GET", "/some-path");
 
-    const outputs: unknown[] = infoSpy.mock.calls.map((call) => {
-      const parsed: unknown = JSON.parse(String(call[0]));
-      return parsed;
-    });
-    const accessLog = outputs.find(
-      (output) =>
-        typeof output === "object" &&
-        output !== null &&
-        "message" in output &&
-        output.message === "access",
+    const lines = logSpy.mock.calls.map((call) => String(call[0]));
+    expect(lines).toContainEqual(expect.stringContaining("<-- GET /some-path"));
+    const outgoing = lines.find((line) =>
+      line.startsWith("--> GET /some-path"),
     );
-    expect(accessLog).toMatchObject({
-      method: "GET",
-      path: "/some-path",
-      status: 404,
-      durationMs: expect.any(Number),
-    });
+    expect(outgoing).toContain("404");
 
     process.emit("SIGINT");
     await running;
-    infoSpy.mockRestore();
+    logSpy.mockRestore();
   });
 });
