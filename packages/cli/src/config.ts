@@ -109,10 +109,7 @@ export function buildConfig(
     }),
   } satisfies AtblobCliConfig;
 
-  if (
-    (!config.didCache || config.didCache === "redis") &&
-    config.redisUrl === undefined
-  ) {
+  if (config.didCache === "redis" && config.redisUrl === undefined) {
     throw new Error(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );

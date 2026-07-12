@@ -61,9 +61,15 @@ describe("resolveConfig", () => {
     );
   });
 
-  it("throws when config is omitted since redisUrl is missing", () => {
-    expect(() => resolveConfig()).toThrow(
-      'redisUrl is required when didCache is "redis"',
-    );
+  it("defaults to memory when config is omitted", () => {
+    const config = resolveConfig();
+
+    expect(config).toMatchObject({
+      didCache: "memory",
+      maxBlobSize: 10 * 1024 * 1024,
+      didResolveTimeout: 5000,
+      blobFetchTimeout: 15000,
+      plcDirectoryUrl: "https://plc.directory",
+    });
   });
 });

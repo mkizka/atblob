@@ -25,7 +25,7 @@ npx @atblob/cli
 A Docker image is also published to GHCR.
 
 ```sh
-docker run -p 3000:3000 -e DID_CACHE=memory ghcr.io/mkizka/atblob:latest
+docker run -p 3000:3000 ghcr.io/mkizka/atblob:latest
 ```
 
 Tags matching the `@atblob/cli` package version (e.g. `1.2.3`) are published alongside `latest`.
@@ -40,17 +40,17 @@ Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
 ## Options
 
-| Option                  | Environment variable  | Description                                                                  | Default                 |
-| ----------------------- | --------------------- | ---------------------------------------------------------------------------- | ----------------------- |
-| `-p, --port`            | `PORT`                | Port number the server listens on                                            | `3000`                  |
-| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                   | `redis`                 |
-| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required unless `--did-cache` is `memory`) | -                       |
-| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                            | `10485760` (10 MiB)     |
-| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                        | `5000`                  |
-| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                            | `15000`                 |
-| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                            | `https://plc.directory` |
-| `--log-level`           | `LOG_LEVEL`           | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent`   | `info`                  |
-| `--log-format`          | `LOG_FORMAT`          | Log output format. `json` or `pretty`                                        | `pretty`                |
+| Option                  | Environment variable  | Description                                                                | Default                 |
+| ----------------------- | --------------------- | -------------------------------------------------------------------------- | ----------------------- |
+| `-p, --port`            | `PORT`                | Port number the server listens on                                          | `3000`                  |
+| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                 | `memory`                |
+| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required when `--did-cache` is `redis`)  | -                       |
+| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                          | `10485760` (10 MiB)     |
+| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                      | `5000`                  |
+| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                          | `15000`                 |
+| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                          | `https://plc.directory` |
+| `--log-level`           | `LOG_LEVEL`           | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent` | `info`                  |
+| `--log-format`          | `LOG_FORMAT`          | Log output format. `json` or `pretty`                                      | `pretty`                |
 
 Command-line arguments take precedence over the corresponding environment variables.
 
