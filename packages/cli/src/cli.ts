@@ -10,6 +10,7 @@ import {
   buildConfig,
   DID_CACHE_CHOICES,
   type Env,
+  LOG_FORMAT_CHOICES,
   LOG_LEVEL_CHOICES,
 } from "./config.js";
 
@@ -39,6 +40,7 @@ Options:
   --plc-directory-url <url>  PLC Directory URL
   -p, --port <number>        Port number the server listens on
   --log-level <choice>       Minimum log level to output (${LOG_LEVEL_CHOICES.join(", ")})
+  --log-format <choice>      Log output format (${LOG_FORMAT_CHOICES.join(", ")})
   -h, --help                 Display this message
   -v, --version              Display version number
 `;
@@ -63,6 +65,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       "--plc-directory-url": String,
       "--port": Number,
       "--log-level": oneOf(LOG_LEVEL_CHOICES),
+      "--log-format": oneOf(LOG_FORMAT_CHOICES),
       "--help": Boolean,
       "--version": Boolean,
       "-p": "--port",
@@ -92,6 +95,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       plcDirectoryUrl: args["--plc-directory-url"],
       port: args["--port"],
       logLevel: args["--log-level"],
+      logFormat: args["--log-format"],
     },
     processEnv,
   );

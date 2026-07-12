@@ -5,6 +5,7 @@ import { createConsoleLogger, createNoopLogger } from "./logger.js";
 describe("createConsoleLogger", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it.each([
@@ -16,7 +17,7 @@ describe("createConsoleLogger", () => {
     "%s outputs JSON containing level, message, and fields",
     (level, _consoleMethodLabel) => {
       const spy = vi.spyOn(console, level).mockImplementation(() => undefined);
-      const logger = createConsoleLogger({ level: "debug" });
+      const logger = createConsoleLogger({ level: "debug", format: "json" });
 
       logger[level]("something happened", { did: "did:plc:example" });
 
@@ -32,12 +33,38 @@ describe("createConsoleLogger", () => {
 
   it("outputs JSON with only message when fields is omitted", () => {
     const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
-    const logger = createConsoleLogger();
+    const logger = createConsoleLogger({ format: "json" });
 
     logger.info("no fields");
 
     const output: unknown = JSON.parse(String(spy.mock.calls[0]?.[0]));
     expect(output).toMatchObject({ level: "info", message: "no fields" });
+  });
+
+  it("outputs pretty-formatted text when format is not specified", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    const logger = createConsoleLogger();
+
+    logger.info("something happened", { did: "did:plc:example" });
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith(
+      "2024-01-01T00:00:00.000Z INFO something happened did=did:plc:example",
+    );
+  });
+
+  it("outputs level, message, and fields in a readable format when format is pretty", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const logger = createConsoleLogger({ format: "pretty" });
+
+    logger.warn("no fields");
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith("2024-01-01T00:00:00.000Z WARN no fields");
   });
 
   it("does not output below info (debug) when level is not specified", () => {

@@ -98,6 +98,34 @@ describe("buildConfig", () => {
     );
   });
 
+  it("creates a pretty-format logger when logFormat is not specified", () => {
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    const config = buildConfig({ didCache: "memory" }, {});
+    config.logger.info("hello");
+
+    expect(String(spy.mock.calls[0]?.[0])).not.toMatch(/^\{/);
+  });
+
+  it("creates a JSON-format logger when logFormat is json", () => {
+    const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    const config = buildConfig({ didCache: "memory", logFormat: "json" }, {});
+    config.logger.info("hello");
+
+    expect(() => {
+      JSON.parse(String(spy.mock.calls[0]?.[0]));
+    }).not.toThrow();
+  });
+
+  it("throws when logFormat is an invalid value", () => {
+    expect(() =>
+      buildConfig({}, { DID_CACHE: "memory", LOG_FORMAT: "yaml" }),
+    ).toThrow(
+      "environment variable LOG_FORMAT must be one of: json, pretty: yaml",
+    );
+  });
+
   it("throws when an environment variable value is not a valid number", () => {
     expect(() => buildConfig({}, { PORT: "not-a-number" })).toThrow(
       "environment variable PORT must be a number: not-a-number",

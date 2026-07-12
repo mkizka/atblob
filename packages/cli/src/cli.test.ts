@@ -108,7 +108,7 @@ describe("runCli", () => {
     const infoSpy = vi
       .spyOn(console, "info")
       .mockImplementation(() => undefined);
-    const { port, running } = await startCli();
+    const { port, running } = await startCli(["--log-format", "json"]);
     infoSpy.mockClear();
 
     await request(port, "GET", "/some-path");

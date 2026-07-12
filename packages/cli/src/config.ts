@@ -17,6 +17,8 @@ export const LOG_LEVEL_CHOICES = [
   "silent",
 ] as const;
 
+export const LOG_FORMAT_CHOICES = ["json", "pretty"] as const;
+
 export type AtblobCliConfig = AtblobConfig & {
   port: number;
   logger: Logger;
@@ -35,6 +37,7 @@ export type CliArgValues = NonRequired<{
   plcDirectoryUrl: string;
   port: number;
   logLevel: (typeof LOG_LEVEL_CHOICES)[number];
+  logFormat: (typeof LOG_FORMAT_CHOICES)[number];
 }>;
 
 const numberSchema = v.pipe(
@@ -51,6 +54,11 @@ const didCacheSchema = v.picklist(
 const logLevelSchema = v.picklist(
   LOG_LEVEL_CHOICES,
   `must be one of: ${LOG_LEVEL_CHOICES.join(", ")}`,
+);
+
+const logFormatSchema = v.picklist(
+  LOG_FORMAT_CHOICES,
+  `must be one of: ${LOG_FORMAT_CHOICES.join(", ")}`,
 );
 
 const stringSchema = v.string();
@@ -97,6 +105,7 @@ export function buildConfig(
     port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({
       level: values.logLevel ?? env("LOG_LEVEL", logLevelSchema, "info"),
+      format: values.logFormat ?? env("LOG_FORMAT", logFormatSchema, "pretty"),
     }),
   } satisfies AtblobCliConfig;
 
