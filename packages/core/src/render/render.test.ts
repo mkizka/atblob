@@ -88,7 +88,7 @@ describe("createRenderFn", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
-  it("returns the image and headers for valid input", async () => {
+  it("returns the transformed image for valid input", async () => {
     const bytes = await createImageBytes();
     const render = createRenderFn({
       pdsResolver: fakePdsResolver(),
@@ -103,12 +103,8 @@ describe("createRenderFn", () => {
       cid: VALID_CID,
     });
 
-    expect(result.headers).toEqual({
-      "Cache-Control": "public, max-age=31536000",
-      "X-Content-Type-Options": "nosniff",
-      "Content-Security-Policy": "default-src 'none'; sandbox",
-      "Content-Type": "image/webp",
-    });
+    expect(result.contentType).toBe("image/webp");
+    expect(result.bytes.byteLength).toBeGreaterThan(0);
   });
 
   it("results in BadGatewayError when did resolution fails", async () => {

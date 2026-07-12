@@ -8,7 +8,7 @@ import {
   BadRequestError,
 } from "../errors.js";
 import { isOutputFormat, isPresetName, PRESETS } from "../image/presets.js";
-import { transformImage } from "../image/transform.js";
+import { type TransformedImage, transformImage } from "../image/transform.js";
 
 export type ImageRequestInput = {
   preset: string;
@@ -17,12 +17,7 @@ export type ImageRequestInput = {
   format?: string | undefined;
 };
 
-export type RenderResult = {
-  bytes: Uint8Array;
-  headers: Record<string, string>;
-};
-
-export type RenderFn = (input: ImageRequestInput) => Promise<RenderResult>;
+export type RenderFn = (input: ImageRequestInput) => Promise<TransformedImage>;
 
 export const createRenderFn = (deps: {
   pdsResolver: PdsResolver;
@@ -52,17 +47,7 @@ export const createRenderFn = (deps: {
         input.did,
         input.cid,
       );
-      const image = await transformImage(blob.bytes, preset, format);
-
-      return {
-        bytes: image.bytes,
-        headers: {
-          "Cache-Control": "public, max-age=31536000",
-          "X-Content-Type-Options": "nosniff",
-          "Content-Security-Policy": "default-src 'none'; sandbox",
-          "Content-Type": image.contentType,
-        },
-      };
+      return await transformImage(blob.bytes, preset, format);
     } catch (error) {
       if (error instanceof AtblobHttpError) {
         throw error;

@@ -4,6 +4,12 @@ import type { MiddlewareHandler } from "hono";
 
 const IMG_PATTERN = /^\/img\/([^/]+)\/plain\/([^/]+)\/([^/]+)$/;
 
+const IMAGE_HEADERS = {
+  "Cache-Control": "public, max-age=31536000",
+  "X-Content-Type-Options": "nosniff",
+  "Content-Security-Policy": "default-src 'none'; sandbox",
+};
+
 const splitCidAndFormat = (
   cidAndFormat: string,
 ): { cid: string; format: string | undefined } => {
@@ -24,11 +30,12 @@ export const atblob = (renderer: Renderer): MiddlewareHandler => {
     const { cid, format } = splitCidAndFormat(cidAndFormat);
 
     try {
-      const result = await renderer.render({ preset, did, cid, format });
+      const image = await renderer.render({ preset, did, cid, format });
+      const headers = { ...IMAGE_HEADERS, "Content-Type": image.contentType };
       if (c.req.method === "HEAD") {
-        return c.body(null, 200, result.headers);
+        return c.body(null, 200, headers);
       }
-      return c.body(new Uint8Array(result.bytes), 200, result.headers);
+      return c.body(new Uint8Array(image.bytes), 200, headers);
     } catch (error) {
       const { status, headers } = toErrorResponse(error);
       return c.body(null, status, headers);

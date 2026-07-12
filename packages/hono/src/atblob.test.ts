@@ -17,7 +17,7 @@ describe("atblob", () => {
     const bytes = new Uint8Array([1, 2, 3]);
     const render = vi.fn().mockResolvedValue({
       bytes,
-      headers: { "Content-Type": "image/webp" },
+      contentType: "image/webp",
     });
     const app = new Hono().use(atblob(fakeRenderer(render)));
 
@@ -27,6 +27,7 @@ describe("atblob", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/webp");
+    expect(res.headers.get("Cache-Control")).toBe("public, max-age=31536000");
     expect(new Uint8Array(await res.arrayBuffer())).toEqual(bytes);
     expect(render).toHaveBeenCalledWith({
       preset: "avatar",
@@ -39,7 +40,7 @@ describe("atblob", () => {
   it("returns only headers and no body for a HEAD request", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array([1, 2, 3]),
-      headers: { "Content-Type": "image/webp" },
+      contentType: "image/webp",
     });
     const app = new Hono().use(atblob(fakeRenderer(render)));
 
@@ -56,7 +57,7 @@ describe("atblob", () => {
   it("splits cidAndFormat into cid and format and passes them to render when it contains @", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array(),
-      headers: {},
+      contentType: "image/webp",
     });
     const app = new Hono().use(atblob(fakeRenderer(render)));
 
@@ -73,7 +74,7 @@ describe("atblob", () => {
   it("treats everything after the first @ as format when cidAndFormat contains multiple @", async () => {
     const render = vi.fn().mockResolvedValue({
       bytes: new Uint8Array(),
-      headers: {},
+      contentType: "image/webp",
     });
     const app = new Hono().use(atblob(fakeRenderer(render)));
 

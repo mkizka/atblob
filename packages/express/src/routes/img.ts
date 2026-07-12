@@ -9,6 +9,12 @@ type ImgParams = {
   cidAndFormat: string;
 };
 
+const IMAGE_HEADERS = {
+  "Cache-Control": "public, max-age=31536000",
+  "X-Content-Type-Options": "nosniff",
+  "Content-Security-Policy": "default-src 'none'; sandbox",
+};
+
 const splitCidAndFormat = (
   cidAndFormat: string,
 ): { cid: string; format: string | undefined } => {
@@ -24,18 +30,21 @@ export const createImgHandler = (
       const { preset, did, cidAndFormat } = req.params;
       const { cid, format } = splitCidAndFormat(cidAndFormat);
 
-      const result = await renderer.render({
+      const image = await renderer.render({
         preset,
         did,
         cid,
         format,
       });
-      res.status(200).set(result.headers);
+      res.status(200).set({
+        ...IMAGE_HEADERS,
+        "Content-Type": image.contentType,
+      });
       if (req.method === "HEAD") {
         res.end();
         return;
       }
-      res.end(Buffer.from(result.bytes));
+      res.end(Buffer.from(image.bytes));
     } catch (error) {
       next(error);
     }
