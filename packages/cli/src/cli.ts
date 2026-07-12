@@ -59,9 +59,9 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
 
       await using app = await createAtblobApp(config);
       const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
-        config.logger.info("server started", {
-          address: `http://${info.address}:${info.port}`,
-        });
+        config.logger.info(
+          `server started on http://${info.address}:${info.port}`,
+        );
       });
 
       await Promise.race([
