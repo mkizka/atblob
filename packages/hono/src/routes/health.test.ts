@@ -17,42 +17,18 @@ const createApp = (checkHealth: Atblob["checkHealth"]) => {
 };
 
 describe("createHealthHandler", () => {
-  it("returns 200 with the package version and checks when every check is ok", async () => {
-    const app = createApp(() =>
-      Promise.resolve({ status: "ok", checks: { redis: { status: "ok" } } }),
-    );
+  it("returns 200 with the package version when healthy", async () => {
+    const app = createApp(() => Promise.resolve({ status: "ok" }));
 
     const res = await app.request(HEALTH_PATH);
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
-      version: pkg.version,
-      status: "ok",
-      checks: { redis: { status: "ok" } },
-    });
+    expect(await res.json()).toEqual({ version: pkg.version, status: "ok" });
   });
 
-  it("returns 200 with an empty checks object when there is nothing to check", async () => {
-    const app = createApp(() => Promise.resolve({ status: "ok", checks: {} }));
-
-    const res = await app.request(HEALTH_PATH);
-
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
-      version: pkg.version,
-      status: "ok",
-      checks: {},
-    });
-  });
-
-  it("returns 503 with the failing check's error when a check fails", async () => {
+  it("returns 503 with the error when unhealthy", async () => {
     const app = createApp(() =>
-      Promise.resolve({
-        status: "error",
-        checks: {
-          redis: { status: "error", error: "connection refused" },
-        },
-      }),
+      Promise.resolve({ status: "error", error: "connection refused" }),
     );
 
     const res = await app.request(HEALTH_PATH);
@@ -61,9 +37,7 @@ describe("createHealthHandler", () => {
     expect(await res.json()).toEqual({
       version: pkg.version,
       status: "error",
-      checks: {
-        redis: { status: "error", error: "connection refused" },
-      },
+      error: "connection refused",
     });
   });
 });

@@ -8,9 +8,6 @@ describe("createAtblob", () => {
 
     const result = await atblob.checkHealth();
 
-    expect(result).toEqual({
-      status: "ok",
-      checks: { didCache: { status: "ok" } },
-    });
+    expect(result).toEqual({ status: "ok" });
   });
 });

@@ -1,11 +1,11 @@
 import type { DidCache } from "@atproto/identity";
 import { MemoryCache } from "@atproto/identity";
 
-import type { HealthCheckable } from "../../health.js";
+import type { HealthCheckable, HealthCheckResult } from "../../health.js";
 
 class MemoryDidCache extends MemoryCache implements HealthCheckable {
-  checkHealth(): Promise<void> {
-    return Promise.resolve();
+  checkHealth(): Promise<HealthCheckResult> {
+    return Promise.resolve({ status: "ok" });
   }
 }
 

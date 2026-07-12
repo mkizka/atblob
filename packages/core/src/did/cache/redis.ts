@@ -49,7 +49,15 @@ export const createRedisDidCache = (
       deps.logger.info("redis did cache disconnected");
     },
     checkHealth: async () => {
-      await redis.ping();
+      try {
+        await redis.ping();
+        return { status: "ok" };
+      } catch (cause) {
+        return {
+          status: "error",
+          error: cause instanceof Error ? cause.message : String(cause),
+        };
+      }
     },
     cacheDid,
     refreshCache: async (did, getDoc) => {

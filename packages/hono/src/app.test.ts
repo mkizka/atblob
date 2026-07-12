@@ -53,7 +53,6 @@ describe("createAtblobApp", () => {
     expect(await res.json()).toEqual({
       version: expect.any(String),
       status: "ok",
-      checks: { didCache: { status: "ok" } },
     });
   });
 });
