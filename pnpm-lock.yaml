@@ -53,13 +53,13 @@ importers:
         version: link:../hono
       '@hono/node-server':
         specifier: 2.0.8
-        version: 2.0.8(hono@4.12.27)
+        version: 2.0.8(hono@4.12.28)
       arg:
         specifier: 5.0.2
         version: 5.0.2
       hono:
-        specifier: 4.12.27
-        version: 4.12.27
+        specifier: 4.12.28
+        version: 4.12.28
       valibot:
         specifier: 1.4.2
         version: 1.4.2(typescript@6.0.3)
@@ -1356,6 +1356,10 @@ packages:
     resolution: {integrity: sha512-1yrb/+w6HWQJrUCLkJ2IF5jNIPvvFkblV5RNOYl6bV+OA6p9GLcMpHFFGTosSvHvcAUibuUukRqhlYI4z32C7Q==}
     engines: {node: '>=16.9.0'}
 
+  hono@4.12.28:
+    resolution: {integrity: sha512-YwUvVpSF7m1yOblFPrU3Hbo8XhPheBoiyfGuII6z19LnOr6JpDnyyp7LFNrfV56wS8tpvtBFGRISHN02pDdLOA==}
+    engines: {node: '>=16.9.0'}
+
   http-errors@2.0.1:
     resolution: {integrity: sha512-4FbRdAX+bSdmo4AUFuS0WNiPz8NgFt+r8ThgNWmlrjQjt1Q7ZR9+zTlce2859x4KSXrwIsaeTqDoKQmtP8pLmQ==}
     engines: {node: '>= 0.8'}
@@ -2498,9 +2502,9 @@ snapshots:
 
   '@gyaku/di@3.5.0': {}
 
-  '@hono/node-server@2.0.8(hono@4.12.27)':
+  '@hono/node-server@2.0.8(hono@4.12.28)':
     dependencies:
-      hono: 4.12.27
+      hono: 4.12.28
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -3491,6 +3495,8 @@ snapshots:
       function-bind: 1.1.2
 
   hono@4.12.27: {}
+
+  hono@4.12.28: {}
 
   http-errors@2.0.1:
     dependencies:
