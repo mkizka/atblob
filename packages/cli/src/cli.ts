@@ -1,6 +1,6 @@
 import events from "node:events";
 
-import { createAtblob, type Logger } from "@atblob/core";
+import { createRenderer, type Logger } from "@atblob/core";
 import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import arg from "arg";
@@ -102,8 +102,8 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using atblob = await createAtblob(config);
-  const atblobApp = createAtblobApp(atblob);
+  await using renderer = await createRenderer(config);
+  const atblobApp = createAtblobApp(renderer);
   const app = new Hono();
   app.use(logger(config.logger));
   app.route("/", atblobApp);

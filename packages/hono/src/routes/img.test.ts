@@ -1,4 +1,4 @@
-import type { Atblob } from "@atblob/core";
+import type { Renderer } from "@atblob/core";
 import { Hono } from "hono";
 import { describe, expect, it, vi } from "vitest";
 
@@ -7,13 +7,13 @@ import { createImgHandler, IMG_PATH } from "./img.js";
 const VALID_DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const VALID_CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
-const createApp = (render: Atblob["render"]) => {
-  const atblob: Atblob = {
+const createApp = (render: Renderer["render"]) => {
+  const renderer: Renderer = {
     render,
     [Symbol.asyncDispose]: () => Promise.resolve(),
   };
   const app = new Hono();
-  app.get(IMG_PATH, createImgHandler(atblob));
+  app.get(IMG_PATH, createImgHandler(renderer));
   return app;
 };
 

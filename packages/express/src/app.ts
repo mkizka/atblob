@@ -1,4 +1,4 @@
-import type { Atblob } from "@atblob/core";
+import type { Renderer } from "@atblob/core";
 import { toErrorResponse } from "@atblob/core";
 import express, { type ErrorRequestHandler, type Express } from "express";
 
@@ -9,8 +9,8 @@ const handleError: ErrorRequestHandler = (error, _req, res, _next) => {
   res.status(status).set(headers).end();
 };
 
-export const createAtblobApp = (atblob: Atblob): Express => {
-  const imgHandler = createImgHandler(atblob);
+export const createAtblobApp = (renderer: Renderer): Express => {
+  const imgHandler = createImgHandler(renderer);
 
   const app = express();
   app.get(IMG_PATH, imgHandler);
