@@ -18,6 +18,8 @@ export type Atblob = AsyncDisposable & {
   checkHealth: () => Promise<HealthCheckResult>;
 };
 
+const NO_HEALTH_CHECKS: Record<string, HealthCheck> = {};
+
 export const createAtblob = async (
   config: AtblobConfig = {},
 ): Promise<Atblob> => {
@@ -41,7 +43,7 @@ export const createAtblob = async (
     resolved.didCache === "memory"
       ? base
           .service("didCache", [], createMemoryDidCache)
-          .value("healthChecks", {})
+          .value("healthChecks", NO_HEALTH_CHECKS)
       : base
           .value("redisUrl", resolved.redisUrl)
           .service("didCache", ["redisUrl", "logger"], createRedisDidCache)
