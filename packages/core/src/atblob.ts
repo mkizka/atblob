@@ -6,12 +6,10 @@ import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
 import { createPdsResolver } from "./did/resolver.js";
-import type { Logger } from "./logger.js";
 import { createRenderer, type Renderer } from "./render/render.js";
 
 export type Atblob = AsyncDisposable & {
   render: Renderer;
-  logger: Logger;
 };
 
 export const createAtblob = async (
@@ -51,7 +49,6 @@ export const createAtblob = async (
 
   return {
     render: services.render,
-    logger: resolved.logger,
     [Symbol.asyncDispose]: services[Symbol.asyncDispose],
   };
 };

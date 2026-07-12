@@ -59,11 +59,30 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       const label = `atblob v${pkg.version}`;
 
       await using app = await createAtblobApp(config);
-      const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
-        config.logger.info(
-          `${label} server started on http://${info.address}:${info.port}`,
-        );
-      });
+      const fetchWithAccessLog: typeof app.fetch = async (
+        request,
+        bindings,
+        executionCtx,
+      ) => {
+        const start = Date.now();
+        const response = await app.fetch(request, bindings, executionCtx);
+        config.logger.info("access", {
+          method: request.method,
+          path: new URL(request.url).pathname,
+          status: response.status,
+          durationMs: Date.now() - start,
+        });
+        return response;
+      };
+
+      const server = serve(
+        { fetch: fetchWithAccessLog, port: config.port },
+        (info) => {
+          config.logger.info(
+            `${label} server started on http://${info.address}:${info.port}`,
+          );
+        },
+      );
 
       await Promise.race([
         events.once(process, "SIGINT"),

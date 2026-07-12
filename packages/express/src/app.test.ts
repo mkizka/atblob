@@ -1,9 +1,8 @@
 import type { Server } from "node:http";
 import http from "node:http";
 
-import type { Logger } from "@atblob/core";
 import getPort from "get-port";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 import { createAtblobApp } from "./app.js";
 
@@ -87,32 +86,5 @@ describe("createAtblobApp", () => {
     );
 
     expect(response.status).toBe(400);
-  });
-
-  it("リクエストごとにアクセスログを出力する", async () => {
-    const info = vi.fn<Logger["info"]>();
-    const logger: Logger = {
-      debug: vi.fn(),
-      info,
-      warn: vi.fn(),
-      error: vi.fn(),
-    };
-    await using app = await createAtblobApp({ didCache: "memory", logger });
-    const server = await startServer(app);
-    close = server.close;
-
-    await request(server.port, "/unknown");
-
-    await vi.waitFor(() => {
-      expect(info).toHaveBeenCalledWith(
-        "access",
-        expect.objectContaining({
-          method: "GET",
-          path: "/unknown",
-          status: 404,
-          durationMs: expect.any(Number),
-        }),
-      );
-    });
   });
 });
