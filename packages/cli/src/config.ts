@@ -51,51 +51,48 @@ const logLevelSchema = v.picklist(
 
 const stringSchema = v.string();
 
-function env<T>(
-  env: Env,
-  envName: string,
-  schema: v.GenericSchema<string, T>,
-): T | undefined;
-function env<T>(
-  env: Env,
-  envName: string,
-  schema: v.GenericSchema<string, T>,
-  defaultValue: T,
-): T;
-function env<T>(
-  env: Env,
-  envName: string,
-  schema: v.GenericSchema<string, T>,
-  defaultValue?: T,
-): T | undefined {
-  const raw = env[envName];
-  if (raw === undefined) {
-    return defaultValue;
-  }
-  const result = v.safeParse(schema, raw);
-  if (!result.success) {
-    throw new Error(
-      `environment variable ${envName} ${result.issues[0].message}: ${raw}`,
-    );
-  }
-  return result.output;
-}
-
 export function buildConfig(
   values: CliArgValues,
   processEnv: Env,
 ): AtblobCliConfig {
+  function env<T>(
+    envName: string,
+    schema: v.GenericSchema<string, T>,
+  ): T | undefined;
+  function env<T>(
+    envName: string,
+    schema: v.GenericSchema<string, T>,
+    defaultValue: T,
+  ): T;
+  function env<T>(
+    envName: string,
+    schema: v.GenericSchema<string, T>,
+    defaultValue?: T,
+  ): T | undefined {
+    const raw = processEnv[envName];
+    if (raw === undefined) {
+      return defaultValue;
+    }
+    const result = v.safeParse(schema, raw);
+    if (!result.success) {
+      throw new Error(
+        `environment variable ${envName} ${result.issues[0].message}: ${raw}`,
+      );
+    }
+    return result.output;
+  }
+
   // prettier-ignore
   const config = {
-    didCache: values.didCache ?? env(processEnv, "DID_CACHE", didCacheSchema),
-    redisUrl: values.redisUrl ?? env(processEnv, "REDIS_URL", stringSchema),
-    maxBlobSize: values.maxBlobSize ?? env(processEnv, "MAX_BLOB_SIZE", numberSchema),
-    didResolveTimeout: values.didResolveTimeout ?? env(processEnv, "DID_RESOLVE_TIMEOUT", numberSchema),
-    blobFetchTimeout: values.blobFetchTimeout ?? env(processEnv, "BLOB_FETCH_TIMEOUT", numberSchema),
-    plcDirectoryUrl: values.plcDirectoryUrl ?? env(processEnv, "PLC_DIRECTORY_URL", stringSchema),
-    port: values.port ?? env(processEnv, "PORT", numberSchema, 3000),
+    didCache: values.didCache ?? env("DID_CACHE", didCacheSchema),
+    redisUrl: values.redisUrl ?? env("REDIS_URL", stringSchema),
+    maxBlobSize: values.maxBlobSize ?? env("MAX_BLOB_SIZE", numberSchema),
+    didResolveTimeout: values.didResolveTimeout ?? env("DID_RESOLVE_TIMEOUT", numberSchema),
+    blobFetchTimeout: values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
+    plcDirectoryUrl: values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
+    port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({
-      level: values.logLevel ?? env(processEnv, "LOG_LEVEL", logLevelSchema, "info"),
+      level: values.logLevel ?? env("LOG_LEVEL", logLevelSchema, "info"),
     }),
   } satisfies AtblobCliConfig;
 
