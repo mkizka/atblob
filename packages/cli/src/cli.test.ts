@@ -37,7 +37,7 @@ async function startCli(
   env: Record<string, string | undefined> = {},
 ): Promise<{ port: number; running: Promise<void> }> {
   const port = await getPort();
-  const running = runCli(
+  const running = doRunCli(
     ["--port", String(port), "--did-cache", "memory", ...args],
     env,
   );
@@ -45,7 +45,7 @@ async function startCli(
   return { port, running };
 }
 
-describe("runCli", () => {
+describe("doRunCli", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -90,7 +90,7 @@ describe("runCli", () => {
 
   it("listens on the PORT environment variable value when --port is not specified", async () => {
     const port = await getPort();
-    const running = runCli(["--did-cache", "memory"], {
+    const running = doRunCli(["--did-cache", "memory"], {
       PORT: String(port),
     });
     await waitForServer(port);
@@ -103,20 +103,20 @@ describe("runCli", () => {
   });
 
   it("throws without starting the server when did-cache is redis and redis-url is missing", async () => {
-    await expect(runCli(["--did-cache", "redis"], {})).rejects.toThrow(
+    await expect(doRunCli(["--did-cache", "redis"], {})).rejects.toThrow(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
   });
 });
 
-describe("doRunCli", () => {
+describe("runCli", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
   it("returns 0 on successful exit", async () => {
     const port = await getPort();
-    const running = doRunCli(
+    const running = runCli(
       ["--port", String(port), "--did-cache", "memory"],
       {},
     );
@@ -132,7 +132,7 @@ describe("doRunCli", () => {
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
 
-    const exitCode = await doRunCli(["--did-cache", "invalid-value"], {});
+    const exitCode = await runCli(["--did-cache", "invalid-value"], {});
 
     expect(exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledTimes(1);
@@ -145,7 +145,7 @@ describe("doRunCli", () => {
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
 
-    const exitCode = await doRunCli(["--did-cache", "redis"], {});
+    const exitCode = await runCli(["--did-cache", "redis"], {});
 
     expect(exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledTimes(1);

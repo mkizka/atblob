@@ -39,7 +39,7 @@ function oneOf<const T extends readonly string[]>(choices: T) {
   };
 }
 
-export async function runCli(argv: string[], processEnv: Env): Promise<void> {
+export async function doRunCli(argv: string[], processEnv: Env): Promise<void> {
   const args = arg(
     {
       "--did-cache": oneOf(DID_CACHE_CHOICES),
@@ -112,12 +112,9 @@ function describeError(error: unknown): {
   return { message: "Unknown error" };
 }
 
-export async function doRunCli(
-  argv: string[],
-  processEnv: Env,
-): Promise<number> {
+export async function runCli(argv: string[], processEnv: Env): Promise<number> {
   try {
-    await runCli(argv, processEnv);
+    await doRunCli(argv, processEnv);
     return 0;
   } catch (error) {
     const { message, name, stack } = describeError(error);
