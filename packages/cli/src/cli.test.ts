@@ -3,7 +3,7 @@ import http from "node:http";
 import getPort from "get-port";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { runCli, runCliEntrypoint } from "./cli.js";
+import { doRunCli, runCli } from "./cli.js";
 
 function request(
   port: number,
@@ -109,14 +109,14 @@ describe("runCli", () => {
   });
 });
 
-describe("runCliEntrypoint", () => {
+describe("doRunCli", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
   it("returns 0 on successful exit", async () => {
     const port = await getPort();
-    const running = runCliEntrypoint(
+    const running = doRunCli(
       ["--port", String(port), "--did-cache", "memory"],
       {},
     );
@@ -132,10 +132,7 @@ describe("runCliEntrypoint", () => {
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
 
-    const exitCode = await runCliEntrypoint(
-      ["--did-cache", "invalid-value"],
-      {},
-    );
+    const exitCode = await doRunCli(["--did-cache", "invalid-value"], {});
 
     expect(exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledTimes(1);
@@ -148,7 +145,7 @@ describe("runCliEntrypoint", () => {
       .spyOn(console, "error")
       .mockImplementation(() => undefined);
 
-    const exitCode = await runCliEntrypoint(["--did-cache", "redis"], {});
+    const exitCode = await doRunCli(["--did-cache", "redis"], {});
 
     expect(exitCode).toBe(1);
     expect(errorSpy).toHaveBeenCalledTimes(1);

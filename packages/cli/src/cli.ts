@@ -106,24 +106,13 @@ function describeError(error: unknown): {
   name?: string | undefined;
   stack?: string | undefined;
 } {
-  if (error instanceof AggregateError) {
-    return {
-      message: error.errors
-        .map((cause: unknown) =>
-          cause instanceof Error ? cause.message : String(cause),
-        )
-        .join("; "),
-      name: error.name,
-      stack: error.stack,
-    };
-  }
   if (error instanceof Error) {
     return { message: error.message, name: error.name, stack: error.stack };
   }
   return { message: "Unknown error" };
 }
 
-export async function runCliEntrypoint(
+export async function doRunCli(
   argv: string[],
   processEnv: Env,
 ): Promise<number> {
