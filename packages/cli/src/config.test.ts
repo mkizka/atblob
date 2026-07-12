@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { buildConfig, type Env } from "./config.js";
 
 describe("buildConfig", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("CLI引数の値を設定に反映する", () => {
     const config = buildConfig(
       {
@@ -12,11 +16,12 @@ describe("buildConfig", () => {
         blobFetchTimeout: 200,
         plcDirectoryUrl: "https://plc.example.com",
         port: 8080,
+        logLevel: "debug",
       },
       {},
     );
 
-    expect(config).toEqual({
+    expect(config).toMatchObject({
       didCache: "memory",
       redisUrl: undefined,
       maxBlobSize: 1024,
@@ -25,6 +30,7 @@ describe("buildConfig", () => {
       plcDirectoryUrl: "https://plc.example.com",
       port: 8080,
     });
+    expect(config.logger).toBeDefined();
   });
 
   it("CLI引数が無い場合は環境変数の値を使う", () => {
@@ -36,11 +42,12 @@ describe("buildConfig", () => {
       BLOB_FETCH_TIMEOUT: "400",
       PLC_DIRECTORY_URL: "https://plc.example.com",
       PORT: "9000",
+      LOG_LEVEL: "warn",
     };
 
     const config = buildConfig({}, env);
 
-    expect(config).toEqual({
+    expect(config).toMatchObject({
       didCache: "redis",
       redisUrl: "redis://localhost:6379",
       maxBlobSize: 2048,
@@ -49,6 +56,7 @@ describe("buildConfig", () => {
       plcDirectoryUrl: "https://plc.example.com",
       port: 9000,
     });
+    expect(config.logger).toBeDefined();
   });
 
   it("CLI引数が環境変数より優先される", () => {
@@ -64,6 +72,30 @@ describe("buildConfig", () => {
     const config = buildConfig({ didCache: "memory" }, {});
 
     expect(config.port).toBe(3000);
+  });
+
+  it("logLevelを指定しない場合はinfo未満(debug)を出力しないロガーになる", () => {
+    const debugSpy = vi
+      .spyOn(console, "debug")
+      .mockImplementation(() => undefined);
+    const infoSpy = vi
+      .spyOn(console, "info")
+      .mockImplementation(() => undefined);
+
+    const config = buildConfig({ didCache: "memory" }, {});
+    config.logger.debug("hidden");
+    config.logger.info("shown");
+
+    expect(debugSpy).not.toHaveBeenCalled();
+    expect(infoSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("logLevelが不正な値の場合はエラーになる", () => {
+    expect(() =>
+      buildConfig({}, { DID_CACHE: "memory", LOG_LEVEL: "verbose" }),
+    ).toThrow(
+      "environment variable LOG_LEVEL must be one of: debug, info, warn, error, silent: verbose",
+    );
   });
 
   it("環境変数の値が数値として不正な場合はエラーになる", () => {

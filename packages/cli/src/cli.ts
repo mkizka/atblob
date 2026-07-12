@@ -5,7 +5,12 @@ import { serve } from "@hono/node-server";
 import { cli, define } from "gunshi";
 
 import pkg from "../package.json" with { type: "json" };
-import { buildConfig, DID_CACHE_CHOICES, type Env } from "./config.js";
+import {
+  buildConfig,
+  DID_CACHE_CHOICES,
+  type Env,
+  LOG_LEVEL_CHOICES,
+} from "./config.js";
 
 export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   const command = define({
@@ -43,12 +48,22 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
         short: "p",
         description: "Port number the server listens on",
       },
+      logLevel: {
+        type: "enum",
+        choices: LOG_LEVEL_CHOICES,
+        description: "Minimum log level to output",
+      },
     },
     run: async (ctx) => {
       const config = buildConfig(ctx.values, processEnv);
+      const label = `atblob v${pkg.version}`;
 
       await using app = await createAtblobApp(config);
-      const server = serve({ fetch: app.fetch, port: config.port });
+      const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
+        config.logger.info(
+          `${label} server started on http://${info.address}:${info.port}`,
+        );
+      });
 
       await Promise.race([
         events.once(process, "SIGINT"),
@@ -57,6 +72,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       const closed = events.once(server, "close");
       server.close();
       await closed;
+      config.logger.info(`${label} server stopped`);
     },
   });
 

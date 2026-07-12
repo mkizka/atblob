@@ -1,6 +1,8 @@
 import type { CacheResult, DidCache, DidDocument } from "@atproto/identity";
 import { Redis } from "ioredis";
 
+import type { Logger } from "../../logger.js";
+
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
 const KEY_PREFIX = "atblob:did:";
@@ -27,7 +29,7 @@ const parseCacheEntry = (raw: string): CacheEntry | null => {
 };
 
 export const createRedisDidCache = (
-  deps: { redisUrl: string },
+  deps: { redisUrl: string; logger: Logger },
   staleTTL = HOUR,
   maxTTL = DAY,
 ): DidCache => {
@@ -41,6 +43,7 @@ export const createRedisDidCache = (
   const cache: DidCache & AsyncDisposable = {
     [Symbol.asyncDispose]: async () => {
       await redis.quit();
+      deps.logger.info("redis did cache disconnected");
     },
     cacheDid,
     refreshCache: async (did, getDoc) => {

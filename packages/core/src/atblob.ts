@@ -24,6 +24,7 @@ export const createAtblob = async (
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
+    .value("logger", resolved.logger)
     .service(
       "blobFetcher",
       ["maxBlobSize", "blobFetchTimeout"],
@@ -35,7 +36,7 @@ export const createAtblob = async (
       ? base.service("didCache", [], createMemoryDidCache)
       : base
           .value("redisUrl", resolved.redisUrl)
-          .service("didCache", ["redisUrl"], createRedisDidCache);
+          .service("didCache", ["redisUrl", "logger"], createRedisDidCache);
 
   const services = await registry
     .service(
