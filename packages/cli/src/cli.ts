@@ -102,9 +102,10 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using renderer = await createRenderer(config);
   const app = new Hono();
   app.use(logger(config.logger));
+
+  await using renderer = await createRenderer(config);
   app.use(atblob(renderer));
 
   app.get("/health", async (c) => {
