@@ -15,3 +15,7 @@ $ pnpm all # runs build, typecheck, format, and test
 ## Commit messages and PR titles
 
 Write commit messages and PR titles in English.
+
+## Changesets
+
+When creating a PR, add a changeset that matches the change (`pnpm changeset`), unless the change has no user-facing effect (e.g. docs-only or internal tooling changes).
