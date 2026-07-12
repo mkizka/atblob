@@ -5,4 +5,5 @@ export {
   createNoopLogger,
   type LogFields,
   type Logger,
+  type LogLevel,
 } from "@atblob/core";

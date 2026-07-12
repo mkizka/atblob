@@ -12,4 +12,5 @@ export {
   createNoopLogger,
   type LogFields,
   type Logger,
+  type LogLevel,
 } from "./logger.js";

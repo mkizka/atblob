@@ -1,12 +1,21 @@
-import type { AtblobConfig } from "@atblob/hono";
+import type { AtblobConfig, LogLevel } from "@atblob/hono";
 import * as v from "valibot";
 
 export type Env = Record<string, string | undefined>;
 
 export const DID_CACHE_CHOICES = ["memory", "redis"] as const;
 
+export const LOG_LEVEL_CHOICES = [
+  "debug",
+  "info",
+  "warn",
+  "error",
+  "silent",
+] as const;
+
 export type AtblobCliConfig = AtblobConfig & {
   port: number;
+  logLevel: LogLevel;
 };
 
 export type CliArgValues = {
@@ -17,6 +26,7 @@ export type CliArgValues = {
   blobFetchTimeout?: number;
   plcDirectoryUrl?: string;
   port?: number;
+  logLevel?: (typeof LOG_LEVEL_CHOICES)[number];
 };
 
 const numberSchema = v.pipe(
@@ -28,6 +38,11 @@ const numberSchema = v.pipe(
 const didCacheSchema = v.picklist(
   DID_CACHE_CHOICES,
   `must be one of: ${DID_CACHE_CHOICES.join(", ")}`,
+);
+
+const logLevelSchema = v.picklist(
+  LOG_LEVEL_CHOICES,
+  `must be one of: ${LOG_LEVEL_CHOICES.join(", ")}`,
 );
 
 const stringSchema = v.string();
@@ -75,6 +90,7 @@ export function buildConfig(
     blobFetchTimeout: values.blobFetchTimeout ?? env(processEnv, "BLOB_FETCH_TIMEOUT", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env(processEnv, "PLC_DIRECTORY_URL", stringSchema),
     port: values.port ?? env(processEnv, "PORT", numberSchema, 3000),
+    logLevel: values.logLevel ?? env(processEnv, "LOG_LEVEL", logLevelSchema, "info"),
   } satisfies AtblobCliConfig;
 
   if (

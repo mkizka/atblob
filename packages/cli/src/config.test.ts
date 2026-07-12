@@ -12,6 +12,7 @@ describe("buildConfig", () => {
         blobFetchTimeout: 200,
         plcDirectoryUrl: "https://plc.example.com",
         port: 8080,
+        logLevel: "debug",
       },
       {},
     );
@@ -24,6 +25,7 @@ describe("buildConfig", () => {
       blobFetchTimeout: 200,
       plcDirectoryUrl: "https://plc.example.com",
       port: 8080,
+      logLevel: "debug",
     });
   });
 
@@ -36,6 +38,7 @@ describe("buildConfig", () => {
       BLOB_FETCH_TIMEOUT: "400",
       PLC_DIRECTORY_URL: "https://plc.example.com",
       PORT: "9000",
+      LOG_LEVEL: "warn",
     };
 
     const config = buildConfig({}, env);
@@ -48,6 +51,7 @@ describe("buildConfig", () => {
       blobFetchTimeout: 400,
       plcDirectoryUrl: "https://plc.example.com",
       port: 9000,
+      logLevel: "warn",
     });
   });
 
@@ -64,6 +68,20 @@ describe("buildConfig", () => {
     const config = buildConfig({ didCache: "memory" }, {});
 
     expect(config.port).toBe(3000);
+  });
+
+  it("logLevelを指定しない場合はinfoがデフォルトになる", () => {
+    const config = buildConfig({ didCache: "memory" }, {});
+
+    expect(config.logLevel).toBe("info");
+  });
+
+  it("logLevelが不正な値の場合はエラーになる", () => {
+    expect(() =>
+      buildConfig({}, { DID_CACHE: "memory", LOG_LEVEL: "verbose" }),
+    ).toThrow(
+      "environment variable LOG_LEVEL must be one of: debug, info, warn, error, silent: verbose",
+    );
   });
 
   it("環境変数の値が数値として不正な場合はエラーになる", () => {

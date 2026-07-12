@@ -9,6 +9,16 @@ export type Logger = {
 
 type Level = "debug" | "info" | "warn" | "error";
 
+export type LogLevel = Level | "silent";
+
+const LEVEL_PRIORITY: Record<LogLevel, number> = {
+  debug: 0,
+  info: 1,
+  warn: 2,
+  error: 3,
+  silent: 4,
+};
+
 const consoleLog: Record<Level, (line: string) => void> = {
   debug: (line) => console.debug(line),
   info: (line) => console.info(line),
@@ -16,8 +26,13 @@ const consoleLog: Record<Level, (line: string) => void> = {
   error: (line) => console.error(line),
 };
 
-export const createConsoleLogger = (): Logger => {
+export const createConsoleLogger = (options?: { level?: LogLevel }): Logger => {
+  const threshold = LEVEL_PRIORITY[options?.level ?? "info"];
+
   const write = (level: Level, message: string, fields?: LogFields): void => {
+    if (LEVEL_PRIORITY[level] < threshold) {
+      return;
+    }
     consoleLog[level](
       JSON.stringify({
         level,
