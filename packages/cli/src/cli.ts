@@ -13,11 +13,11 @@ import {
   LOG_LEVEL_CHOICES,
 } from "./config.js";
 
-const createAccessLogMiddleware = (logger: Logger): MiddlewareHandler => {
+const logger = (log: Logger): MiddlewareHandler => {
   return async (c, next) => {
     const start = Date.now();
     await next();
-    logger.info("access", {
+    log.info("access", {
       method: c.req.method,
       path: c.req.path,
       status: c.res.status,
@@ -99,7 +99,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
 
   await using atblobApp = await createAtblobApp(config);
   const app = new Hono();
-  app.use(createAccessLogMiddleware(config.logger));
+  app.use(logger(config.logger));
   app.route("/", atblobApp);
 
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
