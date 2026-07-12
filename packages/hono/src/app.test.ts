@@ -44,7 +44,7 @@ describe("createAtblobApp", () => {
     expect(res.headers.get("Cache-Control")).toBe("public, max-age=60");
   });
 
-  it("returns 200 on GET /img/health when the did cache needs no external checks", async () => {
+  it("returns 200 on GET /img/health when using the memory did cache", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
 
     const res = await app.request("/img/health");
@@ -53,7 +53,7 @@ describe("createAtblobApp", () => {
     expect(await res.json()).toEqual({
       version: expect.any(String),
       status: "ok",
-      checks: {},
+      checks: { didCache: { status: "ok" } },
     });
   });
 });

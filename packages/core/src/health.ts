@@ -7,6 +7,10 @@ export type HealthCheckResult = {
 
 export type HealthCheck = () => Promise<void>;
 
+export interface HealthCheckable {
+  checkHealth: HealthCheck;
+}
+
 export const runHealthChecks = async (
   checks: Record<string, HealthCheck>,
 ): Promise<HealthCheckResult> => {

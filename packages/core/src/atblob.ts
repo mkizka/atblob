@@ -6,19 +6,13 @@ import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
 import { createPdsResolver } from "./did/resolver.js";
-import {
-  type HealthCheck,
-  type HealthCheckResult,
-  runHealthChecks,
-} from "./health.js";
+import { type HealthCheckResult, runHealthChecks } from "./health.js";
 import { createRenderer, type Renderer } from "./render/render.js";
 
 export type Atblob = AsyncDisposable & {
   render: Renderer;
   checkHealth: () => Promise<HealthCheckResult>;
 };
-
-const NO_HEALTH_CHECKS: Record<string, HealthCheck> = {};
 
 export const createAtblob = async (
   config: AtblobConfig = {},
@@ -41,19 +35,10 @@ export const createAtblob = async (
 
   const registry =
     resolved.didCache === "memory"
-      ? base
-          .service("didCache", [], createMemoryDidCache)
-          .value("healthChecks", NO_HEALTH_CHECKS)
+      ? base.service("didCache", [], createMemoryDidCache)
       : base
           .value("redisUrl", resolved.redisUrl)
-          .service("didCache", ["redisUrl", "logger"], createRedisDidCache)
-          .service(
-            "healthChecks",
-            ["didCache"],
-            (deps): Record<string, HealthCheck> => ({
-              redis: deps.didCache.checkHealth,
-            }),
-          );
+          .service("didCache", ["redisUrl", "logger"], createRedisDidCache);
 
   const services = await registry
     .service(
@@ -64,8 +49,8 @@ export const createAtblob = async (
     .service("render", ["pdsResolver", "blobFetcher"], createRenderer)
     .service(
       "checkHealth",
-      ["healthChecks"],
-      (deps) => () => runHealthChecks(deps.healthChecks),
+      ["didCache"],
+      (deps) => () => runHealthChecks({ didCache: deps.didCache.checkHealth }),
     )
     .resolve();
 
