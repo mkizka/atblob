@@ -44,7 +44,7 @@ describe("createImgHandler", () => {
     close = undefined;
   });
 
-  it("GETリクエストで画像とヘッダーを返す", async () => {
+  it("returns the image and headers for a GET request", async () => {
     const bytes = new TextEncoder().encode("image-bytes");
     const server = await startServer(
       fakeAtblob(() =>
@@ -62,7 +62,7 @@ describe("createImgHandler", () => {
     expect(new Uint8Array(await response.arrayBuffer())).toEqual(bytes);
   });
 
-  it("HEADリクエストではヘッダーのみでボディを返さない", async () => {
+  it("returns only headers and no body for a HEAD request", async () => {
     const bytes = new TextEncoder().encode("image-bytes");
     const server = await startServer(
       fakeAtblob(() =>
@@ -80,7 +80,7 @@ describe("createImgHandler", () => {
     expect(response.headers.get("content-type")).toBe("image/webp");
   });
 
-  it("cidAndFormatに@が含まれる場合はcidとformatに分割してrenderへ渡す", async () => {
+  it("splits cidAndFormat into cid and format and passes them to render when it contains @", async () => {
     let received: unknown;
     const server = await startServer(
       fakeAtblob((input) => {
@@ -100,7 +100,7 @@ describe("createImgHandler", () => {
     });
   });
 
-  it("cidAndFormatに@が含まれない場合はformatをundefinedでrenderへ渡す", async () => {
+  it("passes format as undefined to render when cidAndFormat does not contain @", async () => {
     let received: unknown;
     const server = await startServer(
       fakeAtblob((input) => {
@@ -120,7 +120,7 @@ describe("createImgHandler", () => {
     });
   });
 
-  it("renderが失敗した場合はnextにエラーを渡してExpressのエラーハンドラーに委譲する", async () => {
+  it("passes the error to next and delegates to Express's error handler when render fails", async () => {
     const boom = new Error("boom");
     let caught: unknown;
     const server = await startServer(

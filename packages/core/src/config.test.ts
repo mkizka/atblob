@@ -4,7 +4,7 @@ import { resolveConfig } from "./config.js";
 import { createNoopLogger } from "./logger.js";
 
 describe("resolveConfig", () => {
-  it("didCacheがmemoryの場合はデフォルト値を含めて設定を構築する", () => {
+  it("builds a config including default values when didCache is memory", () => {
     const config = resolveConfig({ didCache: "memory" });
 
     expect(config).toMatchObject({
@@ -17,7 +17,7 @@ describe("resolveConfig", () => {
     expect(config.logger).toBeDefined();
   });
 
-  it("didCacheがredisの場合はredisUrlを含めて設定を構築する", () => {
+  it("builds a config including redisUrl when didCache is redis", () => {
     const config = resolveConfig({
       didCache: "redis",
       redisUrl: "redis://localhost:6379",
@@ -34,7 +34,7 @@ describe("resolveConfig", () => {
     expect(config.logger).toBeDefined();
   });
 
-  it("指定した値がデフォルト値より優先される", () => {
+  it("specified values take precedence over default values", () => {
     const logger = createNoopLogger();
     const config = resolveConfig({
       didCache: "memory",
@@ -55,13 +55,13 @@ describe("resolveConfig", () => {
     });
   });
 
-  it("didCacheがredisでredisUrlが無い場合はエラーになる", () => {
+  it("throws when didCache is redis and redisUrl is missing", () => {
     expect(() => resolveConfig({ didCache: "redis" })).toThrow(
       'redisUrl is required when didCache is "redis"',
     );
   });
 
-  it("configを省略した場合はredisUrlが無いためエラーになる", () => {
+  it("throws when config is omitted since redisUrl is missing", () => {
     expect(() => resolveConfig()).toThrow(
       'redisUrl is required when didCache is "redis"',
     );
