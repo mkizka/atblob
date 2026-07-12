@@ -38,6 +38,24 @@ atblob --port 3000 --did-cache redis --redis-url redis://localhost:6379
 
 Once started, the server shuts down gracefully on `SIGINT` / `SIGTERM`.
 
+## Endpoints
+
+### `GET /img/{preset}/plain/{did}/{cid}@{format}`
+
+| Preset             | Size      | Fit    |
+| ------------------ | --------- | ------ |
+| `avatar`           | 1000x1000 | cover  |
+| `avatar_thumbnail` | 128x128   | cover  |
+| `banner`           | 3000x1000 | cover  |
+| `feed_thumbnail`   | 2000x2000 | inside |
+| `feed_fullsize`    | 1000x1000 | inside |
+
+`{format}` is optional (`jpeg`, `jpg`, `png`, or `webp`; defaults to `webp`).
+
+### `GET /health`
+
+Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` status.
+
 ## Options
 
 | Option                  | Environment variable  | Description                                                                | Default                 |
