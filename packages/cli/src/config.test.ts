@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { buildConfig, type Env } from "./config.js";
 
 describe("buildConfig", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("CLI引数の値を設定に反映する", () => {
     const config = buildConfig(
       {
@@ -17,7 +21,7 @@ describe("buildConfig", () => {
       {},
     );
 
-    expect(config).toEqual({
+    expect(config).toMatchObject({
       didCache: "memory",
       redisUrl: undefined,
       maxBlobSize: 1024,
@@ -25,8 +29,8 @@ describe("buildConfig", () => {
       blobFetchTimeout: 200,
       plcDirectoryUrl: "https://plc.example.com",
       port: 8080,
-      logLevel: "debug",
     });
+    expect(config.logger).toBeDefined();
   });
 
   it("CLI引数が無い場合は環境変数の値を使う", () => {
@@ -43,7 +47,7 @@ describe("buildConfig", () => {
 
     const config = buildConfig({}, env);
 
-    expect(config).toEqual({
+    expect(config).toMatchObject({
       didCache: "redis",
       redisUrl: "redis://localhost:6379",
       maxBlobSize: 2048,
@@ -51,8 +55,8 @@ describe("buildConfig", () => {
       blobFetchTimeout: 400,
       plcDirectoryUrl: "https://plc.example.com",
       port: 9000,
-      logLevel: "warn",
     });
+    expect(config.logger).toBeDefined();
   });
 
   it("CLI引数が環境変数より優先される", () => {
@@ -70,10 +74,20 @@ describe("buildConfig", () => {
     expect(config.port).toBe(3000);
   });
 
-  it("logLevelを指定しない場合はinfoがデフォルトになる", () => {
-    const config = buildConfig({ didCache: "memory" }, {});
+  it("logLevelを指定しない場合はinfo未満(debug)を出力しないロガーになる", () => {
+    const debugSpy = vi
+      .spyOn(console, "debug")
+      .mockImplementation(() => undefined);
+    const infoSpy = vi
+      .spyOn(console, "info")
+      .mockImplementation(() => undefined);
 
-    expect(config.logLevel).toBe("info");
+    const config = buildConfig({ didCache: "memory" }, {});
+    config.logger.debug("hidden");
+    config.logger.info("shown");
+
+    expect(debugSpy).not.toHaveBeenCalled();
+    expect(infoSpy).toHaveBeenCalledTimes(1);
   });
 
   it("logLevelが不正な値の場合はエラーになる", () => {

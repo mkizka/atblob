@@ -1,4 +1,8 @@
-import type { AtblobConfig, LogLevel } from "@atblob/hono";
+import {
+  type AtblobConfig,
+  createConsoleLogger,
+  type Logger,
+} from "@atblob/hono";
 import * as v from "valibot";
 
 export type Env = Record<string, string | undefined>;
@@ -15,7 +19,7 @@ export const LOG_LEVEL_CHOICES = [
 
 export type AtblobCliConfig = AtblobConfig & {
   port: number;
-  logLevel: LogLevel;
+  logger: Logger;
 };
 
 export type CliArgValues = {
@@ -90,7 +94,9 @@ export function buildConfig(
     blobFetchTimeout: values.blobFetchTimeout ?? env(processEnv, "BLOB_FETCH_TIMEOUT", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env(processEnv, "PLC_DIRECTORY_URL", stringSchema),
     port: values.port ?? env(processEnv, "PORT", numberSchema, 3000),
-    logLevel: values.logLevel ?? env(processEnv, "LOG_LEVEL", logLevelSchema, "info"),
+    logger: createConsoleLogger({
+      level: values.logLevel ?? env(processEnv, "LOG_LEVEL", logLevelSchema, "info"),
+    }),
   } satisfies AtblobCliConfig;
 
   if (
