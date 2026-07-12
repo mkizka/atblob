@@ -8,30 +8,30 @@ import {
 } from "./presets.js";
 
 describe("isPresetName", () => {
-  it.each(PRESET_NAMES)("%sはpreset名として有効", (name) => {
+  it.each(PRESET_NAMES)("%s is valid as a preset name", (name) => {
     expect(isPresetName(name)).toBe(true);
   });
 
-  it("未知のpreset名は無効", () => {
+  it("an unknown preset name is invalid", () => {
     expect(isPresetName("unknown")).toBe(false);
   });
 });
 
 describe("isOutputFormat", () => {
   it.each(["jpeg", "jpg", "webp", "png"])(
-    "%sは出力形式として有効",
+    "%s is valid as an output format",
     (format) => {
       expect(isOutputFormat(format)).toBe(true);
     },
   );
 
-  it("未知の出力形式は無効", () => {
+  it("an unknown output format is invalid", () => {
     expect(isOutputFormat("gif")).toBe(false);
   });
 });
 
 describe("PRESETS", () => {
-  it("全てのpresetにPRESET_NAMESと同じキーが定義されている", () => {
+  it("all presets define the same keys as PRESET_NAMES", () => {
     expect(Object.keys(PRESETS).sort()).toEqual([...PRESET_NAMES].sort());
   });
 });

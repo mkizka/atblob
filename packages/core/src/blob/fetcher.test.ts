@@ -40,7 +40,7 @@ describe("createBlobFetcher", () => {
     close = undefined;
   });
 
-  it("画像を正常に取得しCID検証を通過する", async () => {
+  it("successfully fetches the image and passes CID verification", async () => {
     const bytes = Buffer.from("hello world");
     const cid = await cidFor(bytes);
     const server = await startServer((_req, res) => {
@@ -59,7 +59,7 @@ describe("createBlobFetcher", () => {
     expect(Buffer.from(result.bytes)).toEqual(bytes);
   });
 
-  it("CIDがbytesと一致しない場合はNotFoundErrorになる", async () => {
+  it("results in NotFoundError when the CID does not match the bytes", async () => {
     const bytes = Buffer.from("hello world");
     const wrongCid = await cidFor(Buffer.from("different bytes"));
     const server = await startServer((_req, res) => {
@@ -78,7 +78,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("4xxレスポンスの場合はNotFoundErrorになる", async () => {
+  it("results in NotFoundError for a 4xx response", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(404, { "content-type": "text/plain" });
       res.end("not found");
@@ -95,7 +95,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("5xxレスポンスの場合はBadGatewayErrorになる", async () => {
+  it("results in BadGatewayError for a 5xx response", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(500, { "content-type": "text/plain" });
       res.end("error");
@@ -112,7 +112,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("画像以外のcontent-typeの場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError for a non-image content-type", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(200, { "content-type": "text/plain" });
       res.end("not an image");
@@ -129,7 +129,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("content-lengthがmaxBlobSizeを超える場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when content-length exceeds maxBlobSize", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(200, {
         "content-type": "image/png",
@@ -149,7 +149,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("content-lengthが無くても実際のサイズがmaxBlobSizeを超える場合はBadRequestErrorになる", async () => {
+  it("results in BadRequestError when the actual size exceeds maxBlobSize even without content-length", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(200, { "content-type": "image/png" });
       res.end(Buffer.alloc(2048));
@@ -166,7 +166,7 @@ describe("createBlobFetcher", () => {
     );
   });
 
-  it("接続に失敗した場合はBadGatewayErrorになる", async () => {
+  it("results in BadGatewayError when the connection fails", async () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
