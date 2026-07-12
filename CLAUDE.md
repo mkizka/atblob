@@ -4,11 +4,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 atblob is an OSS implementation that replaces Bluesky's image CDN (cdn.bsky.app). The goal is to accept the same URL paths and work with only a hostname swap.
 
-## Documentation
-
-- [docs/spec.md](docs/spec.md)
-  - Read this when you have questions about the spec.
-
 ## Implementation rules
 
 After making changes, always run the following command to verify them.
