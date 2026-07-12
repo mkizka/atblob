@@ -10,3 +10,9 @@ export type HealthCheck = () => Promise<HealthCheckResult>;
 export interface HealthCheckable {
   checkHealth: HealthCheck;
 }
+
+export const createCheckHealth = (deps: {
+  didCache: HealthCheckable;
+}): HealthCheck => {
+  return () => deps.didCache.checkHealth();
+};
