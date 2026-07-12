@@ -1,8 +1,9 @@
 import events from "node:events";
 
-import { createAtblobApp } from "@atblob/hono";
+import { createAtblobApp, type Logger } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import arg from "arg";
+import { Hono, type MiddlewareHandler } from "hono";
 
 import pkg from "../package.json" with { type: "json" };
 import {
@@ -11,6 +12,19 @@ import {
   type Env,
   LOG_LEVEL_CHOICES,
 } from "./config.js";
+
+const logger = (log: Logger): MiddlewareHandler => {
+  return async (c, next) => {
+    const start = Date.now();
+    await next();
+    log.info("access", {
+      method: c.req.method,
+      path: c.req.path,
+      status: c.res.status,
+      durationMs: Date.now() - start,
+    });
+  };
+};
 
 const HELP_TEXT = `Usage: atblob [options]
 
@@ -83,7 +97,11 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using app = await createAtblobApp(config);
+  await using atblobApp = await createAtblobApp(config);
+  const app = new Hono();
+  app.use(logger(config.logger));
+  app.route("/", atblobApp);
+
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
     config.logger.info(
       `${label} server started on http://${info.address}:${info.port}`,
