@@ -2,7 +2,7 @@ import {
   type AtblobConfig,
   createConsoleLogger,
   type Logger,
-} from "@atblob/hono";
+} from "@atblob/core";
 import * as v from "valibot";
 
 export type Env = Record<string, string | undefined>;

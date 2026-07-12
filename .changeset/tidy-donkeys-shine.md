@@ -1,7 +1,6 @@
 ---
 "@atblob/core": minor
-"@atblob/hono": minor
-"@atblob/express": minor
+"@atblob/cli": minor
 ---
 
-Add a health check endpoint at `GET /img/health`
+Add a health check. `Renderer#checkHealth()` reports whether the configured DID cache is reachable, and the CLI exposes it at `GET /img/health`.

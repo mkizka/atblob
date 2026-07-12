@@ -1,6 +1,7 @@
 import events from "node:events";
 
-import { createAtblobApp, type Logger } from "@atblob/hono";
+import { createRenderer, type Logger } from "@atblob/core";
+import { atblob } from "@atblob/hono";
 import { serve } from "@hono/node-server";
 import arg from "arg";
 import { Hono, type MiddlewareHandler } from "hono";
@@ -101,10 +102,17 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
   );
   const label = `atblob v${pkg.version}`;
 
-  await using atblobApp = await createAtblobApp(config);
+  await using renderer = await createRenderer(config);
   const app = new Hono();
   app.use(logger(config.logger));
-  app.route("/", atblobApp);
+  app.get("/img/health", async (c) => {
+    const result = await renderer.checkHealth();
+    return c.json(
+      { version: pkg.version, ...result },
+      result.status === "ok" ? 200 : 503,
+    );
+  });
+  app.use(atblob(renderer));
 
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
     config.logger.info(

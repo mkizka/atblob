@@ -1,4 +1,3 @@
-export { type Atblob, createAtblob } from "./atblob.js";
 export type { AtblobConfig } from "./config.js";
 export {
   AtblobHttpError,
@@ -15,3 +14,4 @@ export {
   type Logger,
   type LogLevel,
 } from "./logger.js";
+export { createRenderer, type Renderer } from "./renderer.js";

@@ -7,16 +7,16 @@ import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
 import { createPdsResolver } from "./did/resolver.js";
 import { createCheckHealth, type HealthCheck } from "./health.js";
-import { createRenderer, type Renderer } from "./render/render.js";
+import { createRenderFn, type RenderFn } from "./render/render.js";
 
-export type Atblob = AsyncDisposable & {
-  render: Renderer;
+export type Renderer = AsyncDisposable & {
+  render: RenderFn;
   checkHealth: HealthCheck;
 };
 
-export const createAtblob = async (
+export const createRenderer = async (
   config: AtblobConfig = {},
-): Promise<Atblob> => {
+): Promise<Renderer> => {
   const resolved = resolveConfig(config);
 
   installSsrfProtection();
@@ -46,7 +46,7 @@ export const createAtblob = async (
       ["plcDirectoryUrl", "didResolveTimeout", "didCache"],
       createPdsResolver,
     )
-    .service("render", ["pdsResolver", "blobFetcher"], createRenderer)
+    .service("render", ["pdsResolver", "blobFetcher"], createRenderFn)
     .service("checkHealth", ["didCache"], createCheckHealth)
     .resolve();
 
