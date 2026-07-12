@@ -54,7 +54,7 @@ const formatPretty = (
         .map(([key, value]) => ` ${key}=${formatFieldValue(value)}`)
         .join("")
     : "";
-  return `${time} ${level.toUpperCase().padEnd(5)} ${message}${fieldsText}`;
+  return `${time} ${level.toUpperCase()} ${message}${fieldsText}`;
 };
 
 export const createConsoleLogger = (options?: {

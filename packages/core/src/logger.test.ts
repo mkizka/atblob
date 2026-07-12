@@ -5,6 +5,7 @@ import { createConsoleLogger, createNoopLogger } from "./logger.js";
 describe("createConsoleLogger", () => {
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   it.each([
@@ -41,29 +42,29 @@ describe("createConsoleLogger", () => {
   });
 
   it("outputs pretty-formatted text when format is not specified", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
     const spy = vi.spyOn(console, "info").mockImplementation(() => undefined);
     const logger = createConsoleLogger();
 
     logger.info("something happened", { did: "did:plc:example" });
 
     expect(spy).toHaveBeenCalledTimes(1);
-    const line = String(spy.mock.calls[0]?.[0]);
-    expect(line).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z INFO {2}something happened did=did:plc:example$/,
+    expect(spy).toHaveBeenCalledWith(
+      "2024-01-01T00:00:00.000Z INFO something happened did=did:plc:example",
     );
   });
 
   it("outputs level, message, and fields in a readable format when format is pretty", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2024-01-01T00:00:00.000Z"));
     const spy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     const logger = createConsoleLogger({ format: "pretty" });
 
     logger.warn("no fields");
 
     expect(spy).toHaveBeenCalledTimes(1);
-    const line = String(spy.mock.calls[0]?.[0]);
-    expect(line).toMatch(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z WARN {2}no fields$/,
-    );
+    expect(spy).toHaveBeenCalledWith("2024-01-01T00:00:00.000Z WARN no fields");
   });
 
   it("does not output below info (debug) when level is not specified", () => {
