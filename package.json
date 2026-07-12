@@ -2,6 +2,10 @@
   "name": "atblob-monorepo",
   "private": true,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkizka/atblob.git"
+  },
   "engines": {
     "node": ">=24"
   },
