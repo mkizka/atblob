@@ -9,8 +9,8 @@ import { createAtblobApp } from "./app.js";
 const DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
-// createAtblobAppはSSRF対策としてグローバルなundici dispatcherを差し替えるため、
-// テスト自身のリクエストにグローバルfetchを使うと弾かれてしまう。node:httpを使う。
+// createAtblobApp replaces the global undici dispatcher as an SSRF countermeasure,
+// so using the global fetch for the test's own requests would get blocked. Use node:http instead.
 function request(
   port: number,
   path: string,
@@ -50,7 +50,7 @@ describe("createAtblobApp", () => {
     close = undefined;
   });
 
-  it("存在しないパスへのGETリクエストは404になる", async () => {
+  it("a GET request to a nonexistent path results in 404", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
     const server = await startServer(app);
     close = server.close;
@@ -60,7 +60,7 @@ describe("createAtblobApp", () => {
     expect(response.status).toBe(404);
   });
 
-  it("不正なpresetへのGETリクエストはBadRequestErrorとして400になる", async () => {
+  it("a GET request with an invalid preset results in 400 as BadRequestError", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
     const server = await startServer(app);
     close = server.close;
@@ -74,7 +74,7 @@ describe("createAtblobApp", () => {
     expect(response.headers["cache-control"]).toBe("public, max-age=60");
   });
 
-  it("不正なpresetへのHEADリクエストも同様に400になる", async () => {
+  it("a HEAD request with an invalid preset likewise results in 400", async () => {
     await using app = await createAtblobApp({ didCache: "memory" });
     const server = await startServer(app);
     close = server.close;
