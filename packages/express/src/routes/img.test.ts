@@ -45,11 +45,9 @@ describe("createImgHandler", () => {
   });
 
   it("returns the image and headers for a GET request", async () => {
-    const bytes = new TextEncoder().encode("image-bytes");
+    const bytes = Buffer.from("image-bytes");
     const server = await startServer(
-      fakeRenderer(() =>
-        Promise.resolve({ bytes, headers: { "Content-Type": "image/webp" } }),
-      ),
+      fakeRenderer(() => Promise.resolve({ bytes, contentType: "image/webp" })),
     );
     close = server.close;
 
@@ -59,15 +57,18 @@ describe("createImgHandler", () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("image/webp");
-    expect(new Uint8Array(await response.arrayBuffer())).toEqual(bytes);
+    expect(response.headers.get("cache-control")).toBe(
+      "public, max-age=31536000",
+    );
+    expect(new Uint8Array(await response.arrayBuffer())).toEqual(
+      new Uint8Array(bytes),
+    );
   });
 
   it("returns only headers and no body for a HEAD request", async () => {
-    const bytes = new TextEncoder().encode("image-bytes");
+    const bytes = Buffer.from("image-bytes");
     const server = await startServer(
-      fakeRenderer(() =>
-        Promise.resolve({ bytes, headers: { "Content-Type": "image/webp" } }),
-      ),
+      fakeRenderer(() => Promise.resolve({ bytes, contentType: "image/webp" })),
     );
     close = server.close;
 
@@ -85,7 +86,10 @@ describe("createImgHandler", () => {
     const server = await startServer(
       fakeRenderer((input) => {
         received = input;
-        return Promise.resolve({ bytes: new Uint8Array(), headers: {} });
+        return Promise.resolve({
+          bytes: Buffer.alloc(0),
+          contentType: "image/webp",
+        });
       }),
     );
     close = server.close;
@@ -105,7 +109,10 @@ describe("createImgHandler", () => {
     const server = await startServer(
       fakeRenderer((input) => {
         received = input;
-        return Promise.resolve({ bytes: new Uint8Array(), headers: {} });
+        return Promise.resolve({
+          bytes: Buffer.alloc(0),
+          contentType: "image/webp",
+        });
       }),
     );
     close = server.close;
