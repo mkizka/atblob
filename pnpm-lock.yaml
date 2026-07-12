@@ -36,6 +36,12 @@ importers:
       lint-staged:
         specifier: 16.4.0
         version: 16.4.0
+      prettier:
+        specifier: 3.9.4
+        version: 3.9.4
+      prettier-plugin-pkg:
+        specifier: 0.21.2
+        version: 0.21.2(prettier@3.9.4)
       turbo:
         specifier: 2.10.4
         version: 2.10.4
