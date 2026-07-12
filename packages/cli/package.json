@@ -23,10 +23,10 @@
     "valibot": "1.4.2"
   },
   "devDependencies": {
-    "@types/node": "24.13.2",
+    "@types/node": "24.13.3",
     "get-port": "7.2.0",
     "prettier": "3.9.4",
-    "prettier-plugin-pkg": "0.21.2",
+    "prettier-plugin-pkg": "0.22.1",
     "vitest": "4.1.10"
   },
   "prettier": {
