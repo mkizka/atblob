@@ -20,7 +20,7 @@
     "@atblob/core": "workspace:*",
     "@atblob/hono": "workspace:*",
     "@hono/node-server": "2.0.8",
-    "gunshi": "0.36.0",
+    "arg": "5.0.2",
     "valibot": "1.4.2"
   },
   "devDependencies": {
