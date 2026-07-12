@@ -2,6 +2,11 @@
   "name": "@atblob/hono",
   "version": "0.0.1",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkizka/atblob.git",
+    "directory": "packages/hono"
+  },
   "license": "AGPL-3.0-only",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
