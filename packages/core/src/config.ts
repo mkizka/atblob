@@ -34,7 +34,7 @@ export const resolveConfig = (
     plcDirectoryUrl: config.plcDirectoryUrl ?? "https://plc.directory",
     logger: config.logger ?? createConsoleLogger(),
   };
-  if (config.didCache === "memory") {
+  if (config.didCache !== "redis") {
     return { ...base, didCache: "memory" };
   }
   const redisUrl = "redisUrl" in config ? config.redisUrl : undefined;

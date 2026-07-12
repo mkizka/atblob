@@ -132,19 +132,13 @@ describe("buildConfig", () => {
     );
   });
 
-  it("throws when didCache is not specified and redisUrl is also missing", () => {
-    expect(() => buildConfig({}, {})).toThrow(
-      '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
-    );
+  it("does not throw when didCache is not specified", () => {
+    expect(() => buildConfig({}, {})).not.toThrow();
   });
 
   it("throws when didCache is redis and redisUrl is missing", () => {
     expect(() => buildConfig({ didCache: "redis" }, {})).toThrow(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
-  });
-
-  it("does not throw when didCache is memory even without redisUrl", () => {
-    expect(() => buildConfig({ didCache: "memory" }, {})).not.toThrow();
   });
 });
