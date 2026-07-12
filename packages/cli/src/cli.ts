@@ -56,11 +56,12 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
     },
     run: async (ctx) => {
       const config = buildConfig(ctx.values, processEnv);
+      const label = `atblob v${pkg.version}`;
 
       await using app = await createAtblobApp(config);
       const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
         config.logger.info(
-          `server started on http://${info.address}:${info.port}`,
+          `${label} server started on http://${info.address}:${info.port}`,
         );
       });
 
@@ -71,7 +72,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       const closed = events.once(server, "close");
       server.close();
       await closed;
-      config.logger.info("server stopped");
+      config.logger.info(`${label} server stopped`);
     },
   });
 
