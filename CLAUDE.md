@@ -19,4 +19,4 @@ $ pnpm all # build typecheck format testを実行する
 
 ## CLI Development
 
-When creating command-line interfaces, use the `use-gunshi-cli` skill.
+CLIの引数パースには `arg` (vercel/arg) を使う。`packages/cli/src/cli.ts` を実装の参考にすること。

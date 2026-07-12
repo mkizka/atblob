@@ -2,7 +2,7 @@ import events from "node:events";
 
 import { createAtblobApp } from "@atblob/hono";
 import { serve } from "@hono/node-server";
-import { cli, define } from "gunshi";
+import arg from "arg";
 
 import pkg from "../package.json" with { type: "json" };
 import {
@@ -12,73 +12,90 @@ import {
   LOG_LEVEL_CHOICES,
 } from "./config.js";
 
+const HELP_TEXT = `Usage: atblob [options]
+
+Start a cdn.bsky.app-compatible image server
+
+Options:
+  --did-cache <choice>       Where to cache DID resolution results (${DID_CACHE_CHOICES.join(", ")})
+  --redis-url <url>          Redis URL used for the DID cache
+  --max-blob-size <number>   Maximum allowed blob size (bytes)
+  --did-resolve-timeout <number>  DID resolution timeout (milliseconds)
+  --blob-fetch-timeout <number>   Blob fetch timeout (milliseconds)
+  --plc-directory-url <url>  PLC Directory URL
+  -p, --port <number>        Port number the server listens on
+  --log-level <choice>       Minimum log level to output (${LOG_LEVEL_CHOICES.join(", ")})
+  -h, --help                 Display this message
+  -v, --version              Display version number
+`;
+
+function oneOf<const T extends readonly string[]>(choices: T) {
+  return (value: string, argName: string): T[number] => {
+    if (!choices.includes(value)) {
+      throw new Error(`${argName} must be one of: ${choices.join(", ")}`);
+    }
+    return value;
+  };
+}
+
 export async function runCli(argv: string[], processEnv: Env): Promise<void> {
-  const command = define({
-    name: "atblob",
-    description: "Start a cdn.bsky.app-compatible image server",
-    toKebab: true,
-    args: {
-      didCache: {
-        type: "enum",
-        choices: DID_CACHE_CHOICES,
-        description: "Where to cache DID resolution results",
-      },
-      redisUrl: {
-        type: "string",
-        description: "Redis URL used for the DID cache",
-      },
-      maxBlobSize: {
-        type: "number",
-        description: "Maximum allowed blob size (bytes)",
-      },
-      didResolveTimeout: {
-        type: "number",
-        description: "DID resolution timeout (milliseconds)",
-      },
-      blobFetchTimeout: {
-        type: "number",
-        description: "Blob fetch timeout (milliseconds)",
-      },
-      plcDirectoryUrl: {
-        type: "string",
-        description: "PLC Directory URL",
-      },
-      port: {
-        type: "number",
-        short: "p",
-        description: "Port number the server listens on",
-      },
-      logLevel: {
-        type: "enum",
-        choices: LOG_LEVEL_CHOICES,
-        description: "Minimum log level to output",
-      },
+  const args = arg(
+    {
+      "--did-cache": oneOf(DID_CACHE_CHOICES),
+      "--redis-url": String,
+      "--max-blob-size": Number,
+      "--did-resolve-timeout": Number,
+      "--blob-fetch-timeout": Number,
+      "--plc-directory-url": String,
+      "--port": Number,
+      "--log-level": oneOf(LOG_LEVEL_CHOICES),
+      "--help": Boolean,
+      "--version": Boolean,
+      "-p": "--port",
+      "-h": "--help",
+      "-v": "--version",
     },
-    run: async (ctx) => {
-      const config = buildConfig(ctx.values, processEnv);
-      const label = `atblob v${pkg.version}`;
+    { argv },
+  );
 
-      await using app = await createAtblobApp(config);
-      const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
-        config.logger.info(
-          `${label} server started on http://${info.address}:${info.port}`,
-        );
-      });
+  if (args["--help"]) {
+    process.stdout.write(`${HELP_TEXT}\n`);
+    return;
+  }
 
-      await Promise.race([
-        events.once(process, "SIGINT"),
-        events.once(process, "SIGTERM"),
-      ]);
-      const closed = events.once(server, "close");
-      server.close();
-      await closed;
-      config.logger.info(`${label} server stopped`);
+  if (args["--version"]) {
+    process.stdout.write(`${pkg.version}\n`);
+    return;
+  }
+
+  const config = buildConfig(
+    {
+      didCache: args["--did-cache"],
+      redisUrl: args["--redis-url"],
+      maxBlobSize: args["--max-blob-size"],
+      didResolveTimeout: args["--did-resolve-timeout"],
+      blobFetchTimeout: args["--blob-fetch-timeout"],
+      plcDirectoryUrl: args["--plc-directory-url"],
+      port: args["--port"],
+      logLevel: args["--log-level"],
     },
+    processEnv,
+  );
+  const label = `atblob v${pkg.version}`;
+
+  await using app = await createAtblobApp(config);
+  const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
+    config.logger.info(
+      `${label} server started on http://${info.address}:${info.port}`,
+    );
   });
 
-  await cli(argv, command, {
-    name: "atblob",
-    version: pkg.version,
-    renderHeader: null,
-  });
+  await Promise.race([
+    events.once(process, "SIGINT"),
+    events.once(process, "SIGTERM"),
+  ]);
+  const closed = events.once(server, "close");
+  server.close();
+  await closed;
+  config.logger.info(`${label} server stopped`);
 }

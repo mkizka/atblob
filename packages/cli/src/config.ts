@@ -23,14 +23,14 @@ export type AtblobCliConfig = AtblobConfig & {
 };
 
 export type CliArgValues = {
-  didCache?: (typeof DID_CACHE_CHOICES)[number];
-  redisUrl?: string;
-  maxBlobSize?: number;
-  didResolveTimeout?: number;
-  blobFetchTimeout?: number;
-  plcDirectoryUrl?: string;
-  port?: number;
-  logLevel?: (typeof LOG_LEVEL_CHOICES)[number];
+  didCache?: (typeof DID_CACHE_CHOICES)[number] | undefined;
+  redisUrl?: string | undefined;
+  maxBlobSize?: number | undefined;
+  didResolveTimeout?: number | undefined;
+  blobFetchTimeout?: number | undefined;
+  plcDirectoryUrl?: string | undefined;
+  port?: number | undefined;
+  logLevel?: (typeof LOG_LEVEL_CHOICES)[number] | undefined;
 };
 
 const numberSchema = v.pipe(
