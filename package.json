@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.10.0",
   "scripts": {
     "atblob": "turbo run build --filter=@atblob/cli && node packages/cli/dist/index.js",
     "build": "turbo run build",
@@ -23,10 +23,10 @@
     "@mkizka/eslint-config": "10.0.0",
     "@tsconfig/node-lts": "24.0.0",
     "@tsconfig/strictest": "2.0.8",
-    "@types/node": "24.13.2",
+    "@types/node": "24.13.3",
     "eslint": "10.6.0",
     "husky": "9.1.7",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.8",
     "prettier": "3.9.4",
     "prettier-plugin-pkg": "0.21.2",
     "turbo": "2.10.4",
