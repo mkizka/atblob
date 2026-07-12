@@ -12,6 +12,6 @@ After making changes, always run the following command to verify them.
 $ pnpm all # runs build, typecheck, format, and test
 ```
 
-## Commit messages
+## Commit messages and PR titles
 
-Write commit messages in English.
+Write commit messages and PR titles in English.
