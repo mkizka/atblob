@@ -48,6 +48,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@atblob/core':
+        specifier: workspace:*
+        version: link:../core
       '@atblob/hono':
         specifier: workspace:*
         version: link:../hono

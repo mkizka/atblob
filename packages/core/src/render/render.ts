@@ -22,12 +22,12 @@ export type RenderResult = {
   headers: Record<string, string>;
 };
 
-export type Renderer = (input: ImageRequestInput) => Promise<RenderResult>;
+export type RenderFn = (input: ImageRequestInput) => Promise<RenderResult>;
 
-export const createRenderer = (deps: {
+export const createRenderFn = (deps: {
   pdsResolver: PdsResolver;
   blobFetcher: BlobFetcher;
-}): Renderer => {
+}): RenderFn => {
   return async (input) => {
     try {
       if (!isPresetName(input.preset)) {
