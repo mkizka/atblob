@@ -29,16 +29,16 @@ const logger = (log: Logger): MiddlewareHandler => {
 };
 
 const ROOT_TEXT = `
-         __  __    __      __
-  ____ _/ /_/ /_  / /___  / /_
- / __ \`/ __/ __ \\/ / __ \\/ __ \\
-/ /_/ / /_/ /_/ / / /_/ / /_/ /
-\\__,_/\\__/_.___/_/\\____/_.___/
+           __  __    __      __
+    ____ _/ /_/ /_  / /___  / /_
+   / __ \`/ __/ __ \\/ / __ \\/ __ \\
+  / /_/ / /_/ /_/ / / /_/ / /_/ /
+  \\__,_/\\__/_.___/_/\\____/_.___/
 
 
 This is a cdn.bsky.app-compatible atproto blob server
 
-Code: https://github.com/mkizka/atblob
+  Code: https://github.com/mkizka/atblob
 `;
 
 const HELP_TEXT = `Usage: atblob [options]
