@@ -28,6 +28,22 @@ const logger = (log: Logger): MiddlewareHandler => {
   };
 };
 
+const ROOT_TEXT = `
+        __    __       ___           __
+       /\\ \\__/\\ \\     /\\_ \\         /\\ \\
+   __  \\ \\ ,_\\ \\ \\____\\//\\ \\     ___\\ \\ \\____
+ /'__\`\\ \\ \\ \\/\\ \\ '__\`\\ \\ \\ \\   / __\`\\ \\ '__\`\\
+/\\ \\L\\.\\_\\ \\ \\_\\ \\ \\L\\ \\ \\_\\ \\_/\\ \\L\\ \\ \\ \\L\\ \\
+\\ \\__/.\\_\\\\ \\__\\\\ \\_,__/ /\\____\\ \\____/\\ \\_,__/
+ \\/__/\\/_/ \\/__/ \\/___/  \\/____/\\/___/  \\/___/
+
+
+This is a cdn.bsky.app-compatible atproto blob server (aka, an atblob CDN)
+
+      Code: https://github.com/mkizka/atblob
+  Protocol: https://atproto.com
+`;
+
 const HELP_TEXT = `Usage: atblob [options]
 
 Start a cdn.bsky.app-compatible image server
@@ -107,6 +123,8 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
 
   await using renderer = await createRenderer(config);
   app.use(atblob(renderer));
+
+  app.get("/", (c) => c.text(ROOT_TEXT));
 
   app.get("/health", async (c) => {
     const result = await renderer.checkHealth();
