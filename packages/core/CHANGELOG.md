@@ -1,5 +1,11 @@
 # @atblob/core
 
+## 0.1.1
+
+### Patch Changes
+
+- cf73559: Improve log readability by wrapping the timestamp and level in brackets, and simplify the CLI's version label and startup log.
+
 ## 0.1.0
 
 ### Minor Changes
