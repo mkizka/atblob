@@ -1,5 +1,18 @@
 # @atblob/cli
 
+## 0.2.0
+
+### Minor Changes
+
+- acd52e7: Add an ASCII art landing page at `GET /`.
+
+### Patch Changes
+
+- cf73559: Improve log readability by wrapping the timestamp and level in brackets, and simplify the CLI's version label and startup log.
+- Updated dependencies [cf73559]
+  - @atblob/core@0.1.1
+  - @atblob/hono@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
