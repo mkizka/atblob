@@ -1,6 +1,6 @@
 # atblob
 
-<img src="./icon.png" width="120" alt="atblob icon" />
+<img src="https://raw.githubusercontent.com/mkizka/atblob/main/packages/cli/icon.png" width="120" alt="atblob icon" />
 
 atblob is a [cdn.bsky.app](https://cdn.bsky.app)-compatible image proxy server for atproto.
 
