@@ -51,7 +51,7 @@ describe("createConsoleLogger", () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(
-      "2024-01-01T00:00:00.000Z INFO something happened did=did:plc:example",
+      "[2024-01-01T00:00:00.000Z INFO] something happened did=did:plc:example",
     );
   });
 
@@ -64,7 +64,9 @@ describe("createConsoleLogger", () => {
     logger.warn("no fields");
 
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith("2024-01-01T00:00:00.000Z WARN no fields");
+    expect(spy).toHaveBeenCalledWith(
+      "[2024-01-01T00:00:00.000Z WARN] no fields",
+    );
   });
 
   it("does not output below info (debug) when level is not specified", () => {

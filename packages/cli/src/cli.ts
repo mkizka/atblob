@@ -100,7 +100,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
     },
     processEnv,
   );
-  const label = `atblob v${pkg.version}`;
+  const label = `atblob@${pkg.version}`;
 
   const app = new Hono();
   app.use(logger(config.logger));
@@ -118,7 +118,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
 
   const server = serve({ fetch: app.fetch, port: config.port }, (info) => {
     config.logger.info(
-      `${label} server started on http://${info.address}:${info.port}`,
+      `${label} server started on http://localhost:${info.port}`,
     );
   });
 
