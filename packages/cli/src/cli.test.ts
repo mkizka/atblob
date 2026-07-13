@@ -29,14 +29,20 @@ afterEach(() => {
 function request(
   port: number,
   method: "GET" | "HEAD" = "GET",
-  path = "/",
-): Promise<{ status: number }> {
+  path = "/not-found",
+): Promise<{ status: number; body: string }> {
   return new Promise((resolve, reject) => {
     const req = http.request(
       { host: "127.0.0.1", port, path, method },
       (res) => {
-        res.resume();
-        resolve({ status: res.statusCode ?? 0 });
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk: Buffer) => chunks.push(chunk));
+        res.on("end", () => {
+          resolve({
+            status: res.statusCode ?? 0,
+            body: Buffer.concat(chunks).toString("utf8"),
+          });
+        });
       },
     );
     req.on("error", reject);
@@ -72,6 +78,17 @@ describe("runCli", () => {
 
     const response = await request(port, "GET");
     expect(response.status).toBe(404);
+
+    process.emit("SIGINT");
+    await running;
+  });
+
+  it("responds to GET / with an ASCII art landing page", async () => {
+    const { port, running } = await startCli();
+
+    const response = await request(port, "GET", "/");
+    expect(response.status).toBe(200);
+    expect(response.body).toContain("github.com/mkizka/atblob");
 
     process.emit("SIGINT");
     await running;

@@ -28,6 +28,19 @@ const logger = (log: Logger): MiddlewareHandler => {
   };
 };
 
+const ROOT_TEXT = `
+           __  __    __      __
+    ____ _/ /_/ /_  / /___  / /_
+   / __ \`/ __/ __ \\/ / __ \\/ __ \\
+  / /_/ / /_/ /_/ / / /_/ / /_/ /
+  \\__,_/\\__/_.___/_/\\____/_.___/
+
+
+This is a cdn.bsky.app-compatible atproto image proxy server.
+
+  Code: https://github.com/mkizka/atblob
+`;
+
 const HELP_TEXT = `Usage: atblob [options]
 
 Start a cdn.bsky.app-compatible image server
@@ -107,6 +120,8 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
 
   await using renderer = await createRenderer(config);
   app.use(atblob(renderer));
+
+  app.get("/", (c) => c.text(ROOT_TEXT));
 
   app.get("/health", async (c) => {
     const result = await renderer.checkHealth();
