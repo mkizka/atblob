@@ -36,7 +36,7 @@ const ROOT_TEXT = `
   \\__,_/\\__/_.___/_/\\____/_.___/
 
 
-This is a cdn.bsky.app-compatible atproto blob server
+This is a cdn.bsky.app-compatible atproto image proxy server.
 
   Code: https://github.com/mkizka/atblob
 `;
