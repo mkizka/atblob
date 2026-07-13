@@ -88,7 +88,7 @@ describe("runCli", () => {
 
     const response = await request(port, "GET", "/");
     expect(response.status).toBe(200);
-    expect(response.body).toContain("atblob CDN");
+    expect(response.body).toContain("github.com/mkizka/atblob");
 
     process.emit("SIGINT");
     await running;

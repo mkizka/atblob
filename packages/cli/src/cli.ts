@@ -38,10 +38,9 @@ const ROOT_TEXT = `
  \\/__/\\/_/ \\/__/ \\/___/  \\/____/\\/___/  \\/___/
 
 
-This is a cdn.bsky.app-compatible atproto blob server (aka, an atblob CDN)
+This is a cdn.bsky.app-compatible atproto blob server
 
-      Code: https://github.com/mkizka/atblob
-  Protocol: https://atproto.com
+Code: https://github.com/mkizka/atblob
 `;
 
 const HELP_TEXT = `Usage: atblob [options]
