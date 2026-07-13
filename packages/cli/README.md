@@ -6,6 +6,8 @@ atblob is a [cdn.bsky.app](https://cdn.bsky.app)-compatible image proxy server f
 
 It accepts the same URL paths as Bluesky's image CDN (`/img/{preset}/plain/{did}/{cid}@{format}`), so clients can switch to it just by swapping the hostname.
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/atblob?referralCode=mveF9L&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 ## Use cases
 
 - Building atproto applications that don't depend on Bluesky
