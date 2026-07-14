@@ -41,10 +41,12 @@ const waitForServer = async (port: number): Promise<void> => {
   );
 };
 
+export type LocalCli = AsyncDisposable & { port: number };
+
 export const startCli = async (
   args: string[] = [],
   env: Env = {},
-): Promise<{ port: number; stop: () => Promise<void> }> => {
+): Promise<LocalCli> => {
   const port = await getPort();
   const running = runCli(
     ["--port", String(port), "--did-cache", "memory", ...args],
@@ -53,7 +55,7 @@ export const startCli = async (
   await waitForServer(port);
   return {
     port,
-    stop: async () => {
+    [Symbol.asyncDispose]: async () => {
       process.emit("SIGINT");
       await running;
     },

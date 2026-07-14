@@ -37,11 +37,10 @@ const didDocumentFor = (did: string, pdsUrl: string) => ({
   ],
 });
 
-export type MockUpstream = {
+export type MockUpstream = AsyncDisposable & {
   did: string;
   pdsUrl: string;
   serveBlob: (cid: string, bytes: Uint8Array, contentType?: string) => void;
-  close: () => Promise<void>;
 };
 
 export const setupMockUpstream = (opts: {
@@ -83,7 +82,7 @@ export const setupMockUpstream = (opts: {
     did: opts.did,
     pdsUrl,
     serveBlob,
-    close: () => {
+    [Symbol.asyncDispose]: () => {
       server.close();
       return Promise.resolve();
     },
