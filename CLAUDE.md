@@ -20,4 +20,6 @@ Write commit messages and PR titles in English.
 
 When creating a PR, add a changeset that matches the change (`pnpm changeset`), unless the change has no user-facing effect (e.g. docs-only or internal tooling changes).
 
-Write the changeset text as a single short sentence, like a release note bullet point. Only go longer (e.g. a before/after code example) for breaking changes that need migration guidance.
+Write the changeset text as a single short, plain sentence, like a release note bullet point. Only go longer (e.g. a before/after code example) for breaking changes that need migration guidance.
+
+If a change touches multiple packages with distinct user-facing effects, add one changeset file per package instead of one file listing multiple packages, and write each summary specific to that package.
