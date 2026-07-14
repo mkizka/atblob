@@ -2,6 +2,7 @@ import { createRegistry } from "@gyaku/di";
 
 import { createMemoryBlobCache } from "./blob/cache/memory.js";
 import { createBlobFetcher } from "./blob/fetcher.js";
+import { createBlobResolver } from "./blob/resolver.js";
 import { installSsrfProtection } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
@@ -50,10 +51,11 @@ export const createRenderer = async (
       createPdsResolver,
     )
     .service(
-      "render",
+      "blobResolver",
       ["pdsResolver", "blobFetcher", "blobCache"],
-      createRenderFn,
+      createBlobResolver,
     )
+    .service("render", ["blobResolver"], createRenderFn)
     .service("checkHealth", ["didCache"], createCheckHealth)
     .resolve();
 
