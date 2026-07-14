@@ -1,5 +1,17 @@
 # @atblob/cli
 
+## 0.3.0
+
+### Minor Changes
+
+- 04b6677: Add a `--blob-cache-ttl` / `BLOB_CACHE_TTL` option to configure how long fetched blobs are cached in memory.
+
+### Patch Changes
+
+- Updated dependencies [04b6677]
+  - @atblob/core@0.2.0
+  - @atblob/hono@0.1.2
+
 ## 0.2.0
 
 ### Minor Changes
