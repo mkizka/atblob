@@ -1,3 +1,4 @@
+import type { BlobCache } from "../blob/cache/cache.js";
 import { isCid } from "../blob/cid.js";
 import type { BlobFetcher } from "../blob/fetcher.js";
 import { isDid } from "../did/did.js";
@@ -22,6 +23,7 @@ export type RenderFn = (input: ImageRequestInput) => Promise<TransformedImage>;
 export const createRenderFn = (deps: {
   pdsResolver: PdsResolver;
   blobFetcher: BlobFetcher;
+  blobCache: BlobCache;
 }): RenderFn => {
   return async (input) => {
     try {
@@ -41,12 +43,18 @@ export const createRenderFn = (deps: {
       const preset = PRESETS[input.preset];
       const format = input.format ?? preset.format;
 
-      const pdsEndpoint = await deps.pdsResolver.resolvePdsEndpoint(input.did);
-      const blob = await deps.blobFetcher.fetchBlob(
-        pdsEndpoint,
-        input.did,
-        input.cid,
-      );
+      let blob = await deps.blobCache.get(input.did, input.cid);
+      if (!blob) {
+        const pdsEndpoint = await deps.pdsResolver.resolvePdsEndpoint(
+          input.did,
+        );
+        blob = await deps.blobFetcher.fetchBlob(
+          pdsEndpoint,
+          input.did,
+          input.cid,
+        );
+        await deps.blobCache.set(input.did, input.cid, blob);
+      }
       return await transformImage(blob.bytes, preset, format);
     } catch (error) {
       if (error instanceof AtblobHttpError) {

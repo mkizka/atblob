@@ -1,6 +1,7 @@
 import sharp from "sharp";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
+import type { BlobCache } from "../blob/cache/cache.js";
 import type { BlobFetcher } from "../blob/fetcher.js";
 import type { PdsResolver } from "../did/resolver.js";
 import { BadGatewayError, BadRequestError } from "../errors.js";
@@ -30,6 +31,11 @@ const fakeBlobFetcher = (fetchBlob: BlobFetcher["fetchBlob"]): BlobFetcher => ({
   fetchBlob,
 });
 
+const fakeBlobCache = (
+  get: BlobCache["get"] = () => Promise.resolve(undefined),
+  set: BlobCache["set"] = () => Promise.resolve(),
+): BlobCache => ({ get, set });
+
 describe("createRenderFn", () => {
   it("results in BadRequestError when preset is unknown", async () => {
     const render = createRenderFn({
@@ -37,6 +43,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
+      blobCache: fakeBlobCache(),
     });
 
     await expect(
@@ -50,6 +57,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
+      blobCache: fakeBlobCache(),
     });
 
     await expect(
@@ -63,6 +71,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
+      blobCache: fakeBlobCache(),
     });
 
     await expect(
@@ -76,6 +85,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
+      blobCache: fakeBlobCache(),
     });
 
     await expect(
@@ -95,6 +105,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() =>
         Promise.resolve({ bytes, contentType: "image/png" }),
       ),
+      blobCache: fakeBlobCache(),
     });
 
     const result = await render({
@@ -107,6 +118,52 @@ describe("createRenderFn", () => {
     expect(result.bytes.byteLength).toBeGreaterThan(0);
   });
 
+  it("returns the cached blob without calling pdsResolver or blobFetcher", async () => {
+    const bytes = await createImageBytes();
+    const resolvePdsEndpoint = vi.fn(() => {
+      throw new Error("should not be called");
+    });
+    const fetchBlob = vi.fn(() => {
+      throw new Error("should not be called");
+    });
+    const render = createRenderFn({
+      pdsResolver: fakePdsResolver(resolvePdsEndpoint),
+      blobFetcher: fakeBlobFetcher(fetchBlob),
+      blobCache: fakeBlobCache(() =>
+        Promise.resolve({ bytes, contentType: "image/png" }),
+      ),
+    });
+
+    const result = await render({
+      preset: "avatar",
+      did: VALID_DID,
+      cid: VALID_CID,
+    });
+
+    expect(result.contentType).toBe("image/webp");
+    expect(resolvePdsEndpoint).not.toHaveBeenCalled();
+    expect(fetchBlob).not.toHaveBeenCalled();
+  });
+
+  it("stores the fetched blob in the cache on a cache miss", async () => {
+    const bytes = await createImageBytes();
+    const set = vi.fn(() => Promise.resolve());
+    const render = createRenderFn({
+      pdsResolver: fakePdsResolver(),
+      blobFetcher: fakeBlobFetcher(() =>
+        Promise.resolve({ bytes, contentType: "image/png" }),
+      ),
+      blobCache: fakeBlobCache(undefined, set),
+    });
+
+    await render({ preset: "avatar", did: VALID_DID, cid: VALID_CID });
+
+    expect(set).toHaveBeenCalledWith(VALID_DID, VALID_CID, {
+      bytes,
+      contentType: "image/png",
+    });
+  });
+
   it("results in BadGatewayError when did resolution fails", async () => {
     const render = createRenderFn({
       pdsResolver: fakePdsResolver(() =>
@@ -115,6 +172,7 @@ describe("createRenderFn", () => {
       blobFetcher: fakeBlobFetcher(() => {
         throw new Error("should not be called");
       }),
+      blobCache: fakeBlobCache(),
     });
 
     await expect(
