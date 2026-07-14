@@ -71,6 +71,7 @@ Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` s
 | `--did-resolve-timeout`     | `DID_RESOLVE_TIMEOUT`     | DID resolution timeout (milliseconds)                                      | `5000`                  |
 | `--blob-fetch-timeout`      | `BLOB_FETCH_TIMEOUT`      | Blob fetch timeout (milliseconds)                                          | `15000`                 |
 | `--max-concurrent-per-host` | `MAX_CONCURRENT_PER_HOST` | Max concurrent blob fetches per PDS host (per instance, not shared)        | `4`                     |
+| `--blob-cache-ttl`          | `BLOB_CACHE_TTL`          | How long fetched blobs are cached in memory (milliseconds)                 | `300000` (5 minutes)    |
 | `--plc-directory-url`       | `PLC_DIRECTORY_URL`       | PLC Directory URL                                                          | `https://plc.directory` |
 | `--log-level`               | `LOG_LEVEL`               | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent` | `info`                  |
 | `--log-format`              | `LOG_FORMAT`              | Log output format. `json` or `pretty`                                      | `pretty`                |

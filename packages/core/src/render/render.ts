@@ -1,7 +1,6 @@
 import { isCid } from "../blob/cid.js";
-import type { BlobFetcher } from "../blob/fetcher.js";
+import type { BlobResolver } from "../blob/resolver.js";
 import { isDid } from "../did/did.js";
-import type { PdsResolver } from "../did/resolver.js";
 import {
   AtblobHttpError,
   BadGatewayError,
@@ -20,8 +19,7 @@ export type ImageRequestInput = {
 export type RenderFn = (input: ImageRequestInput) => Promise<TransformedImage>;
 
 export const createRenderFn = (deps: {
-  pdsResolver: PdsResolver;
-  blobFetcher: BlobFetcher;
+  blobResolver: BlobResolver;
 }): RenderFn => {
   return async (input) => {
     try {
@@ -41,12 +39,7 @@ export const createRenderFn = (deps: {
       const preset = PRESETS[input.preset];
       const format = input.format ?? preset.format;
 
-      const pdsEndpoint = await deps.pdsResolver.resolvePdsEndpoint(input.did);
-      const blob = await deps.blobFetcher.fetchBlob(
-        pdsEndpoint,
-        input.did,
-        input.cid,
-      );
+      const blob = await deps.blobResolver.resolveBlob(input.did, input.cid);
       return await transformImage(blob.bytes, preset, format);
     } catch (error) {
       if (error instanceof AtblobHttpError) {

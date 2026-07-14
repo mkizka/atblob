@@ -35,6 +35,7 @@ export type CliArgValues = NonRequired<{
   didResolveTimeout: number;
   blobFetchTimeout: number;
   maxConcurrentPerHost: number;
+  blobCacheTTL: number;
   plcDirectoryUrl: string;
   port: number;
   logLevel: (typeof LOG_LEVEL_CHOICES)[number];
@@ -103,6 +104,7 @@ export function buildConfig(
     didResolveTimeout: values.didResolveTimeout ?? env("DID_RESOLVE_TIMEOUT", numberSchema),
     blobFetchTimeout: values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
     maxConcurrentPerHost: values.maxConcurrentPerHost ?? env("MAX_CONCURRENT_PER_HOST", numberSchema),
+    blobCacheTTL: values.blobCacheTTL ?? env("BLOB_CACHE_TTL", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
     port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({

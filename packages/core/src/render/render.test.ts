@@ -1,8 +1,7 @@
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
-import type { BlobFetcher } from "../blob/fetcher.js";
-import type { PdsResolver } from "../did/resolver.js";
+import type { BlobResolver } from "../blob/resolver.js";
 import { BadGatewayError, BadRequestError } from "../errors.js";
 import { createRenderFn } from "./render.js";
 
@@ -21,20 +20,14 @@ const createImageBytes = (): Promise<Buffer> =>
     .png()
     .toBuffer();
 
-const fakePdsResolver = (
-  resolvePdsEndpoint: PdsResolver["resolvePdsEndpoint"] = () =>
-    Promise.resolve("https://pds.example.com"),
-): PdsResolver => ({ resolvePdsEndpoint });
-
-const fakeBlobFetcher = (fetchBlob: BlobFetcher["fetchBlob"]): BlobFetcher => ({
-  fetchBlob,
-});
+const fakeBlobResolver = (
+  resolveBlob: BlobResolver["resolveBlob"],
+): BlobResolver => ({ resolveBlob });
 
 describe("createRenderFn", () => {
   it("results in BadRequestError when preset is unknown", async () => {
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(),
-      blobFetcher: fakeBlobFetcher(() => {
+      blobResolver: fakeBlobResolver(() => {
         throw new Error("should not be called");
       }),
     });
@@ -46,8 +39,7 @@ describe("createRenderFn", () => {
 
   it("results in BadRequestError when did is invalid", async () => {
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(),
-      blobFetcher: fakeBlobFetcher(() => {
+      blobResolver: fakeBlobResolver(() => {
         throw new Error("should not be called");
       }),
     });
@@ -59,8 +51,7 @@ describe("createRenderFn", () => {
 
   it("results in BadRequestError when cid is invalid", async () => {
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(),
-      blobFetcher: fakeBlobFetcher(() => {
+      blobResolver: fakeBlobResolver(() => {
         throw new Error("should not be called");
       }),
     });
@@ -72,8 +63,7 @@ describe("createRenderFn", () => {
 
   it("results in BadRequestError when format is unsupported", async () => {
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(),
-      blobFetcher: fakeBlobFetcher(() => {
+      blobResolver: fakeBlobResolver(() => {
         throw new Error("should not be called");
       }),
     });
@@ -91,8 +81,7 @@ describe("createRenderFn", () => {
   it("returns the transformed image for valid input", async () => {
     const bytes = await createImageBytes();
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(),
-      blobFetcher: fakeBlobFetcher(() =>
+      blobResolver: fakeBlobResolver(() =>
         Promise.resolve({ bytes, contentType: "image/png" }),
       ),
     });
@@ -107,14 +96,11 @@ describe("createRenderFn", () => {
     expect(result.bytes.byteLength).toBeGreaterThan(0);
   });
 
-  it("results in BadGatewayError when did resolution fails", async () => {
+  it("results in BadGatewayError when blob resolution fails", async () => {
     const render = createRenderFn({
-      pdsResolver: fakePdsResolver(() =>
+      blobResolver: fakeBlobResolver(() =>
         Promise.reject(new Error("resolve failed")),
       ),
-      blobFetcher: fakeBlobFetcher(() => {
-        throw new Error("should not be called");
-      }),
     });
 
     await expect(

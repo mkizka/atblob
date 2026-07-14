@@ -15,6 +15,7 @@ describe("buildConfig", () => {
         didResolveTimeout: 100,
         blobFetchTimeout: 200,
         maxConcurrentPerHost: 2,
+        blobCacheTTL: 300,
         plcDirectoryUrl: "https://plc.example.com",
         port: 8080,
         logLevel: "debug",
@@ -29,6 +30,7 @@ describe("buildConfig", () => {
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
       maxConcurrentPerHost: 2,
+      blobCacheTTL: 300,
       plcDirectoryUrl: "https://plc.example.com",
       port: 8080,
     });
@@ -43,6 +45,7 @@ describe("buildConfig", () => {
       DID_RESOLVE_TIMEOUT: "300",
       BLOB_FETCH_TIMEOUT: "400",
       MAX_CONCURRENT_PER_HOST: "8",
+      BLOB_CACHE_TTL: "500",
       PLC_DIRECTORY_URL: "https://plc.example.com",
       PORT: "9000",
       LOG_LEVEL: "warn",
@@ -57,6 +60,7 @@ describe("buildConfig", () => {
       didResolveTimeout: 300,
       blobFetchTimeout: 400,
       maxConcurrentPerHost: 8,
+      blobCacheTTL: 500,
       plcDirectoryUrl: "https://plc.example.com",
       port: 9000,
     });
