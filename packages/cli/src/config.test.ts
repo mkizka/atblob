@@ -14,6 +14,7 @@ describe("buildConfig", () => {
         maxBlobSize: 1024,
         didResolveTimeout: 100,
         blobFetchTimeout: 200,
+        blobCacheTTL: 300,
         plcDirectoryUrl: "https://plc.example.com",
         port: 8080,
         logLevel: "debug",
@@ -27,6 +28,7 @@ describe("buildConfig", () => {
       maxBlobSize: 1024,
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
+      blobCacheTTL: 300,
       plcDirectoryUrl: "https://plc.example.com",
       port: 8080,
     });
@@ -40,6 +42,7 @@ describe("buildConfig", () => {
       MAX_BLOB_SIZE: "2048",
       DID_RESOLVE_TIMEOUT: "300",
       BLOB_FETCH_TIMEOUT: "400",
+      BLOB_CACHE_TTL: "500",
       PLC_DIRECTORY_URL: "https://plc.example.com",
       PORT: "9000",
       LOG_LEVEL: "warn",
@@ -53,6 +56,7 @@ describe("buildConfig", () => {
       maxBlobSize: 2048,
       didResolveTimeout: 300,
       blobFetchTimeout: 400,
+      blobCacheTTL: 500,
       plcDirectoryUrl: "https://plc.example.com",
       port: 9000,
     });

@@ -34,6 +34,7 @@ export type CliArgValues = NonRequired<{
   maxBlobSize: number;
   didResolveTimeout: number;
   blobFetchTimeout: number;
+  blobCacheTTL: number;
   plcDirectoryUrl: string;
   port: number;
   logLevel: (typeof LOG_LEVEL_CHOICES)[number];
@@ -101,6 +102,7 @@ export function buildConfig(
     maxBlobSize: values.maxBlobSize ?? env("MAX_BLOB_SIZE", numberSchema),
     didResolveTimeout: values.didResolveTimeout ?? env("DID_RESOLVE_TIMEOUT", numberSchema),
     blobFetchTimeout: values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
+    blobCacheTTL: values.blobCacheTTL ?? env("BLOB_CACHE_TTL", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
     port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({
