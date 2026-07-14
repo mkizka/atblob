@@ -1,10 +1,8 @@
 import http from "node:http";
 
+import { type Env, runCli } from "@atblob/cli";
 import getPort from "get-port";
 import { vi } from "vitest";
-
-import { runCli } from "../cli.js";
-import type { Env } from "../config.js";
 
 export type LocalResponse = {
   status: number;

@@ -15,6 +15,8 @@ import {
   LOG_LEVEL_CHOICES,
 } from "./config.js";
 
+export type { Env } from "./config.js";
+
 const logger = (log: Logger): MiddlewareHandler => {
   return async (c, next) => {
     const start = Date.now();
