@@ -63,50 +63,30 @@ const didDocumentFor = (did: string, pdsUrl: string) => ({
   ],
 });
 
-type BlobReply =
-  | {
-      kind: "ok";
-      bytes: Uint8Array;
-      contentType: string;
-      contentLength?: number;
-    }
-  | { kind: "error"; status: number };
-
 export type MockUpstream = {
   did: string;
   pdsUrl: string;
-  serveBlob: (
-    cid: string,
-    bytes: Uint8Array,
-    opts?: { contentType?: string; contentLength?: number },
-  ) => void;
-  failBlob: (cid: string, status: number) => void;
-  getBlobCallCount: (cid: string) => number;
+  serveBlob: (cid: string, bytes: Uint8Array, contentType?: string) => void;
   close: () => Promise<void>;
 };
 
 export const setupMockUpstream = async (opts: {
   did: string;
   pdsUrl?: string;
-  // Whether the PLC directory resolves `did`.
-  didResolves?: boolean;
 }): Promise<MockUpstream> => {
   await warmUpSsrfProtection();
 
   const pdsUrl = opts.pdsUrl ?? PDS_URL;
-  const didResolves = opts.didResolves ?? true;
   const didPath = `/${encodeURIComponent(opts.did)}`;
-  const blobReplies = new Map<string, BlobReply>();
-  const blobCallCounts = new Map<string, number>();
+  const blobReplies = new Map<
+    string,
+    { bytes: Uint8Array; contentType: string }
+  >();
 
   const server = http.createServer((req, res) => {
     const url = new URL(req.url ?? "/", "http://localhost");
 
     if (url.pathname === didPath) {
-      if (!didResolves) {
-        res.writeHead(404).end();
-        return;
-      }
       res
         .writeHead(200, { "content-type": "application/did+ld+json" })
         .end(JSON.stringify(didDocumentFor(opts.did, pdsUrl)));
@@ -115,23 +95,14 @@ export const setupMockUpstream = async (opts: {
 
     if (url.pathname === "/xrpc/com.atproto.sync.getBlob") {
       const cid = url.searchParams.get("cid") ?? "";
-      blobCallCounts.set(cid, (blobCallCounts.get(cid) ?? 0) + 1);
       const reply = blobReplies.get(cid);
       if (!reply) {
         res.writeHead(404).end("no mock registered for this cid");
         return;
       }
-      if (reply.kind === "error") {
-        res.writeHead(reply.status).end("upstream error");
-        return;
-      }
-      const headers: http.OutgoingHttpHeaders = {
-        "content-type": reply.contentType,
-      };
-      if (reply.contentLength !== undefined) {
-        headers["content-length"] = reply.contentLength;
-      }
-      res.writeHead(200, headers).end(Buffer.from(reply.bytes));
+      res
+        .writeHead(200, { "content-type": reply.contentType })
+        .end(Buffer.from(reply.bytes));
       return;
     }
 
@@ -161,27 +132,14 @@ export const setupMockUpstream = async (opts: {
   });
   setGlobalDispatcher(agent);
 
-  const serveBlob: MockUpstream["serveBlob"] = (cid, bytes, blobOpts) => {
-    blobReplies.set(cid, {
-      kind: "ok",
-      bytes,
-      contentType: blobOpts?.contentType ?? "image/png",
-      ...(blobOpts?.contentLength !== undefined && {
-        contentLength: blobOpts.contentLength,
-      }),
-    });
-  };
-
-  const failBlob: MockUpstream["failBlob"] = (cid, status) => {
-    blobReplies.set(cid, { kind: "error", status });
+  const serveBlob: MockUpstream["serveBlob"] = (cid, bytes, contentType) => {
+    blobReplies.set(cid, { bytes, contentType: contentType ?? "image/png" });
   };
 
   return {
     did: opts.did,
     pdsUrl,
     serveBlob,
-    failBlob,
-    getBlobCallCount: (cid) => blobCallCounts.get(cid) ?? 0,
     close: async () => {
       setGlobalDispatcher(previousDispatcher);
       await new Promise<void>((resolve) => {

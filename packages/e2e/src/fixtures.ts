@@ -9,18 +9,14 @@ export const cidFor = async (bytes: Uint8Array): Promise<string> => {
 };
 
 export const createTestImage = (
-  opts: {
-    width?: number;
-    height?: number;
-    background?: { r: number; g: number; b: number };
-  } = {},
+  opts: { width?: number; height?: number } = {},
 ): Promise<Buffer> =>
   sharp({
     create: {
       width: opts.width ?? 400,
       height: opts.height ?? 200,
       channels: 3,
-      background: opts.background ?? { r: 0, g: 128, b: 255 },
+      background: { r: 0, g: 128, b: 255 },
     },
   })
     .png()
