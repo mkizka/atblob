@@ -6,9 +6,11 @@ type CacheEntry = { blob: FetchedBlob; expiresAt: number };
 
 const toKey = (did: Did, cid: string): string => `${did}:${cid}`;
 
+export type MemoryBlobCache = BlobCache & AsyncDisposable;
+
 export const createMemoryBlobCache = (deps: {
   blobCacheTTL: number;
-}): BlobCache => {
+}): MemoryBlobCache => {
   const store = new Map<string, CacheEntry>();
 
   const get = (did: Did, cid: string): Promise<FetchedBlob | undefined> => {
@@ -32,5 +34,22 @@ export const createMemoryBlobCache = (deps: {
     return Promise.resolve();
   };
 
-  return { get, set };
+  const timer = setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of store) {
+      if (now > entry.expiresAt) {
+        store.delete(key);
+      }
+    }
+  }, deps.blobCacheTTL);
+  timer.unref();
+
+  return {
+    get,
+    set,
+    [Symbol.asyncDispose]: () => {
+      clearInterval(timer);
+      return Promise.resolve();
+    },
+  };
 };
