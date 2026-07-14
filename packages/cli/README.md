@@ -70,7 +70,7 @@ Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` s
 | `--max-blob-size`           | `MAX_BLOB_SIZE`           | Maximum allowed blob size (bytes)                                          | `10485760` (10 MiB)     |
 | `--did-resolve-timeout`     | `DID_RESOLVE_TIMEOUT`     | DID resolution timeout (milliseconds)                                      | `5000`                  |
 | `--blob-fetch-timeout`      | `BLOB_FETCH_TIMEOUT`      | Blob fetch timeout (milliseconds)                                          | `15000`                 |
-| `--max-concurrent-per-host` | `MAX_CONCURRENT_PER_HOST` | Max concurrent blob fetches per PDS host                                   | `4`                     |
+| `--max-concurrent-per-host` | `MAX_CONCURRENT_PER_HOST` | Max concurrent blob fetches per PDS host (per instance, not shared)        | `4`                     |
 | `--plc-directory-url`       | `PLC_DIRECTORY_URL`       | PLC Directory URL                                                          | `https://plc.directory` |
 | `--log-level`               | `LOG_LEVEL`               | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent` | `info`                  |
 | `--log-format`              | `LOG_FORMAT`              | Log output format. `json` or `pretty`                                      | `pretty`                |
