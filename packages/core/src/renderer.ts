@@ -24,12 +24,13 @@ export const createRenderer = async (
   const base = createRegistry()
     .value("maxBlobSize", resolved.maxBlobSize)
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
+    .value("maxConcurrentPerHost", resolved.maxConcurrentPerHost)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
     .value("logger", resolved.logger)
     .service(
       "blobFetcher",
-      ["maxBlobSize", "blobFetchTimeout"],
+      ["maxBlobSize", "blobFetchTimeout", "maxConcurrentPerHost"],
       createBlobFetcher,
     );
 

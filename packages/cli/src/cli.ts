@@ -51,6 +51,7 @@ Options:
   --max-blob-size <number>   Maximum allowed blob size (bytes)
   --did-resolve-timeout <number>  DID resolution timeout (milliseconds)
   --blob-fetch-timeout <number>   Blob fetch timeout (milliseconds)
+  --max-concurrent-per-host <number>  Max concurrent blob fetches per PDS host
   --plc-directory-url <url>  PLC Directory URL
   -p, --port <number>        Port number the server listens on
   --log-level <choice>       Minimum log level to output (${LOG_LEVEL_CHOICES.join(", ")})
@@ -76,6 +77,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       "--max-blob-size": Number,
       "--did-resolve-timeout": Number,
       "--blob-fetch-timeout": Number,
+      "--max-concurrent-per-host": Number,
       "--plc-directory-url": String,
       "--port": Number,
       "--log-level": oneOf(LOG_LEVEL_CHOICES),
@@ -106,6 +108,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       maxBlobSize: args["--max-blob-size"],
       didResolveTimeout: args["--did-resolve-timeout"],
       blobFetchTimeout: args["--blob-fetch-timeout"],
+      maxConcurrentPerHost: args["--max-concurrent-per-host"],
       plcDirectoryUrl: args["--plc-directory-url"],
       port: args["--port"],
       logLevel: args["--log-level"],

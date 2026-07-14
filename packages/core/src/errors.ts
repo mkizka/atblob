@@ -1,5 +1,5 @@
 export abstract class AtblobHttpError extends Error {
-  abstract readonly status: 400 | 404 | 502;
+  abstract readonly status: 400 | 404 | 429 | 502;
 }
 
 export class BadRequestError extends AtblobHttpError {
@@ -12,13 +12,18 @@ export class NotFoundError extends AtblobHttpError {
   override readonly name = "NotFoundError";
 }
 
+export class TooManyRequestsError extends AtblobHttpError {
+  override readonly status = 429;
+  override readonly name = "TooManyRequestsError";
+}
+
 export class BadGatewayError extends AtblobHttpError {
   override readonly status = 502;
   override readonly name = "BadGatewayError";
 }
 
 type ErrorResponse = {
-  status: 400 | 404 | 502;
+  status: 400 | 404 | 429 | 502;
   headers: Record<string, string>;
 };
 

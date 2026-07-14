@@ -5,6 +5,7 @@ export {
   BadRequestError,
   NotFoundError,
   toErrorResponse,
+  TooManyRequestsError,
 } from "./errors.js";
 export type { HealthCheckResult, HealthCheckStatus } from "./health.js";
 export {

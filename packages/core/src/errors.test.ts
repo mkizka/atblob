@@ -5,6 +5,7 @@ import {
   BadRequestError,
   NotFoundError,
   toErrorResponse,
+  TooManyRequestsError,
 } from "./errors.js";
 
 describe("toErrorResponse", () => {
@@ -18,6 +19,12 @@ describe("toErrorResponse", () => {
     const response = toErrorResponse(new NotFoundError("not found"));
 
     expect(response.status).toBe(404);
+  });
+
+  it("TooManyRequestsError results in status 429", () => {
+    const response = toErrorResponse(new TooManyRequestsError("too many"));
+
+    expect(response.status).toBe(429);
   });
 
   it("BadGatewayError results in status 502", () => {

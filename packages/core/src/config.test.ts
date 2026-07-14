@@ -16,6 +16,7 @@ describe("resolveConfig", () => {
       maxBlobSize: 10 * 1024 * 1024,
       didResolveTimeout: 5000,
       blobFetchTimeout: 15000,
+      maxConcurrentPerHost: 4,
       plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();
@@ -28,6 +29,7 @@ describe("resolveConfig", () => {
       maxBlobSize: 1024,
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
+      maxConcurrentPerHost: 2,
       plcDirectoryUrl: "https://plc.example.com",
       logger,
     });
@@ -37,6 +39,7 @@ describe("resolveConfig", () => {
       maxBlobSize: 1024,
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
+      maxConcurrentPerHost: 2,
       plcDirectoryUrl: "https://plc.example.com",
       logger,
     });
@@ -56,6 +59,7 @@ describe("resolveConfig", () => {
       maxBlobSize: 10 * 1024 * 1024,
       didResolveTimeout: 5000,
       blobFetchTimeout: 15000,
+      maxConcurrentPerHost: 4,
       plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();

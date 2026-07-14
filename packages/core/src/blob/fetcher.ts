@@ -1,6 +1,12 @@
 import type { Did } from "../did/did.js";
-import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
+import {
+  BadGatewayError,
+  BadRequestError,
+  NotFoundError,
+  TooManyRequestsError,
+} from "../errors.js";
 import { verifyCid } from "./cid.js";
+import { createHostLimiter } from "./host-limiter.js";
 
 export type FetchedBlob = {
   bytes: Uint8Array;
@@ -47,7 +53,10 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
+  maxConcurrentPerHost: number;
 }): BlobFetcher => {
+  const hostLimiter = createHostLimiter(deps.maxConcurrentPerHost);
+
   const fetchBlob = async (
     pdsEndpoint: string,
     did: Did,
@@ -57,52 +66,62 @@ export const createBlobFetcher = (deps: {
     url.searchParams.set("did", did);
     url.searchParams.set("cid", cid);
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      controller.abort();
-    }, deps.blobFetchTimeout);
+    if (!hostLimiter.acquire(url.hostname)) {
+      throw new TooManyRequestsError(
+        `too many concurrent requests to pds: ${url.hostname}`,
+      );
+    }
 
-    let response: Response;
     try {
-      response = await fetch(url, { signal: controller.signal });
-    } catch (cause) {
-      throw new BadGatewayError(
-        `failed to fetch blob from pds: ${pdsEndpoint}`,
-        {
-          cause,
-        },
-      );
-    } finally {
-      clearTimeout(timer);
-    }
+      const controller = new AbortController();
+      const timer = setTimeout(() => {
+        controller.abort();
+      }, deps.blobFetchTimeout);
 
-    if (!response.ok) {
-      if (response.status >= 400 && response.status < 500) {
-        throw new NotFoundError(`blob not found: did=${did} cid=${cid}`);
+      let response: Response;
+      try {
+        response = await fetch(url, { signal: controller.signal });
+      } catch (cause) {
+        throw new BadGatewayError(
+          `failed to fetch blob from pds: ${pdsEndpoint}`,
+          {
+            cause,
+          },
+        );
+      } finally {
+        clearTimeout(timer);
       }
-      throw new BadGatewayError(
-        `upstream error fetching blob: status=${response.status}`,
-      );
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 500) {
+          throw new NotFoundError(`blob not found: did=${did} cid=${cid}`);
+        }
+        throw new BadGatewayError(
+          `upstream error fetching blob: status=${response.status}`,
+        );
+      }
+
+      const contentType = response.headers.get("content-type") ?? "";
+      if (!contentType.startsWith("image/")) {
+        throw new BadRequestError(
+          `blob is not an image: content-type=${contentType}`,
+        );
+      }
+
+      const contentLength = response.headers.get("content-length");
+      if (contentLength !== null && Number(contentLength) > deps.maxBlobSize) {
+        throw new BadRequestError(
+          `blob exceeds max size of ${deps.maxBlobSize} bytes`,
+        );
+      }
+
+      const bytes = await readBodyWithLimit(response, deps.maxBlobSize);
+      await verifyCid(cid, bytes);
+
+      return { bytes, contentType };
+    } finally {
+      hostLimiter.release(url.hostname);
     }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.startsWith("image/")) {
-      throw new BadRequestError(
-        `blob is not an image: content-type=${contentType}`,
-      );
-    }
-
-    const contentLength = response.headers.get("content-length");
-    if (contentLength !== null && Number(contentLength) > deps.maxBlobSize) {
-      throw new BadRequestError(
-        `blob exceeds max size of ${deps.maxBlobSize} bytes`,
-      );
-    }
-
-    const bytes = await readBodyWithLimit(response, deps.maxBlobSize);
-    await verifyCid(cid, bytes);
-
-    return { bytes, contentType };
   };
 
   return { fetchBlob };

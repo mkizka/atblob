@@ -62,17 +62,18 @@ Returns `{ "version": "...", "status": "ok" | "error" }` with a `200` or `503` s
 
 ## Options
 
-| Option                  | Environment variable  | Description                                                                | Default                 |
-| ----------------------- | --------------------- | -------------------------------------------------------------------------- | ----------------------- |
-| `-p, --port`            | `PORT`                | Port number the server listens on                                          | `3000`                  |
-| `--did-cache`           | `DID_CACHE`           | Where to cache DID resolution results. `memory` or `redis`                 | `memory`                |
-| `--redis-url`           | `REDIS_URL`           | Redis URL used for the DID cache (required when `--did-cache` is `redis`)  | -                       |
-| `--max-blob-size`       | `MAX_BLOB_SIZE`       | Maximum allowed blob size (bytes)                                          | `10485760` (10 MiB)     |
-| `--did-resolve-timeout` | `DID_RESOLVE_TIMEOUT` | DID resolution timeout (milliseconds)                                      | `5000`                  |
-| `--blob-fetch-timeout`  | `BLOB_FETCH_TIMEOUT`  | Blob fetch timeout (milliseconds)                                          | `15000`                 |
-| `--plc-directory-url`   | `PLC_DIRECTORY_URL`   | PLC Directory URL                                                          | `https://plc.directory` |
-| `--log-level`           | `LOG_LEVEL`           | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent` | `info`                  |
-| `--log-format`          | `LOG_FORMAT`          | Log output format. `json` or `pretty`                                      | `pretty`                |
+| Option                      | Environment variable      | Description                                                                | Default                 |
+| --------------------------- | ------------------------- | -------------------------------------------------------------------------- | ----------------------- |
+| `-p, --port`                | `PORT`                    | Port number the server listens on                                          | `3000`                  |
+| `--did-cache`               | `DID_CACHE`               | Where to cache DID resolution results. `memory` or `redis`                 | `memory`                |
+| `--redis-url`               | `REDIS_URL`               | Redis URL used for the DID cache (required when `--did-cache` is `redis`)  | -                       |
+| `--max-blob-size`           | `MAX_BLOB_SIZE`           | Maximum allowed blob size (bytes)                                          | `10485760` (10 MiB)     |
+| `--did-resolve-timeout`     | `DID_RESOLVE_TIMEOUT`     | DID resolution timeout (milliseconds)                                      | `5000`                  |
+| `--blob-fetch-timeout`      | `BLOB_FETCH_TIMEOUT`      | Blob fetch timeout (milliseconds)                                          | `15000`                 |
+| `--max-concurrent-per-host` | `MAX_CONCURRENT_PER_HOST` | Max concurrent blob fetches per PDS host                                   | `4`                     |
+| `--plc-directory-url`       | `PLC_DIRECTORY_URL`       | PLC Directory URL                                                          | `https://plc.directory` |
+| `--log-level`               | `LOG_LEVEL`               | Minimum log level to output. `debug`, `info`, `warn`, `error`, or `silent` | `info`                  |
+| `--log-format`              | `LOG_FORMAT`              | Log output format. `json` or `pretty`                                      | `pretty`                |
 
 Command-line arguments take precedence over the corresponding environment variables.
 

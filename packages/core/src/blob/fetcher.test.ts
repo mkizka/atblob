@@ -7,7 +7,12 @@ import { sha256 } from "multiformats/hashes/sha2";
 import { afterEach, describe, expect, it } from "vitest";
 
 import type { Did } from "../did/did.js";
-import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
+import {
+  BadGatewayError,
+  BadRequestError,
+  NotFoundError,
+  TooManyRequestsError,
+} from "../errors.js";
 import { createBlobFetcher } from "./fetcher.js";
 
 const DID: Did = "did:plc:z72i7hdynmk6r22z27h6tvur";
@@ -52,6 +57,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
     const result = await fetcher.fetchBlob(server.url, DID, cid);
 
@@ -71,6 +77,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, wrongCid)).rejects.toThrow(
@@ -88,6 +95,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -105,6 +113,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -122,6 +131,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -142,6 +152,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -159,6 +170,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -170,10 +182,41 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 4,
     });
 
     await expect(
       fetcher.fetchBlob("http://127.0.0.1:1", DID, "cid"),
     ).rejects.toThrow(BadGatewayError);
+  });
+
+  it("results in TooManyRequestsError when concurrent requests to the same host exceed maxConcurrentPerHost", async () => {
+    const bytes = Buffer.from("hello world");
+    const wrongCid = await cidFor(Buffer.from("different bytes"));
+    let release: (() => void) | undefined;
+    const inFlight = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const server = await startServer((_req, res) => {
+      void inFlight.then(() => {
+        res.writeHead(200, { "content-type": "image/png" });
+        res.end(bytes);
+      });
+    });
+    close = server.close;
+
+    const fetcher = createBlobFetcher({
+      maxBlobSize: 1024,
+      blobFetchTimeout: 1000,
+      maxConcurrentPerHost: 1,
+    });
+
+    const firstRequest = fetcher.fetchBlob(server.url, DID, wrongCid);
+    await expect(fetcher.fetchBlob(server.url, DID, wrongCid)).rejects.toThrow(
+      TooManyRequestsError,
+    );
+
+    release?.();
+    await expect(firstRequest).rejects.toThrow(NotFoundError);
   });
 });
