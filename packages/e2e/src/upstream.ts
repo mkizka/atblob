@@ -1,39 +1,13 @@
-import http from "node:http";
-
-import { createRenderer } from "@atblob/core";
-import { Agent, getGlobalDispatcher, Pool, setGlobalDispatcher } from "undici";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 
 // atblob installs SSRF protection on the global fetch dispatcher, which
 // refuses to connect to loopback/private hosts and only allows https - so a
 // local http server can never stand in for a real PDS or PLC directory by
-// address alone.
-//
-// Node's native global fetch() also doesn't reliably honor an undici
-// MockAgent registered from the npm "undici" package: Node bundles its own
-// internal copy of undici for fetch(), and when the installed package
-// version differs from that internal one, MockAgent's request matching
-// silently falls through to the real network instead of throwing. atblob's
-// own SSRF Agent (blob/ssrf.ts) doesn't hit this problem because it only
-// relies on the plain `Agent({ factory })` hook, which native fetch() does
-// honor across that version boundary. So we reuse that same mechanism here:
-// a custom Agent redirects the well-known upstream hostnames to a real local
-// http server that plays PDS and PLC directory.
-//
-// installSsrfProtection() only ever installs itself once per process (it's
-// a module-level no-op after the first call), and createRenderer() is what
-// triggers it. Left alone, the first test in a file to start the cli would
-// have its dispatcher silently overwritten by the real SSRF agent right as
-// runCli() calls createRenderer(), clobbering whatever this module set up.
-// So we install it ourselves, once, up front - after that, createRenderer()
-// calls made by runCli() in every test are no-ops and our dispatcher sticks.
-let ssrfProtectionWarmedUp: Promise<void> | undefined;
-const warmUpSsrfProtection = async (): Promise<void> => {
-  ssrfProtectionWarmedUp ??= (async () => {
-    const renderer = await createRenderer({ didCache: "memory" });
-    await renderer[Symbol.asyncDispose]();
-  })();
-  await ssrfProtectionWarmedUp;
-};
+// address alone. msw's fetch interceptor patches globalThis.fetch itself, so
+// it intercepts requests before that dispatcher is ever consulted - no SSRF
+// workaround needed here, regardless of whether atblob's SSRF protection
+// installs before or after this mock server starts.
 
 export const PLC_DIRECTORY_URL = "https://plc.directory";
 export const PDS_URL = "https://pds.test";
@@ -70,67 +44,36 @@ export type MockUpstream = {
   close: () => Promise<void>;
 };
 
-export const setupMockUpstream = async (opts: {
+export const setupMockUpstream = (opts: {
   did: string;
   pdsUrl?: string;
-}): Promise<MockUpstream> => {
-  await warmUpSsrfProtection();
-
+}): MockUpstream => {
   const pdsUrl = opts.pdsUrl ?? PDS_URL;
-  const didPath = `/${encodeURIComponent(opts.did)}`;
   const blobReplies = new Map<
     string,
     { bytes: Uint8Array; contentType: string }
   >();
 
-  const server = http.createServer((req, res) => {
-    const url = new URL(req.url ?? "/", "http://localhost");
-
-    if (url.pathname === didPath) {
-      res
-        .writeHead(200, { "content-type": "application/did+ld+json" })
-        .end(JSON.stringify(didDocumentFor(opts.did, pdsUrl)));
-      return;
-    }
-
-    if (url.pathname === "/xrpc/com.atproto.sync.getBlob") {
-      const cid = url.searchParams.get("cid") ?? "";
+  const server = setupServer(
+    http.get(`${PLC_DIRECTORY_URL}/${encodeURIComponent(opts.did)}`, () =>
+      HttpResponse.json(didDocumentFor(opts.did, pdsUrl), {
+        headers: { "content-type": "application/did+ld+json" },
+      }),
+    ),
+    http.get(`${pdsUrl}/xrpc/com.atproto.sync.getBlob`, ({ request }) => {
+      const cid = new URL(request.url).searchParams.get("cid") ?? "";
       const reply = blobReplies.get(cid);
       if (!reply) {
-        res.writeHead(404).end("no mock registered for this cid");
-        return;
+        return new HttpResponse("no mock registered for this cid", {
+          status: 404,
+        });
       }
-      res
-        .writeHead(200, { "content-type": reply.contentType })
-        .end(Buffer.from(reply.bytes));
-      return;
-    }
-
-    res.writeHead(404).end();
-  });
-
-  await new Promise<void>((resolve) => {
-    server.listen(0, "127.0.0.1", resolve);
-  });
-  const address = server.address();
-  if (address === null || typeof address === "string") {
-    throw new Error("failed to determine the mock upstream server's port");
-  }
-  const localOrigin = `http://127.0.0.1:${address.port}`;
-
-  const plcHostname = new URL(PLC_DIRECTORY_URL).hostname;
-  const pdsHostname = new URL(pdsUrl).hostname;
-  const previousDispatcher = getGlobalDispatcher();
-  const agent = new Agent({
-    factory: (origin, poolOpts) => {
-      const { hostname } = origin instanceof URL ? origin : new URL(origin);
-      if (hostname === plcHostname || hostname === pdsHostname) {
-        return new Pool(localOrigin, poolOpts);
-      }
-      throw new Error(`unmocked upstream host in e2e test: ${hostname}`);
-    },
-  });
-  setGlobalDispatcher(agent);
+      return new HttpResponse(reply.bytes, {
+        headers: { "content-type": reply.contentType },
+      });
+    }),
+  );
+  server.listen({ onUnhandledRequest: "error" });
 
   const serveBlob: MockUpstream["serveBlob"] = (cid, bytes, contentType) => {
     blobReplies.set(cid, { bytes, contentType: contentType ?? "image/png" });
@@ -140,11 +83,9 @@ export const setupMockUpstream = async (opts: {
     did: opts.did,
     pdsUrl,
     serveBlob,
-    close: async () => {
-      setGlobalDispatcher(previousDispatcher);
-      await new Promise<void>((resolve) => {
-        server.close(() => resolve());
-      });
+    close: () => {
+      server.close();
+      return Promise.resolve();
     },
   };
 };

@@ -16,12 +16,12 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@atblob/cli": "workspace:*",
-    "@atblob/core": "workspace:*"
+    "@atblob/cli": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
     "get-port": "7.2.0",
+    "msw": "2.15.0",
     "multiformats": "14.0.4",
     "prettier": "3.9.4",
     "prettier-plugin-pkg": "0.22.1",

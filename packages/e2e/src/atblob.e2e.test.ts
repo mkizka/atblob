@@ -28,7 +28,7 @@ describe("atblob e2e", () => {
   it("resolves the did, fetches the blob from the pds, and returns a resized image", async () => {
     const bytes = await createTestImage({ width: 400, height: 200 });
     const cid = await cidFor(bytes);
-    const upstream = await setupMockUpstream({ did: DID });
+    const upstream = setupMockUpstream({ did: DID });
     upstream.serveBlob(cid, bytes);
     const cli = await startCli();
 
