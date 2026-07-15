@@ -19,10 +19,8 @@ const localDispatcher = new Agent();
 export const request = async (
   port: number,
   path: string,
-  method: "GET" | "HEAD" = "GET",
 ): Promise<LocalResponse> => {
   const res = await undiciRequest(`http://127.0.0.1:${port}${path}`, {
-    method,
     dispatcher: localDispatcher,
   });
   return {

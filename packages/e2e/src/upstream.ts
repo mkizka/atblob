@@ -38,49 +38,38 @@ const didDocumentFor = (did: string, pdsUrl: string) => ({
 });
 
 export type MockUpstream = AsyncDisposable & {
-  did: string;
-  pdsUrl: string;
-  serveBlob: (cid: string, bytes: Uint8Array, contentType?: string) => void;
+  serveBlob: (cid: string, bytes: Uint8Array) => void;
 };
 
-export const setupMockUpstream = (opts: {
-  did: string;
-  pdsUrl?: string;
-}): MockUpstream => {
-  const pdsUrl = opts.pdsUrl ?? PDS_URL;
-  const blobReplies = new Map<
-    string,
-    { bytes: Uint8Array; contentType: string }
-  >();
+export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
+  const blobReplies = new Map<string, Uint8Array>();
 
   const server = setupServer(
     http.get(`${PLC_DIRECTORY_URL}/${encodeURIComponent(opts.did)}`, () =>
-      HttpResponse.json(didDocumentFor(opts.did, pdsUrl), {
+      HttpResponse.json(didDocumentFor(opts.did, PDS_URL), {
         headers: { "content-type": "application/did+ld+json" },
       }),
     ),
-    http.get(`${pdsUrl}/xrpc/com.atproto.sync.getBlob`, ({ request }) => {
+    http.get(`${PDS_URL}/xrpc/com.atproto.sync.getBlob`, ({ request }) => {
       const cid = new URL(request.url).searchParams.get("cid") ?? "";
-      const reply = blobReplies.get(cid);
-      if (!reply) {
+      const bytes = blobReplies.get(cid);
+      if (!bytes) {
         return new HttpResponse("no mock registered for this cid", {
           status: 404,
         });
       }
-      return new HttpResponse(reply.bytes, {
-        headers: { "content-type": reply.contentType },
+      return new HttpResponse(bytes, {
+        headers: { "content-type": "image/png" },
       });
     }),
   );
   server.listen({ onUnhandledRequest: "error" });
 
-  const serveBlob: MockUpstream["serveBlob"] = (cid, bytes, contentType) => {
-    blobReplies.set(cid, { bytes, contentType: contentType ?? "image/png" });
+  const serveBlob: MockUpstream["serveBlob"] = (cid, bytes) => {
+    blobReplies.set(cid, bytes);
   };
 
   return {
-    did: opts.did,
-    pdsUrl,
     serveBlob,
     [Symbol.asyncDispose]: () => {
       server.close();
