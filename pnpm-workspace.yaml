@@ -1,9 +1,6 @@
 packages:
   - "packages/*"
 
-onlyBuiltDependencies:
-  - msw
-
 injectWorkspacePackages: true
 
 allowBuilds:
