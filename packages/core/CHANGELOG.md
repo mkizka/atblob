@@ -1,5 +1,11 @@
 # @atblob/core
 
+## 0.2.0
+
+### Minor Changes
+
+- 04b6677: Cache fetched blobs in memory for a configurable TTL to avoid re-fetching the same blob from the PDS.
+
 ## 0.1.1
 
 ### Patch Changes
