@@ -22,4 +22,4 @@ ENV LOG_FORMAT=json
 COPY --from=builder /app/deploy .
 
 EXPOSE 3000
-CMD ["dist/index.js"]
+CMD ["dist/bin.js"]
