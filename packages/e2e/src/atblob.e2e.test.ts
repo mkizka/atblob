@@ -1,7 +1,6 @@
 import sharp from "sharp";
 import { aroundAll, describe, expect, it, vi } from "vitest";
 
-import { cidFor, createTestImage } from "./fixtures.js";
 import { request, startCli } from "./local-server.js";
 import { type MockUpstream, setupMockUpstream } from "./upstream.js";
 
@@ -25,7 +24,7 @@ describe("atblob e2e", () => {
 
     try {
       await using cli = await startCli();
-      await using mockUpstream = setupMockUpstream({ did: DID });
+      using mockUpstream = setupMockUpstream({ did: DID });
       cliPort = cli.port;
       upstream = mockUpstream;
 
@@ -36,9 +35,7 @@ describe("atblob e2e", () => {
   });
 
   it("resolves the did, fetches the blob from the pds, and returns a resized image", async () => {
-    const bytes = await createTestImage({ width: 400, height: 200 });
-    const cid = await cidFor(bytes);
-    upstream.serveBlob(cid, bytes);
+    const cid = await upstream.serveBlob({ width: 400, height: 200 });
 
     const res = await request(
       cliPort,

@@ -46,10 +46,7 @@ export const startCli = async (
   env: Env = {},
 ): Promise<LocalCli> => {
   const port = await getPort();
-  const running = runCli(
-    ["--port", String(port), "--did-cache", "memory", ...args],
-    env,
-  );
+  const running = runCli(["--port", String(port), ...args], env);
   await waitForServer(port);
   return {
     port,

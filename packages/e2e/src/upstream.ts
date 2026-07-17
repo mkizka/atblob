@@ -1,5 +1,9 @@
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
+import { CID } from "multiformats/cid";
+import * as raw from "multiformats/codecs/raw";
+import { sha256 } from "multiformats/hashes/sha2";
+import sharp from "sharp";
 
 // atblob installs SSRF protection on the global fetch dispatcher, which
 // refuses to connect to loopback/private hosts and only allows https - so a
@@ -37,8 +41,27 @@ const didDocumentFor = (did: string, pdsUrl: string) => ({
   ],
 });
 
-export type MockUpstream = AsyncDisposable & {
-  serveBlob: (cid: string, bytes: Uint8Array) => void;
+const createTestImage = (
+  opts: { width?: number; height?: number } = {},
+): Promise<Buffer> =>
+  sharp({
+    create: {
+      width: opts.width ?? 400,
+      height: opts.height ?? 200,
+      channels: 3,
+      background: { r: 0, g: 128, b: 255 },
+    },
+  })
+    .png()
+    .toBuffer();
+
+const cidFor = async (bytes: Uint8Array): Promise<string> => {
+  const digest = await sha256.digest(bytes);
+  return CID.createV1(raw.code, digest).toString();
+};
+
+export type MockUpstream = Disposable & {
+  serveBlob: (opts?: { width?: number; height?: number }) => Promise<string>;
 };
 
 export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
@@ -65,15 +88,17 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
   );
   server.listen({ onUnhandledRequest: "error" });
 
-  const serveBlob: MockUpstream["serveBlob"] = (cid, bytes) => {
+  const serveBlob: MockUpstream["serveBlob"] = async (imageOpts) => {
+    const bytes = await createTestImage(imageOpts);
+    const cid = await cidFor(bytes);
     blobReplies.set(cid, bytes);
+    return cid;
   };
 
   return {
     serveBlob,
-    [Symbol.asyncDispose]: () => {
+    [Symbol.dispose]: () => {
       server.close();
-      return Promise.resolve();
     },
   };
 };
