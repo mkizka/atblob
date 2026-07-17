@@ -126,8 +126,8 @@ importers:
         specifier: ^0.5.3
         version: 0.5.3
       '@gyaku/di':
-        specifier: ^3.5.0
-        version: 3.5.0
+        specifier: ^4.0.0
+        version: 4.0.0
       ioredis:
         specifier: ^5.11.1
         version: 5.11.1
@@ -400,8 +400,8 @@ packages:
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@gyaku/di@3.5.0':
-    resolution: {integrity: sha512-d8EWrT42RinT9p7eZD0/FC3EFnl0g26QXTp+U1HVNfNdKg6Lbc88cLTKhFdmYHb2E01iolfGcCM5Gtus8LdFRA==}
+  '@gyaku/di@4.0.0':
+    resolution: {integrity: sha512-7rlVctTHqvQzf9Ht8H0myHhGs0bt5/VfShblyLuuWvFekPI8IxVlfuuDIMouX6iLD8VB+ehu2aC0onPnAYINbg==}
     engines: {node: '>=24'}
 
   '@hono/node-server@2.0.8':
@@ -2722,7 +2722,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@gyaku/di@3.5.0': {}
+  '@gyaku/di@4.0.0': {}
 
   '@hono/node-server@2.0.8(hono@4.12.28)':
     dependencies:
