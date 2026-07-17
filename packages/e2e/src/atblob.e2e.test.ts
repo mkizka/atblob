@@ -94,6 +94,9 @@ describe("atblob e2e", () => {
   });
 
   it("returns 404 when the fetched blob's hash doesn't match the cid", async () => {
+    // Unlike the "no blob for the cid" case above, the pds mock here
+    // responds with 200 and real bytes - only atblob's own cid
+    // verification can catch that they don't hash to the requested cid.
     const cid = await upstream.serveBlobWithMismatchedCid();
 
     const res = await request(
