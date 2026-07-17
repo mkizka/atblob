@@ -1,5 +1,2 @@
-#!/usr/bin/env node
-
-import { runCli } from "./cli.js";
-
-await runCli(process.argv.slice(2), process.env);
+export { runCli } from "./cli.js";
+export type { Env } from "./config.js";
