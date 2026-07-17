@@ -16,14 +16,6 @@ describe("atblob e2e", () => {
   let cliPort: number;
   let upstream: MockUpstream;
 
-  const fetchImg = (
-    cid: string,
-    opts: { preset?: string; did?: string } = {},
-  ) => {
-    const { preset = "avatar_thumbnail", did = DID } = opts;
-    return request(cliPort, `/img/${preset}/plain/${did}/${cid}`);
-  };
-
   aroundAll(async (runSuite) => {
     vi.spyOn(console, "info").mockImplementation(() => undefined);
     vi.spyOn(console, "debug").mockImplementation(() => undefined);
@@ -45,7 +37,10 @@ describe("atblob e2e", () => {
   it("resolves the did, fetches the blob from the pds, and returns a resized image", async () => {
     const cid = await upstream.serveBlob({ width: 400, height: 200 });
 
-    const res = await fetchImg(cid);
+    const res = await request(
+      cliPort,
+      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
+    );
 
     expect(res.status).toBe(200);
     expect(res.headers["content-type"]).toBe("image/webp");
@@ -58,13 +53,19 @@ describe("atblob e2e", () => {
 
   it("returns 400 for an unknown preset", async () => {
     // preset is validated before the cid, so it need not be registered.
-    const res = await fetchImg("unused", { preset: "not_a_real_preset" });
+    const res = await request(
+      cliPort,
+      `/img/not_a_real_preset/plain/${DID}/unused`,
+    );
 
     expect(res.status).toBe(400);
   });
 
   it("returns 400 for a malformed cid", async () => {
-    const res = await fetchImg("not-a-valid-cid");
+    const res = await request(
+      cliPort,
+      `/img/avatar_thumbnail/plain/${DID}/not-a-valid-cid`,
+    );
 
     expect(res.status).toBe(400);
   });
@@ -73,7 +74,10 @@ describe("atblob e2e", () => {
     const unknownDid = "did:plc:doesnotexist000000000000";
     const cid = await upstream.unregisteredCid();
 
-    const res = await fetchImg(cid, { did: unknownDid });
+    const res = await request(
+      cliPort,
+      `/img/avatar_thumbnail/plain/${unknownDid}/${cid}`,
+    );
 
     expect(res.status).toBe(404);
   });
@@ -81,7 +85,10 @@ describe("atblob e2e", () => {
   it("returns 404 when the pds has no blob for the cid", async () => {
     const cid = await upstream.unregisteredCid();
 
-    const res = await fetchImg(cid);
+    const res = await request(
+      cliPort,
+      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
+    );
 
     expect(res.status).toBe(404);
   });
@@ -89,7 +96,10 @@ describe("atblob e2e", () => {
   it("returns 404 when the fetched blob's hash doesn't match the cid", async () => {
     const cid = await upstream.serveBlobWithMismatchedCid();
 
-    const res = await fetchImg(cid);
+    const res = await request(
+      cliPort,
+      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
+    );
 
     expect(res.status).toBe(404);
   });
