@@ -62,6 +62,12 @@ const cidFor = async (bytes: Uint8Array): Promise<string> => {
 
 export type MockUpstream = Disposable & {
   serveBlob: (opts?: { width?: number; height?: number }) => Promise<string>;
+  // A syntactically valid cid never registered with the pds mock, so
+  // getBlob replies 404 - simulates a blob missing on the real pds.
+  unregisteredCid: () => Promise<string>;
+  // Registers a real image under a cid it doesn't actually hash to - the pds
+  // mock happily serves it, so only our own cid verification can catch it.
+  serveBlobWithMismatchedCid: () => Promise<string>;
 };
 
 export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
@@ -72,6 +78,10 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
       HttpResponse.json(didDocumentFor(opts.did, PDS_URL), {
         headers: { "content-type": "application/did+ld+json" },
       }),
+    ),
+    http.get(
+      `${PLC_DIRECTORY_URL}/*`,
+      () => new HttpResponse("did not found", { status: 404 }),
     ),
     http.get(`${PDS_URL}/xrpc/com.atproto.sync.getBlob`, ({ request }) => {
       const cid = new URL(request.url).searchParams.get("cid") ?? "";
@@ -88,15 +98,34 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
   );
   server.listen({ onUnhandledRequest: "error" });
 
-  const serveBlob: MockUpstream["serveBlob"] = async (imageOpts) => {
-    const bytes = await createTestImage(imageOpts);
-    const cid = await cidFor(bytes);
+  const registerBlobAt = (cid: string, bytes: Uint8Array): string => {
     blobReplies.set(cid, bytes);
     return cid;
   };
 
+  const serveBlob: MockUpstream["serveBlob"] = async (imageOpts) => {
+    const bytes = await createTestImage(imageOpts);
+    return registerBlobAt(await cidFor(bytes), bytes);
+  };
+
+  const unregisteredCid: MockUpstream["unregisteredCid"] = () =>
+    cidFor(new TextEncoder().encode("unregistered"));
+
+  const serveBlobWithMismatchedCid: MockUpstream["serveBlobWithMismatchedCid"] =
+    async () => {
+      const wrongCid = await cidFor(
+        new TextEncoder().encode("not the real bytes"),
+      );
+      return registerBlobAt(
+        wrongCid,
+        new TextEncoder().encode("mismatched blob bytes"),
+      );
+    };
+
   return {
     serveBlob,
+    unregisteredCid,
+    serveBlobWithMismatchedCid,
     [Symbol.dispose]: () => {
       server.close();
     },
