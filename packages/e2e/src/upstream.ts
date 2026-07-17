@@ -98,24 +98,28 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
   );
   server.listen({ onUnhandledRequest: "error" });
 
-  const serveBlob: MockUpstream["serveBlob"] = async (imageOpts) => {
-    const bytes = await createTestImage(imageOpts);
-    const cid = await cidFor(bytes);
+  const registerBlobAt = (cid: string, bytes: Uint8Array): string => {
     blobReplies.set(cid, bytes);
     return cid;
   };
 
+  const serveBlob: MockUpstream["serveBlob"] = async (imageOpts) => {
+    const bytes = await createTestImage(imageOpts);
+    return registerBlobAt(await cidFor(bytes), bytes);
+  };
+
   const unregisteredCid: MockUpstream["unregisteredCid"] = () =>
-    cidFor(crypto.getRandomValues(new Uint8Array(16)));
+    cidFor(new TextEncoder().encode("unregistered"));
 
   const serveBlobWithMismatchedCid: MockUpstream["serveBlobWithMismatchedCid"] =
     async () => {
-      const bytes = await createTestImage();
       const wrongCid = await cidFor(
         new TextEncoder().encode("not the real bytes"),
       );
-      blobReplies.set(wrongCid, bytes);
-      return wrongCid;
+      return registerBlobAt(
+        wrongCid,
+        new TextEncoder().encode("mismatched blob bytes"),
+      );
     };
 
   return {
