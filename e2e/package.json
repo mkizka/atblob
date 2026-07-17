@@ -5,7 +5,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mkizka/atblob.git",
-    "directory": "packages/e2e"
+    "directory": "e2e"
   },
   "license": "AGPL-3.0-only",
   "private": true,
