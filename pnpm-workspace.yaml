@@ -8,4 +8,4 @@ allowBuilds:
   msw: true
 
 minimumReleaseAgeExclude:
-  - '@gyaku/di@4.0.0'
+  - '@gyaku/di'
