@@ -1,5 +1,11 @@
 # @atblob/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- f999027: Expose `runCli` and `Env` as a library entry point (`import { runCli } from "@atblob/cli"`), separate from the `atblob` bin script.
+
 ## 0.3.0
 
 ### Minor Changes
