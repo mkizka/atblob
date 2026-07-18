@@ -27,12 +27,15 @@
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {
-    "@atblob/core": "workspace:*",
+  "peerDependencies": {
     "hono": "^4.12.27"
+  },
+  "dependencies": {
+    "@atblob/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
+    "hono": "4.12.30",
     "prettier": "3.9.5",
     "prettier-plugin-pkg": "0.22.1",
     "vitest": "4.1.10"

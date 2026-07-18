@@ -159,13 +159,13 @@ importers:
       '@atblob/core':
         specifier: workspace:*
         version: link:../core
-      express:
-        specifier: ^5.2.1
-        version: 5.2.1
     devDependencies:
       '@types/express':
         specifier: 5.0.6
         version: 5.0.6
+      express:
+        specifier: 5.2.1
+        version: 5.2.1
       get-port:
         specifier: 7.2.0
         version: 7.2.0
@@ -184,13 +184,13 @@ importers:
       '@atblob/core':
         specifier: workspace:*
         version: link:../core
-      hono:
-        specifier: ^4.12.27
-        version: 4.12.30
     devDependencies:
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
+      hono:
+        specifier: 4.12.30
+        version: 4.12.30
       prettier:
         specifier: 3.9.5
         version: 3.9.5
