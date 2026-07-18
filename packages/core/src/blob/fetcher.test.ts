@@ -166,6 +166,26 @@ describe("createBlobFetcher", () => {
     );
   });
 
+  it("results in BadGatewayError when the body trickles in slower than blobFetchTimeout", async () => {
+    const server = await startServer((_req, res) => {
+      res.writeHead(200, { "content-type": "image/png" });
+      res.write("a");
+      setTimeout(() => {
+        res.end("b");
+      }, 500);
+    });
+    close = server.close;
+
+    const fetcher = createBlobFetcher({
+      maxBlobSize: 1024,
+      blobFetchTimeout: 100,
+    });
+
+    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
+      BadGatewayError,
+    );
+  });
+
   it("results in BadGatewayError when the connection fails", async () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
