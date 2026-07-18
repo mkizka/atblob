@@ -16,7 +16,7 @@ const BLOB: FetchedBlob = {
 
 const fakePdsResolver = (
   resolvePdsEndpoint: PdsResolver["resolvePdsEndpoint"] = () =>
-    Promise.resolve("https://pds.example.com"),
+    Promise.resolve(new URL("https://pds.example.com")),
 ): PdsResolver => ({ resolvePdsEndpoint });
 
 const fakeBlobFetcher = (
@@ -78,7 +78,7 @@ describe("createBlobResolver", () => {
     const fetchBlob = vi.fn(() => Promise.resolve(BLOB));
     const resolver = createBlobResolver({
       pdsResolver: fakePdsResolver(() =>
-        Promise.resolve("https://pds.example.com"),
+        Promise.resolve(new URL("https://pds.example.com")),
       ),
       blobFetcher: fakeBlobFetcher(fetchBlob),
       blobCache: fakeBlobCache(),
@@ -86,6 +86,10 @@ describe("createBlobResolver", () => {
 
     await resolver.resolveBlob(DID, CID);
 
-    expect(fetchBlob).toHaveBeenCalledWith("https://pds.example.com", DID, CID);
+    expect(fetchBlob).toHaveBeenCalledWith(
+      new URL("https://pds.example.com"),
+      DID,
+      CID,
+    );
   });
 });
