@@ -1,5 +1,15 @@
 # @atblob/express
 
+## 0.2.0
+
+### Minor Changes
+
+- 60e8a09: `express` is now a peer dependency instead of a regular dependency, so you need to install it yourself:
+
+  ```sh
+  pnpm add express @atblob/express
+  ```
+
 ## 0.1.2
 
 ### Patch Changes
