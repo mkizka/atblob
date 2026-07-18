@@ -1,6 +1,7 @@
 import type { Did } from "../did/did.js";
 import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
 import { verifyCid } from "./cid.js";
+import type { SafeFetch } from "./ssrf.js";
 
 export type FetchedBlob = {
   bytes: Uint8Array;
@@ -47,7 +48,10 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
+  blobFetch?: SafeFetch;
 }): BlobFetcher => {
+  const doFetch = deps.blobFetch ?? fetch;
+
   const fetchBlob = async (
     pdsEndpoint: string,
     did: Did,
@@ -65,7 +69,10 @@ export const createBlobFetcher = (deps: {
     try {
       let response: Response;
       try {
-        response = await fetch(url, { signal: controller.signal });
+        response = await doFetch(url, {
+          signal: controller.signal,
+          redirect: "follow",
+        });
       } catch (cause) {
         throw new BadGatewayError(
           `failed to fetch blob from pds: ${pdsEndpoint}`,

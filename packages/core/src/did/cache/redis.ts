@@ -1,49 +1,29 @@
-import type { CacheResult, DidCache, DidDocument } from "@atproto/identity";
+import type { Did, DidCache, DidDocument } from "@atproto-labs/did-resolver";
 import { Redis } from "ioredis";
 
 import type { HealthCheckable } from "../../health.js";
 import type { Logger } from "../../logger.js";
 
 const HOUR = 60 * 60 * 1000;
-const DAY = 24 * HOUR;
 const KEY_PREFIX = "atblob:did:";
 
-type CacheEntry = { doc: DidDocument; updatedAt: number };
+interface RedisDidCache extends DidCache, AsyncDisposable, HealthCheckable {}
 
 const isObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null;
 };
 
-const isCacheEntry = (value: unknown): value is CacheEntry => {
-  if (!isObject(value)) {
-    return false;
-  }
-  if (!("doc" in value) || !("updatedAt" in value)) {
-    return false;
-  }
-  return typeof value["updatedAt"] === "number" && isObject(value["doc"]);
+const isDidDocument = (value: unknown): value is DidDocument => {
+  return isObject(value) && "id" in value && typeof value["id"] === "string";
 };
-
-const parseCacheEntry = (raw: string): CacheEntry | null => {
-  const value: unknown = JSON.parse(raw);
-  return isCacheEntry(value) ? value : null;
-};
-
-interface RedisDidCache extends DidCache, AsyncDisposable, HealthCheckable {}
 
 export const createRedisDidCache = (
   deps: { redisUrl: string; logger: Logger },
-  staleTTL = HOUR,
-  maxTTL = DAY,
+  ttlMs = HOUR,
 ): RedisDidCache => {
   const redis = new Redis(deps.redisUrl, { lazyConnect: true });
 
-  const cacheDid = async (did: string, doc: DidDocument): Promise<void> => {
-    const entry: CacheEntry = { doc, updatedAt: Date.now() };
-    await redis.set(KEY_PREFIX + did, JSON.stringify(entry), "PX", maxTTL);
-  };
-
-  const cache: RedisDidCache = {
+  return {
     [Symbol.asyncDispose]: async () => {
       await redis.quit();
       deps.logger.info("redis did cache disconnected");
@@ -59,35 +39,21 @@ export const createRedisDidCache = (
         };
       }
     },
-    cacheDid,
-    refreshCache: async (did, getDoc) => {
-      const doc = await getDoc();
-      if (doc) {
-        await cacheDid(did, doc);
-      }
-    },
-    checkCache: async (did): Promise<CacheResult | null> => {
+    get: async (did: Did): Promise<DidDocument | undefined> => {
       const raw = await redis.get(KEY_PREFIX + did);
       if (!raw) {
-        return null;
+        return undefined;
       }
-      const entry = parseCacheEntry(raw);
-      if (!entry) {
-        return null;
-      }
-      const now = Date.now();
-      return {
-        did,
-        doc: entry.doc,
-        updatedAt: entry.updatedAt,
-        stale: now > entry.updatedAt + staleTTL,
-        expired: now > entry.updatedAt + maxTTL,
-      };
+      const parsed: unknown = JSON.parse(raw);
+      return isDidDocument(parsed) ? parsed : undefined;
     },
-    clearEntry: async (did) => {
+    set: async (did: Did, doc: DidDocument): Promise<void> => {
+      await redis.set(KEY_PREFIX + did, JSON.stringify(doc), "PX", ttlMs);
+    },
+    del: async (did: Did): Promise<void> => {
       await redis.del(KEY_PREFIX + did);
     },
-    clear: async () => {
+    clear: async (): Promise<void> => {
       let cursor = "0";
       do {
         const [nextCursor, keys] = await redis.scan(
@@ -104,6 +70,4 @@ export const createRedisDidCache = (
       } while (cursor !== "0");
     },
   };
-
-  return cache;
 };

@@ -9,11 +9,10 @@ export type LocalResponse = {
   body: Buffer;
 };
 
-// A dedicated dispatcher, never the global one: atblob's own SSRF protection
-// installs a global dispatcher that blocks loopback addresses, and
-// upstream.ts's msw server intercepts the global fetch() - neither should be
-// involved when this test client talks to its own local cli. undici.request()
-// isn't touched by either as long as we pass a plain, explicit dispatcher.
+// A dedicated dispatcher, never the global one: upstream.ts's msw server
+// intercepts the global fetch(), which should not be involved when this
+// test client talks to its own local cli. undici.request() isn't touched by
+// it as long as we pass a plain, explicit dispatcher.
 const localDispatcher = new Agent();
 
 export const request = async (

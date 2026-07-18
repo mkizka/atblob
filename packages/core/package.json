@@ -28,8 +28,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@atproto-labs/did-resolver": "^0.3.5",
     "@atproto-labs/fetch-node": "^0.3.4",
-    "@atproto/identity": "^0.5.3",
+    "@atproto/did": "^0.5.4",
     "@gyaku/di": "^4.0.0",
     "ioredis": "^5.11.1",
     "multiformats": "^14.0.4",

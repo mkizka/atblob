@@ -3,7 +3,7 @@ import { createRegistry } from "@gyaku/di";
 import { createMemoryBlobCache } from "./blob/cache/memory.js";
 import { createBlobFetcher } from "./blob/fetcher.js";
 import { createBlobResolver } from "./blob/resolver.js";
-import { installSsrfProtection } from "./blob/ssrf.js";
+import { createSafeFetch } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
@@ -21,18 +21,26 @@ export const createRenderer = async (
 ): Promise<Renderer> => {
   const resolved = resolveConfig(config);
 
-  installSsrfProtection();
+  // Each fetch is wrapped independently (rather than mutating undici's
+  // global dispatcher) so that host apps embedding @atblob/hono or
+  // @atblob/express don't have their own unrelated fetch() calls affected.
+  const blobFetch = createSafeFetch({
+    timeout: resolved.blobFetchTimeout,
+    responseMaxSize: resolved.maxBlobSize,
+  });
+  const didFetch = createSafeFetch({ timeout: resolved.didResolveTimeout });
 
   const base = createRegistry()
     .value("maxBlobSize", resolved.maxBlobSize)
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
+    .value("blobFetch", blobFetch)
     .value("blobCacheTTL", resolved.blobCacheTTL)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
-    .value("didResolveTimeout", resolved.didResolveTimeout)
+    .value("didFetch", didFetch)
     .value("logger", resolved.logger)
     .service(
       "blobFetcher",
-      ["maxBlobSize", "blobFetchTimeout"],
+      ["maxBlobSize", "blobFetchTimeout", "blobFetch"],
       createBlobFetcher,
     )
     .service("blobCache", ["blobCacheTTL"], createMemoryBlobCache);
@@ -47,7 +55,7 @@ export const createRenderer = async (
   const services = await registry
     .service(
       "pdsResolver",
-      ["plcDirectoryUrl", "didResolveTimeout", "didCache"],
+      ["plcDirectoryUrl", "didFetch", "didCache"],
       createPdsResolver,
     )
     .service(
