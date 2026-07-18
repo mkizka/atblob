@@ -3,6 +3,7 @@ import { createRegistry } from "@gyaku/di";
 import { createMemoryBlobCache } from "./blob/cache/memory.js";
 import { createBlobFetcher } from "./blob/fetcher.js";
 import { createBlobResolver } from "./blob/resolver.js";
+import { createScopedFetch } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
@@ -27,9 +28,10 @@ export const createRenderer = async (
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
     .value("logger", resolved.logger)
+    .value("fetch", createScopedFetch())
     .service(
       "blobFetcher",
-      ["maxBlobSize", "blobFetchTimeout"],
+      ["maxBlobSize", "blobFetchTimeout", "fetch"],
       createBlobFetcher,
     )
     .service("blobCache", ["blobCacheTTL"], createMemoryBlobCache);
@@ -44,7 +46,7 @@ export const createRenderer = async (
   const services = await registry
     .service(
       "pdsResolver",
-      ["plcDirectoryUrl", "didResolveTimeout", "didCache"],
+      ["plcDirectoryUrl", "didResolveTimeout", "didCache", "fetch"],
       createPdsResolver,
     )
     .service(

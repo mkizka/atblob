@@ -47,6 +47,7 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
+  fetch: typeof fetch;
 }): BlobFetcher => {
   const fetchBlob = async (
     pdsEndpoint: string,
@@ -64,7 +65,10 @@ export const createBlobFetcher = (deps: {
 
     let response: Response;
     try {
-      response = await fetch(url, { signal: controller.signal });
+      response = await deps.fetch(url, {
+        signal: controller.signal,
+        redirect: "error",
+      });
     } catch (cause) {
       throw new BadGatewayError(
         `failed to fetch blob from pds: ${pdsEndpoint}`,

@@ -52,6 +52,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
     const result = await fetcher.fetchBlob(server.url, DID, cid);
 
@@ -71,6 +72,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, wrongCid)).rejects.toThrow(
@@ -88,6 +90,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -105,6 +108,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -122,6 +126,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -142,6 +147,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -159,6 +165,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
@@ -170,6 +177,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      fetch: globalThis.fetch,
     });
 
     await expect(

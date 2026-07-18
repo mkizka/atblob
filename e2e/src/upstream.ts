@@ -5,14 +5,14 @@ import * as raw from "multiformats/codecs/raw";
 import { sha256 } from "multiformats/hashes/sha2";
 import sharp from "sharp";
 
-// atblob patches the global fetch() while a render is in flight, requiring
-// https and rejecting any request that resolves to a loopback/private
-// address - so a local http server can never stand in for a real PDS or PLC
-// directory by address alone. That resolution check only runs for requests
-// that actually reach the network though: msw's fetch interceptor sits
-// between atblob's guard and the real dispatcher, so a mocked response for
-// these https URLs is returned before any DNS lookup happens - no SSRF
-// workaround needed here.
+// atblob's own outbound requests (DID resolution and blob fetching, see
+// packages/core/src/blob/ssrf.ts) require https and reject any hostname that
+// resolves to a loopback/private address - so a local http server can never
+// stand in for a real PDS or PLC directory by address alone. That
+// resolution check only runs for requests that actually reach the network
+// though: msw's fetch interceptor patches globalThis.fetch, which atblob
+// calls into, so a mocked response for these https URLs is returned before
+// any DNS lookup happens - no SSRF workaround needed here.
 
 export const PLC_DIRECTORY_URL = "https://plc.directory";
 export const PDS_URL = "https://pds.test";
