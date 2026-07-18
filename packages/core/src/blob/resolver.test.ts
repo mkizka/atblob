@@ -87,7 +87,7 @@ describe("createBlobResolver", () => {
     await resolver.resolveBlob(DID, CID);
 
     expect(fetchBlob).toHaveBeenCalledWith(
-      "https://pds.example.com/",
+      new URL("https://pds.example.com"),
       DID,
       CID,
     );
