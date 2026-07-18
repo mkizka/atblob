@@ -15,12 +15,12 @@ export type PdsResolver = {
 export const createPdsResolver = (deps: {
   plcDirectoryUrl: string;
   didCache: DidCache;
-  didFetch?: SafeFetch;
+  didFetch: SafeFetch;
 }): PdsResolver => {
   const resolver = createDidResolver({
     plcDirectoryUrl: deps.plcDirectoryUrl,
     didCache: deps.didCache,
-    ...(deps.didFetch !== undefined && { fetch: deps.didFetch }),
+    fetch: deps.didFetch,
   });
 
   const resolvePdsEndpoint = async (did: Did): Promise<string> => {

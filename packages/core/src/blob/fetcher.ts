@@ -48,10 +48,8 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
-  blobFetch?: SafeFetch;
+  blobFetch: SafeFetch;
 }): BlobFetcher => {
-  const doFetch = deps.blobFetch ?? fetch;
-
   const fetchBlob = async (
     pdsEndpoint: string,
     did: Did,
@@ -69,7 +67,7 @@ export const createBlobFetcher = (deps: {
     try {
       let response: Response;
       try {
-        response = await doFetch(url, {
+        response = await deps.blobFetch(url, {
           signal: controller.signal,
           redirect: "follow",
         });

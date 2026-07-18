@@ -6,13 +6,9 @@ import { sha256 } from "multiformats/hashes/sha2";
 import sharp from "sharp";
 
 // atblob wraps its outbound fetch calls with SSRF protection (https-only,
-// unicast-only DNS lookups), so a local http server can never stand in for
-// a real PDS or PLC directory by address alone. msw's fetch interceptor
-// patches globalThis.fetch itself, and atblob resolves globalThis.fetch
-// lazily at call time (not when the wrapped fetch is constructed), so the
-// request never reaches the real network regardless of whether this mock
-// server starts before or after atblob's renderer is created - no SSRF
-// workaround needed here.
+// unicast-only), so a local http server can never stand in for a real PDS
+// or PLC directory by address alone - hence the msw mocks below, which
+// intercept globalThis.fetch itself rather than a real network address.
 
 export const PLC_DIRECTORY_URL = "https://plc.directory";
 export const PDS_URL = "https://pds.test";

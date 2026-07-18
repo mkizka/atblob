@@ -2,7 +2,10 @@ import { safeFetchWrap } from "@atproto-labs/fetch-node";
 
 export type SafeFetch = typeof fetch;
 
-export const createSafeFetch = (deps: {
+// Each fetch is wrapped independently (rather than mutating undici's global
+// dispatcher) so that host apps embedding @atblob/hono or @atblob/express
+// don't have their own unrelated fetch() calls affected.
+const createSafeFetch = (deps: {
   timeout: number;
   responseMaxSize?: number;
 }): SafeFetch =>
@@ -16,3 +19,16 @@ export const createSafeFetch = (deps: {
       responseMaxSize: deps.responseMaxSize,
     }),
   });
+
+export const createBlobFetch = (deps: {
+  blobFetchTimeout: number;
+  maxBlobSize: number;
+}): SafeFetch =>
+  createSafeFetch({
+    timeout: deps.blobFetchTimeout,
+    responseMaxSize: deps.maxBlobSize,
+  });
+
+export const createDidFetch = (deps: {
+  didResolveTimeout: number;
+}): SafeFetch => createSafeFetch({ timeout: deps.didResolveTimeout });
