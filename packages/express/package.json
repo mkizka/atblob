@@ -27,12 +27,15 @@
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {
-    "@atblob/core": "workspace:*",
+  "peerDependencies": {
     "express": "^5.2.1"
+  },
+  "dependencies": {
+    "@atblob/core": "workspace:*"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
+    "express": "5.2.1",
     "get-port": "7.2.0",
     "prettier": "3.9.5",
     "prettier-plugin-pkg": "0.22.1",
