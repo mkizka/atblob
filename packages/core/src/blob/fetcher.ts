@@ -62,47 +62,60 @@ export const createBlobFetcher = (deps: {
       controller.abort();
     }, deps.blobFetchTimeout);
 
-    let response: Response;
     try {
-      response = await fetch(url, { signal: controller.signal });
-    } catch (cause) {
-      throw new BadGatewayError(
-        `failed to fetch blob from pds: ${pdsEndpoint}`,
-        {
-          cause,
-        },
-      );
+      let response: Response;
+      try {
+        response = await fetch(url, { signal: controller.signal });
+      } catch (cause) {
+        throw new BadGatewayError(
+          `failed to fetch blob from pds: ${pdsEndpoint}`,
+          {
+            cause,
+          },
+        );
+      }
+
+      if (!response.ok) {
+        if (response.status >= 400 && response.status < 500) {
+          throw new NotFoundError(`blob not found: did=${did} cid=${cid}`);
+        }
+        throw new BadGatewayError(
+          `upstream error fetching blob: status=${response.status}`,
+        );
+      }
+
+      const contentType = response.headers.get("content-type") ?? "";
+      if (!contentType.startsWith("image/")) {
+        throw new BadRequestError(
+          `blob is not an image: content-type=${contentType}`,
+        );
+      }
+
+      const contentLength = response.headers.get("content-length");
+      if (contentLength !== null && Number(contentLength) > deps.maxBlobSize) {
+        throw new BadRequestError(
+          `blob exceeds max size of ${deps.maxBlobSize} bytes`,
+        );
+      }
+
+      let bytes: Buffer;
+      try {
+        bytes = await readBodyWithLimit(response, deps.maxBlobSize);
+      } catch (cause) {
+        if (controller.signal.aborted) {
+          throw new BadGatewayError(
+            `timed out reading blob body from pds: ${pdsEndpoint}`,
+            { cause },
+          );
+        }
+        throw cause;
+      }
+      await verifyCid(cid, bytes);
+
+      return { bytes, contentType };
     } finally {
       clearTimeout(timer);
     }
-
-    if (!response.ok) {
-      if (response.status >= 400 && response.status < 500) {
-        throw new NotFoundError(`blob not found: did=${did} cid=${cid}`);
-      }
-      throw new BadGatewayError(
-        `upstream error fetching blob: status=${response.status}`,
-      );
-    }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.startsWith("image/")) {
-      throw new BadRequestError(
-        `blob is not an image: content-type=${contentType}`,
-      );
-    }
-
-    const contentLength = response.headers.get("content-length");
-    if (contentLength !== null && Number(contentLength) > deps.maxBlobSize) {
-      throw new BadRequestError(
-        `blob exceeds max size of ${deps.maxBlobSize} bytes`,
-      );
-    }
-
-    const bytes = await readBodyWithLimit(response, deps.maxBlobSize);
-    await verifyCid(cid, bytes);
-
-    return { bytes, contentType };
   };
 
   return { fetchBlob };
