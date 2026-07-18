@@ -2,4 +2,9 @@
 
 import { runCli } from "./cli.js";
 
-await runCli(process.argv.slice(2), process.env);
+try {
+  await runCli(process.argv.slice(2), process.env);
+} catch (error) {
+  console.error("ERROR:", error instanceof Error ? error.message : error);
+  process.exit(1);
+}
