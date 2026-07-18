@@ -1,9 +1,8 @@
-import type { DidCache } from "@atproto/identity";
-import { MemoryCache } from "@atproto/identity";
+import { type DidCache, DidCacheMemory } from "@atproto-labs/did-resolver";
 
 import type { HealthCheckable, HealthCheckResult } from "../../health.js";
 
-class MemoryDidCache extends MemoryCache implements HealthCheckable {
+class MemoryDidCache extends DidCacheMemory implements HealthCheckable {
   checkHealth(): Promise<HealthCheckResult> {
     return Promise.resolve({ status: "ok" });
   }
