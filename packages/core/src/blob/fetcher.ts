@@ -9,11 +9,7 @@ export type FetchedBlob = {
 };
 
 export type BlobFetcher = {
-  fetchBlob: (
-    pdsEndpoint: string,
-    did: Did,
-    cid: string,
-  ) => Promise<FetchedBlob>;
+  fetchBlob: (pdsEndpoint: URL, did: Did, cid: string) => Promise<FetchedBlob>;
 };
 
 const readBodyWithLimit = async (
@@ -51,7 +47,7 @@ export const createBlobFetcher = (deps: {
   blobFetch: SafeFetch;
 }): BlobFetcher => {
   const fetchBlob = async (
-    pdsEndpoint: string,
+    pdsEndpoint: URL,
     did: Did,
     cid: string,
   ): Promise<FetchedBlob> => {
@@ -73,7 +69,7 @@ export const createBlobFetcher = (deps: {
         });
       } catch (cause) {
         throw new BadGatewayError(
-          `failed to fetch blob from pds: ${pdsEndpoint}`,
+          `failed to fetch blob from pds: ${pdsEndpoint.href}`,
           {
             cause,
           },
@@ -109,7 +105,7 @@ export const createBlobFetcher = (deps: {
       } catch (cause) {
         if (controller.signal.aborted) {
           throw new BadGatewayError(
-            `timed out reading blob body from pds: ${pdsEndpoint}`,
+            `timed out reading blob body from pds: ${pdsEndpoint.href}`,
             { cause },
           );
         }

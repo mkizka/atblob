@@ -9,7 +9,7 @@ import { NotFoundError } from "../errors.js";
 import type { Did } from "./did.js";
 
 export type PdsResolver = {
-  resolvePdsEndpoint: (did: Did) => Promise<string>;
+  resolvePdsEndpoint: (did: Did) => Promise<URL>;
 };
 
 export const createPdsResolver = (deps: {
@@ -23,10 +23,10 @@ export const createPdsResolver = (deps: {
     fetch: deps.didFetch,
   });
 
-  const resolvePdsEndpoint = async (did: Did): Promise<string> => {
+  const resolvePdsEndpoint = async (did: Did): Promise<URL> => {
     try {
       const document = await resolver.resolve(did);
-      return extractPdsUrl(document).toString();
+      return extractPdsUrl(document);
     } catch (cause) {
       throw new NotFoundError(`failed to resolve did: ${did}`, { cause });
     }

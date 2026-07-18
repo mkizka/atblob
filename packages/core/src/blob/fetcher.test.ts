@@ -54,7 +54,7 @@ describe("createBlobFetcher", () => {
       blobFetchTimeout: 1000,
       blobFetch: fetch,
     });
-    const result = await fetcher.fetchBlob(server.url, DID, cid);
+    const result = await fetcher.fetchBlob(new URL(server.url), DID, cid);
 
     expect(result.contentType).toBe("image/png");
     expect(Buffer.from(result.bytes)).toEqual(bytes);
@@ -75,9 +75,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, wrongCid)).rejects.toThrow(
-      NotFoundError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, wrongCid),
+    ).rejects.toThrow(NotFoundError);
   });
 
   it("results in NotFoundError for a 4xx response", async () => {
@@ -93,9 +93,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      NotFoundError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(NotFoundError);
   });
 
   it("results in BadGatewayError for a 5xx response", async () => {
@@ -111,9 +111,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      BadGatewayError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadGatewayError);
   });
 
   it("results in BadRequestError for a non-image content-type", async () => {
@@ -129,9 +129,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      BadRequestError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadRequestError);
   });
 
   it("results in BadRequestError when content-length exceeds maxBlobSize", async () => {
@@ -150,9 +150,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      BadRequestError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadRequestError);
   });
 
   it("results in BadRequestError when the actual size exceeds maxBlobSize even without content-length", async () => {
@@ -168,9 +168,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      BadRequestError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadRequestError);
   });
 
   it("results in BadGatewayError when the body trickles in slower than blobFetchTimeout", async () => {
@@ -189,9 +189,9 @@ describe("createBlobFetcher", () => {
       blobFetch: fetch,
     });
 
-    await expect(fetcher.fetchBlob(server.url, DID, "cid")).rejects.toThrow(
-      BadGatewayError,
-    );
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadGatewayError);
   });
 
   it("results in BadGatewayError when the connection fails", async () => {
@@ -202,7 +202,7 @@ describe("createBlobFetcher", () => {
     });
 
     await expect(
-      fetcher.fetchBlob("http://127.0.0.1:1", DID, "cid"),
+      fetcher.fetchBlob(new URL("http://127.0.0.1:1"), DID, "cid"),
     ).rejects.toThrow(BadGatewayError);
   });
 });

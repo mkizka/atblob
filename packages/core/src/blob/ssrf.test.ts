@@ -12,23 +12,18 @@ describe("createBlobFetch", () => {
     expect(getGlobalDispatcher()).toBe(dispatcherBefore);
   });
 
-  it("rejects requests to a loopback address", async () => {
-    const blobFetch = createBlobFetch({
-      blobFetchTimeout: 1000,
-      maxBlobSize: 1024,
-    });
+  const blobFetch = createBlobFetch({
+    blobFetchTimeout: 1000,
+    maxBlobSize: 1024,
+  });
 
+  it("rejects requests to a loopback address", async () => {
     await expect(
       blobFetch("https://127.0.0.1/", { redirect: "error" }),
     ).rejects.toThrow();
   });
 
   it("rejects requests over http", async () => {
-    const blobFetch = createBlobFetch({
-      blobFetchTimeout: 1000,
-      maxBlobSize: 1024,
-    });
-
     await expect(
       blobFetch("http://example.com/", { redirect: "error" }),
     ).rejects.toThrow();
