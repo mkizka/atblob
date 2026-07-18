@@ -11,8 +11,9 @@ import { atblob } from "./atblob.js";
 const DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
-// atblob() replaces the global undici dispatcher as an SSRF countermeasure,
-// so using the global fetch for the test's own requests would get blocked. Use node:http instead.
+// A plain node:http client, independent of the global fetch() that atblob's
+// SSRF guard patches while a render() is in flight (see
+// packages/core/src/blob/ssrf.ts).
 function request(
   port: number,
   path: string,
