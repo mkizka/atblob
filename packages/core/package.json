@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "get-port": "7.2.0",
-    "prettier": "3.9.4",
+    "prettier": "3.9.5",
     "prettier-plugin-pkg": "0.22.1",
     "vitest": "4.1.10"
   },
