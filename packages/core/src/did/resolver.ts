@@ -4,7 +4,7 @@ import { NotFoundError } from "../errors.js";
 import type { Did } from "./did.js";
 
 export type PdsResolver = {
-  resolvePdsEndpoint: (did: Did) => Promise<string>;
+  resolvePdsEndpoint: (did: Did) => Promise<URL>;
 };
 
 export const createPdsResolver = (deps: {
@@ -18,10 +18,10 @@ export const createPdsResolver = (deps: {
     didCache: deps.didCache,
   });
 
-  const resolvePdsEndpoint = async (did: Did): Promise<string> => {
+  const resolvePdsEndpoint = async (did: Did): Promise<URL> => {
     try {
       const { pds } = await resolver.resolveAtprotoData(did);
-      return pds;
+      return new URL(pds);
     } catch (cause) {
       throw new NotFoundError(`failed to resolve did: ${did}`, { cause });
     }

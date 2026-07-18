@@ -18,7 +18,11 @@ export const createBlobResolver = (deps: {
       return cached;
     }
     const pdsEndpoint = await deps.pdsResolver.resolvePdsEndpoint(did);
-    const blob = await deps.blobFetcher.fetchBlob(pdsEndpoint, did, cid);
+    const blob = await deps.blobFetcher.fetchBlob(
+      pdsEndpoint.toString(),
+      did,
+      cid,
+    );
     await deps.blobCache.set(did, cid, blob);
     return blob;
   };
