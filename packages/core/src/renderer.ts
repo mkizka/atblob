@@ -3,11 +3,10 @@ import { createRegistry } from "@gyaku/di";
 import { createMemoryBlobCache } from "./blob/cache/memory.js";
 import { createBlobFetcher } from "./blob/fetcher.js";
 import { createBlobResolver } from "./blob/resolver.js";
-import { installSsrfProtection } from "./blob/ssrf.js";
+import { createBlobFetch, createDidFetch } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
-import { createDidFetch } from "./did/fetch.js";
 import { createPdsResolver } from "./did/resolver.js";
 import { createCheckHealth, type HealthCheck } from "./health.js";
 import { createRenderFn, type RenderFn } from "./render/render.js";
@@ -22,8 +21,6 @@ export const createRenderer = async (
 ): Promise<Renderer> => {
   const resolved = resolveConfig(config);
 
-  installSsrfProtection();
-
   const base = createRegistry()
     .value("maxBlobSize", resolved.maxBlobSize)
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
@@ -31,10 +28,11 @@ export const createRenderer = async (
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
     .value("logger", resolved.logger)
+    .service("blobFetch", ["blobFetchTimeout", "maxBlobSize"], createBlobFetch)
     .service("didFetch", ["didResolveTimeout"], createDidFetch)
     .service(
       "blobFetcher",
-      ["maxBlobSize", "blobFetchTimeout"],
+      ["maxBlobSize", "blobFetchTimeout", "blobFetch"],
       createBlobFetcher,
     )
     .service("blobCache", ["blobCacheTTL"], createMemoryBlobCache);

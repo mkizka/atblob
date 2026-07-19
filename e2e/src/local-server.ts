@@ -1,6 +1,6 @@
 import { type Env, runCli } from "@atblob/cli";
 import getPort from "get-port";
-import { Agent, request as undiciRequest } from "undici";
+import { request as undiciRequest } from "undici";
 import { vi } from "vitest";
 
 export type LocalResponse = {
@@ -9,20 +9,11 @@ export type LocalResponse = {
   body: Buffer;
 };
 
-// A dedicated dispatcher, never the global one: atblob's own SSRF protection
-// installs a global dispatcher that blocks loopback addresses, and
-// upstream.ts's msw server intercepts the global fetch() - neither should be
-// involved when this test client talks to its own local cli. undici.request()
-// isn't touched by either as long as we pass a plain, explicit dispatcher.
-const localDispatcher = new Agent();
-
 export const request = async (
   port: number,
   path: string,
 ): Promise<LocalResponse> => {
-  const res = await undiciRequest(`http://127.0.0.1:${port}${path}`, {
-    dispatcher: localDispatcher,
-  });
+  const res = await undiciRequest(`http://127.0.0.1:${port}${path}`);
   return {
     status: res.statusCode,
     headers: res.headers,

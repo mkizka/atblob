@@ -52,6 +52,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
     const result = await fetcher.fetchBlob(new URL(server.url), DID, cid);
 
@@ -71,6 +72,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -88,6 +90,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -105,6 +108,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -122,6 +126,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -142,6 +147,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -159,6 +165,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -179,6 +186,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 100,
+      blobFetch: fetch,
     });
 
     await expect(
@@ -190,6 +198,7 @@ describe("createBlobFetcher", () => {
     const fetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 1000,
+      blobFetch: fetch,
     });
 
     await expect(

@@ -4,9 +4,9 @@ import {
   extractPdsUrl,
 } from "@atproto-labs/did-resolver";
 
+import type { SafeFetch } from "../blob/ssrf.js";
 import { NotFoundError } from "../errors.js";
 import type { Did } from "./did.js";
-import type { DidFetch } from "./fetch.js";
 
 export type PdsResolver = {
   resolvePdsEndpoint: (did: Did) => Promise<URL>;
@@ -15,7 +15,7 @@ export type PdsResolver = {
 export const createPdsResolver = (deps: {
   plcDirectoryUrl: string;
   didCache: DidCache;
-  didFetch: DidFetch;
+  didFetch: SafeFetch;
 }): PdsResolver => {
   const resolver = createDidResolver({
     plcDirectoryUrl: deps.plcDirectoryUrl,
