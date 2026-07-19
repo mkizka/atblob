@@ -6,21 +6,10 @@ import {
 
 import { NotFoundError } from "../errors.js";
 import type { Did } from "./did.js";
+import type { DidFetch } from "./fetch.js";
 
 export type PdsResolver = {
   resolvePdsEndpoint: (did: Did) => Promise<URL>;
-};
-
-export type DidFetch = typeof fetch;
-
-export const createDidFetch = (deps: {
-  didResolveTimeout: number;
-}): DidFetch => {
-  return (input, init) =>
-    fetch(input, {
-      ...init,
-      signal: AbortSignal.timeout(deps.didResolveTimeout),
-    });
 };
 
 export const createPdsResolver = (deps: {
