@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import { setupServer } from "msw/node";
 import { CID } from "multiformats/cid";
 import * as raw from "multiformats/codecs/raw";
@@ -9,6 +9,12 @@ import sharp from "sharp";
 // unicast-only), so a local http server can never stand in for a real PDS
 // or PLC directory by address alone - hence the msw mocks below, which
 // intercept globalThis.fetch itself rather than a real network address.
+//
+// msw intercepts every fetch() process-wide while it's running, including
+// local-server.ts's own requests to the cli under test - so those need an
+// explicit passthrough, or they'd fail onUnhandledRequest's "error" strategy
+// below.
+const LOCAL_SERVER_PATTERN = /^http:\/\/127\.0\.0\.1:\d+\//;
 
 export const PLC_DIRECTORY_URL = "https://plc.directory";
 export const PDS_URL = "https://pds.test";
@@ -92,6 +98,7 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
         headers: { "content-type": "image/png" },
       });
     }),
+    http.all(LOCAL_SERVER_PATTERN, () => passthrough()),
   );
   server.listen({ onUnhandledRequest: "error" });
 

@@ -1,23 +1,25 @@
 import { type Env, runCli } from "@atblob/cli";
 import getPort from "get-port";
-import { request as undiciRequest } from "undici";
 import { vi } from "vitest";
 
 export type LocalResponse = {
   status: number;
-  headers: Record<string, string | string[] | undefined>;
+  headers: Record<string, string>;
   body: Buffer;
 };
 
+// A plain fetch(), routed through upstream.ts's passthrough handler for
+// 127.0.0.1 - see the comment there for why msw needs to be told to leave
+// requests to this local cli alone.
 export const request = async (
   port: number,
   path: string,
 ): Promise<LocalResponse> => {
-  const res = await undiciRequest(`http://127.0.0.1:${port}${path}`);
+  const res = await fetch(`http://127.0.0.1:${port}${path}`);
   return {
-    status: res.statusCode,
-    headers: res.headers,
-    body: Buffer.from(await res.body.arrayBuffer()),
+    status: res.status,
+    headers: Object.fromEntries(res.headers),
+    body: Buffer.from(await res.arrayBuffer()),
   };
 };
 

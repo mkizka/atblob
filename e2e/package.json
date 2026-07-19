@@ -26,7 +26,6 @@
     "prettier": "3.9.5",
     "prettier-plugin-pkg": "0.22.1",
     "sharp": "0.35.3",
-    "undici": "8.7.0",
     "vitest": "4.1.10"
   },
   "prettier": {
