@@ -1,5 +1,15 @@
 # @atblob/express
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [5999952]
+- Updated dependencies [d2cd4bd]
+- Updated dependencies [11b66c5]
+- Updated dependencies [3e31e20]
+  - @atblob/core@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
