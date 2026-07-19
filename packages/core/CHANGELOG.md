@@ -1,5 +1,14 @@
 # @atblob/core
 
+## 0.2.1
+
+### Patch Changes
+
+- 5999952: Fix blobFetchTimeout not being enforced while reading the blob response body.
+- d2cd4bd: Migrate DID resolution from @atproto/identity to @atproto-labs/did-resolver.
+- 11b66c5: Remove unused undici dependency from core.
+- 3e31e20: Scope SSRF protection to individual fetch calls instead of the global dispatcher.
+
 ## 0.2.0
 
 ### Minor Changes

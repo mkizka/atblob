@@ -1,5 +1,17 @@
 # @atblob/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- 8ec97eb: Print a clean error message on invalid args/env instead of a stack trace.
+- Updated dependencies [5999952]
+- Updated dependencies [d2cd4bd]
+- Updated dependencies [11b66c5]
+- Updated dependencies [3e31e20]
+  - @atblob/core@0.2.1
+  - @atblob/hono@0.2.1
+
 ## 0.4.1
 
 ### Patch Changes
