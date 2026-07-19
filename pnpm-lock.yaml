@@ -137,9 +137,6 @@ importers:
       sharp:
         specifier: ^0.35.3
         version: 0.35.3(@types/node@24.13.3)
-      undici:
-        specifier: ^8.7.0
-        version: 8.7.0
     devDependencies:
       get-port:
         specifier: 7.2.0
