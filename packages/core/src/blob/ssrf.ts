@@ -1,28 +1,34 @@
-import { isUnicastIpHostname, unicastLookup } from "@atproto-labs/fetch-node";
-import { Agent, Pool, setGlobalDispatcher } from "undici";
+import { safeFetchWrap } from "@atproto-labs/fetch-node";
 
-let installed = false;
+export type SafeFetch = typeof fetch;
 
-export const installSsrfProtection = (): void => {
-  if (installed) {
-    return;
-  }
-  installed = true;
-  setGlobalDispatcher(
-    // ref: https://github.com/bluesky-social/atproto/blob/6b493b77f56b7de47f5eb91d29f726cdc7794e46/packages/bsky/src/api/blob-dispatcher.ts
-    new Agent({
-      factory: (origin, opts) => {
-        const { protocol, hostname } =
-          origin instanceof URL ? origin : new URL(origin);
-        if (protocol !== "https:") {
-          throw new Error(`forbidden protocol: ${protocol}`);
-        }
-        if (isUnicastIpHostname(hostname) === false) {
-          throw new Error(`hostname resolved to non-unicast address`);
-        }
-        return new Pool(origin, opts);
-      },
-      connect: { lookup: unicastLookup },
+// Each fetch is wrapped independently (rather than mutating undici's global
+// dispatcher) so that host apps embedding @atblob/hono or @atblob/express
+// don't have their own unrelated fetch() calls affected.
+const createSafeFetch = (deps: {
+  timeout: number;
+  responseMaxSize?: number;
+}): SafeFetch =>
+  safeFetchWrap({
+    // Resolve globalThis.fetch lazily, at call time rather than here, so
+    // that fetch mocks (e.g. msw) installed after this function runs are
+    // still honored.
+    fetch: (input, init) => globalThis.fetch(input, init),
+    timeout: deps.timeout,
+    ...(deps.responseMaxSize !== undefined && {
+      responseMaxSize: deps.responseMaxSize,
     }),
-  );
-};
+  });
+
+export const createBlobFetch = (deps: {
+  blobFetchTimeout: number;
+  maxBlobSize: number;
+}): SafeFetch =>
+  createSafeFetch({
+    timeout: deps.blobFetchTimeout,
+    responseMaxSize: deps.maxBlobSize,
+  });
+
+export const createDidFetch = (deps: {
+  didResolveTimeout: number;
+}): SafeFetch => createSafeFetch({ timeout: deps.didResolveTimeout });
