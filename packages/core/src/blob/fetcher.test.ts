@@ -134,6 +134,24 @@ describe("createBlobFetcher", () => {
     ).rejects.toThrow(BadRequestError);
   });
 
+  it("results in BadRequestError for an image/svg+xml content-type", async () => {
+    const server = await startServer((_req, res) => {
+      res.writeHead(200, { "content-type": "image/svg+xml" });
+      res.end("<svg></svg>");
+    });
+    close = server.close;
+
+    const fetcher = createBlobFetcher({
+      maxBlobSize: 1024,
+      blobFetchTimeout: 1000,
+      blobFetch: fetch,
+    });
+
+    await expect(
+      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+    ).rejects.toThrow(BadRequestError);
+  });
+
   it("results in BadRequestError when content-length exceeds maxBlobSize", async () => {
     const server = await startServer((_req, res) => {
       res.writeHead(200, {
