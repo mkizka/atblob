@@ -1,7 +1,7 @@
 import type { Did } from "../did/did.js";
 import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
+import type { SafeFetch } from "../safe-fetch.js";
 import { verifyCid } from "./cid.js";
-import type { SafeFetch } from "./ssrf.js";
 
 export type FetchedBlob = {
   bytes: Uint8Array;

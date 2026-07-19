@@ -1,12 +1,13 @@
 import { createRegistry } from "@gyaku/di";
 
 import { createMemoryBlobCache } from "./blob/cache/memory.js";
+import { createBlobFetch } from "./blob/fetch.js";
 import { createBlobFetcher } from "./blob/fetcher.js";
 import { createBlobResolver } from "./blob/resolver.js";
-import { createBlobFetch, createDidFetch } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
+import { createDidFetch } from "./did/fetch.js";
 import { createPdsResolver } from "./did/resolver.js";
 import { createCheckHealth, type HealthCheck } from "./health.js";
 import { createRenderFn, type RenderFn } from "./render/render.js";

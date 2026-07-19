@@ -1,7 +1,7 @@
 import { getGlobalDispatcher } from "undici";
 import { describe, expect, it } from "vitest";
 
-import { createBlobFetch } from "./ssrf.js";
+import { createBlobFetch } from "./fetch.js";
 
 describe("createBlobFetch", () => {
   it("does not mutate undici's global dispatcher", () => {

@@ -4,8 +4,8 @@ import {
   extractPdsUrl,
 } from "@atproto-labs/did-resolver";
 
-import type { SafeFetch } from "../blob/ssrf.js";
 import { NotFoundError } from "../errors.js";
+import type { SafeFetch } from "../safe-fetch.js";
 import type { Did } from "./did.js";
 
 export type PdsResolver = {
