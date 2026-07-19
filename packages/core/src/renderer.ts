@@ -7,7 +7,7 @@ import { installSsrfProtection } from "./blob/ssrf.js";
 import { type AtblobConfig, resolveConfig } from "./config.js";
 import { createMemoryDidCache } from "./did/cache/memory.js";
 import { createRedisDidCache } from "./did/cache/redis.js";
-import { createPdsResolver } from "./did/resolver.js";
+import { createDidFetch, createPdsResolver } from "./did/resolver.js";
 import { createCheckHealth, type HealthCheck } from "./health.js";
 import { createRenderFn, type RenderFn } from "./render/render.js";
 
@@ -30,6 +30,7 @@ export const createRenderer = async (
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
     .value("logger", resolved.logger)
+    .service("didFetch", ["didResolveTimeout"], createDidFetch)
     .service(
       "blobFetcher",
       ["maxBlobSize", "blobFetchTimeout"],
@@ -47,7 +48,7 @@ export const createRenderer = async (
   const services = await registry
     .service(
       "pdsResolver",
-      ["plcDirectoryUrl", "didResolveTimeout", "didCache"],
+      ["plcDirectoryUrl", "didFetch", "didCache"],
       createPdsResolver,
     )
     .service(

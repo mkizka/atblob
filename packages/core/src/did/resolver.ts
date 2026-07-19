@@ -11,19 +11,27 @@ export type PdsResolver = {
   resolvePdsEndpoint: (did: Did) => Promise<URL>;
 };
 
+export type DidFetch = typeof fetch;
+
+export const createDidFetch = (deps: {
+  didResolveTimeout: number;
+}): DidFetch => {
+  return (input, init) =>
+    fetch(input, {
+      ...init,
+      signal: AbortSignal.timeout(deps.didResolveTimeout),
+    });
+};
+
 export const createPdsResolver = (deps: {
   plcDirectoryUrl: string;
-  didResolveTimeout: number;
   didCache: DidCache;
+  didFetch: DidFetch;
 }): PdsResolver => {
   const resolver = createDidResolver({
     plcDirectoryUrl: deps.plcDirectoryUrl,
     didCache: deps.didCache,
-    fetch: (input, init) =>
-      fetch(input, {
-        ...init,
-        signal: AbortSignal.timeout(deps.didResolveTimeout),
-      }),
+    fetch: deps.didFetch,
   });
 
   const resolvePdsEndpoint = async (did: Did): Promise<URL> => {
