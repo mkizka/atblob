@@ -1,7 +1,7 @@
 import type { Did } from "../did/did.js";
 import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
-import type { SafeFetch } from "../safe-fetch.js";
 import { verifyCid } from "./cid.js";
+import type { BlobFetch } from "./fetch.js";
 
 export type FetchedBlob = {
   bytes: Uint8Array;
@@ -44,7 +44,7 @@ const readBodyWithLimit = async (
 export const createBlobFetcher = (deps: {
   maxBlobSize: number;
   blobFetchTimeout: number;
-  blobFetch: SafeFetch;
+  blobFetch: BlobFetch;
 }): BlobFetcher => {
   const fetchBlob = async (
     pdsEndpoint: URL,
