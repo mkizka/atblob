@@ -44,7 +44,9 @@ export const createMemoryBlobCache = (deps: {
   };
 
   const set = (did: Did, cid: string, blob: FetchedBlob): Promise<void> => {
-    const size = blob.bytes.byteLength;
+    // Charge at least 1 byte per entry so zero-byte blobs still count toward
+    // the cap and eviction — otherwise they could accumulate without bound.
+    const size = Math.max(blob.bytes.byteLength, 1);
     if (size > deps.blobCacheMaxBytes) {
       return Promise.resolve();
     }

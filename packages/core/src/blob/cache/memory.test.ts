@@ -146,4 +146,42 @@ describe("createMemoryBlobCache", () => {
 
     await expect(cache.get(DID, CID)).resolves.toBeUndefined();
   });
+
+  it("does not cache anything when the byte cap is 0, even a zero-byte blob", async () => {
+    await using cache = createMemoryBlobCache({
+      blobCacheTTL: 1000,
+      blobCacheMaxBytes: 0,
+    });
+    const emptyBlob: FetchedBlob = {
+      bytes: new Uint8Array([]),
+      contentType: "image/png",
+    };
+
+    await cache.set(DID, CID, emptyBlob);
+
+    await expect(cache.get(DID, CID)).resolves.toBeUndefined();
+  });
+
+  it("counts zero-byte blobs toward the byte cap so they can't accumulate without bound", async () => {
+    await using cache = createMemoryBlobCache({
+      blobCacheTTL: 1000,
+      blobCacheMaxBytes: 2,
+    });
+    const emptyBlob: FetchedBlob = {
+      bytes: new Uint8Array([]),
+      contentType: "image/png",
+    };
+    const cids = [
+      CID,
+      OTHER_CID,
+      "bafkreigh2akiscaildcqabsyg3dfr6chu3fgpregiymsck7e7aqa4s52zy",
+    ];
+
+    for (const cid of cids) {
+      await cache.set(DID, cid, emptyBlob);
+    }
+
+    const cached = await Promise.all(cids.map((cid) => cache.get(DID, cid)));
+    expect(cached.filter((blob) => blob !== undefined)).toHaveLength(2);
+  });
 });
