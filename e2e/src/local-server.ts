@@ -8,9 +8,6 @@ export type LocalResponse = {
   body: Buffer;
 };
 
-// A plain fetch(), routed through upstream.ts's passthrough handler for
-// 127.0.0.1 - see the comment there for why msw needs to be told to leave
-// requests to this local cli alone.
 export const request = async (
   port: number,
   path: string,
