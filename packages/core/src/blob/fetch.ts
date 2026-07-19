@@ -2,9 +2,8 @@ import { safeFetchWrap } from "@atproto-labs/fetch-node";
 
 export type BlobFetch = typeof fetch;
 
-// Wrapped independently (rather than mutating undici's global dispatcher) so
-// that host apps embedding @atblob/hono or @atblob/express don't have their
-// own unrelated fetch() calls affected.
+// Wrapped independently so that host apps embedding @atblob/hono or
+// @atblob/express don't have their own unrelated fetch() calls affected.
 export const createBlobFetch = (deps: {
   blobFetchTimeout: number;
   maxBlobSize: number;

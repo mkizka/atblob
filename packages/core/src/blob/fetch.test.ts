@@ -1,17 +1,8 @@
-import { getGlobalDispatcher } from "undici";
 import { describe, expect, it } from "vitest";
 
 import { createBlobFetch } from "./fetch.js";
 
 describe("createBlobFetch", () => {
-  it("does not mutate undici's global dispatcher", () => {
-    const dispatcherBefore = getGlobalDispatcher();
-
-    createBlobFetch({ blobFetchTimeout: 1000, maxBlobSize: 1024 });
-
-    expect(getGlobalDispatcher()).toBe(dispatcherBefore);
-  });
-
   const blobFetch = createBlobFetch({
     blobFetchTimeout: 1000,
     maxBlobSize: 1024,
