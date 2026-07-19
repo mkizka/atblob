@@ -20,4 +20,4 @@ Write commit messages and PR titles in English.
 
 When creating a PR, add a changeset that matches the change (`pnpm changeset`), unless the change has no user-facing effect (e.g. docs-only or internal tooling changes).
 
-Write the changeset text to match the message part of the PR title.
+Decide the PR title first, then write the changeset text to match its message part verbatim (e.g. "Fix foo" -> "Fix foo."). If the PR title changes afterward, update the changeset text to match. Don't draft the changeset wording independently before the PR title is finalized.

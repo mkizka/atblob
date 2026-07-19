@@ -34,8 +34,7 @@
     "@gyaku/di": "^4.0.0",
     "ioredis": "^5.11.1",
     "multiformats": "^14.0.4",
-    "sharp": "^0.35.3",
-    "undici": "^8.7.0"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "get-port": "7.2.0",
