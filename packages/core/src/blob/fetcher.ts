@@ -8,6 +8,13 @@ export type FetchedBlob = {
   contentType: string;
 };
 
+const ALLOWED_CONTENT_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
 export type BlobFetcher = {
   fetchBlob: (pdsEndpoint: URL, did: Did, cid: string) => Promise<FetchedBlob>;
 };
@@ -86,9 +93,9 @@ export const createBlobFetcher = (deps: {
       }
 
       const contentType = response.headers.get("content-type") ?? "";
-      if (!contentType.startsWith("image/")) {
+      if (!ALLOWED_CONTENT_TYPES.has(contentType)) {
         throw new BadRequestError(
-          `blob is not an image: content-type=${contentType}`,
+          `blob has unsupported content-type: content-type=${contentType}`,
         );
       }
 
