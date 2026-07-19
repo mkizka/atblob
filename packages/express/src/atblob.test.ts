@@ -1,5 +1,4 @@
 import type { Server } from "node:http";
-import http from "node:http";
 
 import { createRenderer } from "@atblob/core";
 import express, { type Express } from "express";
@@ -11,24 +10,13 @@ import { atblob } from "./atblob.js";
 const DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 const CID = "bafkreidykmkzxc7zxarcqodlerlmadmiu3zoo5wp3jdchlaqiwhxo3wjqe";
 
-// atblob() replaces the global undici dispatcher as an SSRF countermeasure,
-// so using the global fetch for the test's own requests would get blocked. Use node:http instead.
-function request(
+async function request(
   port: number,
   path: string,
   method: "GET" | "HEAD" = "GET",
-): Promise<{ status: number; headers: http.IncomingHttpHeaders }> {
-  return new Promise((resolve, reject) => {
-    const req = http.request(
-      { host: "127.0.0.1", port, path, method },
-      (res) => {
-        res.resume();
-        resolve({ status: res.statusCode ?? 0, headers: res.headers });
-      },
-    );
-    req.on("error", reject);
-    req.end();
-  });
+): Promise<{ status: number; headers: Record<string, string> }> {
+  const res = await fetch(`http://127.0.0.1:${port}${path}`, { method });
+  return { status: res.status, headers: Object.fromEntries(res.headers) };
 }
 
 const startServer = async (
