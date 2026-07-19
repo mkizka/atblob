@@ -104,9 +104,7 @@ export function buildConfig(
     didResolveTimeout: values.didResolveTimeout ?? env("DID_RESOLVE_TIMEOUT", numberSchema),
     blobFetchTimeout: values.blobFetchTimeout ?? env("BLOB_FETCH_TIMEOUT", numberSchema),
     blobCacheTTL: values.blobCacheTTL ?? env("BLOB_CACHE_TTL", numberSchema),
-    blobCacheMaxBytes:
-      values.blobCacheMaxBytes ??
-      env("BLOB_CACHE_MAX_BYTES", numberSchema),
+    blobCacheMaxBytes: values.blobCacheMaxBytes ?? env("BLOB_CACHE_MAX_BYTES", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
     port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({
