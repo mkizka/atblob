@@ -17,6 +17,7 @@ describe("resolveConfig", () => {
       didResolveTimeout: 5000,
       blobFetchTimeout: 15000,
       blobCacheTTL: 5 * 60 * 1000,
+      blobCacheMaxBytes: 100 * 1024 * 1024,
       plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();
@@ -30,6 +31,7 @@ describe("resolveConfig", () => {
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
       blobCacheTTL: 300,
+      blobCacheMaxBytes: 4096,
       plcDirectoryUrl: "https://plc.example.com",
       logger,
     });
@@ -40,6 +42,7 @@ describe("resolveConfig", () => {
       didResolveTimeout: 100,
       blobFetchTimeout: 200,
       blobCacheTTL: 300,
+      blobCacheMaxBytes: 4096,
       plcDirectoryUrl: "https://plc.example.com",
       logger,
     });
@@ -60,6 +63,7 @@ describe("resolveConfig", () => {
       didResolveTimeout: 5000,
       blobFetchTimeout: 15000,
       blobCacheTTL: 5 * 60 * 1000,
+      blobCacheMaxBytes: 100 * 1024 * 1024,
       plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();

@@ -5,6 +5,7 @@ type BaseAtblobConfig = {
   didResolveTimeout: number;
   blobFetchTimeout: number;
   blobCacheTTL: number;
+  blobCacheMaxBytes: number;
   plcDirectoryUrl: string;
   logger: Logger;
 };
@@ -33,6 +34,7 @@ export const resolveConfig = (
     didResolveTimeout: config.didResolveTimeout ?? 5000,
     blobFetchTimeout: config.blobFetchTimeout ?? 15000,
     blobCacheTTL: config.blobCacheTTL ?? 5 * 60 * 1000,
+    blobCacheMaxBytes: config.blobCacheMaxBytes ?? 100 * 1024 * 1024,
     plcDirectoryUrl: config.plcDirectoryUrl ?? "https://plc.directory",
     logger: config.logger ?? createConsoleLogger(),
   };
