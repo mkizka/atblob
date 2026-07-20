@@ -19,6 +19,7 @@
     "@atblob/cli": "workspace:*"
   },
   "devDependencies": {
+    "@testcontainers/redis": "12.0.4",
     "@types/node": "24.13.3",
     "get-port": "7.2.0",
     "msw": "2.15.0",
@@ -26,6 +27,7 @@
     "prettier": "3.9.5",
     "prettier-plugin-pkg": "0.22.1",
     "sharp": "0.35.3",
+    "testcontainers": "12.0.4",
     "vitest": "4.1.10"
   },
   "prettier": {
