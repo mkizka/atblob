@@ -8,7 +8,4 @@ export default [
       "no-console": "off",
     },
   },
-  {
-    ignores: ["vitest.config.ts"],
-  },
 ];
