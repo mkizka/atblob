@@ -1,5 +1,15 @@
 # @atblob/core
 
+## 0.3.0
+
+### Minor Changes
+
+- aa82fbf: Cap the in-memory blob cache to prevent unbounded memory growth.
+
+### Patch Changes
+
+- 9f4c4ef: Restrict accepted blob content-types to a raster image allowlist.
+
 ## 0.2.1
 
 ### Patch Changes
