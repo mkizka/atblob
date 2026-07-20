@@ -10,5 +10,7 @@ export const createSafeFetch = (deps: {
     // still honored.
     fetch: (input, init) => globalThis.fetch(input, init),
     timeout: deps.timeout,
-    responseMaxSize: deps.responseMaxSize,
+    ...(deps.responseMaxSize !== undefined && {
+      responseMaxSize: deps.responseMaxSize,
+    }),
   });
