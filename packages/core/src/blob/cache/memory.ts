@@ -5,7 +5,7 @@ import type { BlobCache } from "./cache.js";
 
 const toKey = (did: Did, cid: string): string => `${did}:${cid}`;
 
-export type MemoryBlobCache = BlobCache & Disposable;
+type MemoryBlobCache = BlobCache & Disposable;
 
 export const createMemoryBlobCache = (deps: {
   blobCacheTTL: number;

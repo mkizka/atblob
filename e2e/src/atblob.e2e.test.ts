@@ -2,13 +2,8 @@ import sharp from "sharp";
 import { aroundAll, describe, expect, it, vi } from "vitest";
 
 import { request, startCli } from "./local-server.js";
+import { startTestRedis } from "./redis-container.js";
 import { type MockUpstream, setupMockUpstream } from "./upstream.js";
-
-// These tests drive the real, wired-up product (runCli -> hono -> @atblob/core)
-// over real HTTP, with only the outbound PLC/PDS calls replaced by a scripted
-// upstream (see upstream.ts for why). Everything else - routing, DID
-// resolution, blob fetching, CID verification, the in-memory blob cache and
-// the sharp-based image transform - runs for real.
 
 const DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 
@@ -23,7 +18,13 @@ describe("atblob e2e", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     try {
-      await using cli = await startCli();
+      await using redis = await startTestRedis();
+      await using cli = await startCli([
+        "--did-cache",
+        "redis",
+        "--redis-url",
+        redis.url,
+      ]);
       using mockUpstream = setupMockUpstream({ did: DID });
       cliPort = cli.port;
       upstream = mockUpstream;

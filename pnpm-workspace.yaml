@@ -5,7 +5,10 @@ packages:
 injectWorkspacePackages: true
 
 allowBuilds:
+  cpu-features: false
   msw: true
+  protobufjs: false
+  ssh2: false
 
 minimumReleaseAgeExclude:
   - '@gyaku/di'

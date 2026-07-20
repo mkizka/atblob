@@ -1,0 +1,16 @@
+import { safeFetchWrap } from "@atproto-labs/fetch-node";
+
+export const createSafeFetch = (deps: {
+  timeout: number;
+  responseMaxSize?: number;
+}): typeof fetch =>
+  safeFetchWrap({
+    // Resolve globalThis.fetch lazily, at call time rather than here, so
+    // that fetch mocks (e.g. msw) installed after this function runs are
+    // still honored.
+    fetch: (input, init) => globalThis.fetch(input, init),
+    timeout: deps.timeout,
+    ...(deps.responseMaxSize !== undefined && {
+      responseMaxSize: deps.responseMaxSize,
+    }),
+  });
