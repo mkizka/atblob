@@ -19,10 +19,12 @@ describe("atblob e2e", () => {
 
     try {
       await using redis = await startTestRedis();
-      await using cli = await startCli([], {
-        DID_CACHE: "redis",
-        REDIS_URL: redis.url,
-      });
+      await using cli = await startCli([
+        "--did-cache",
+        "redis",
+        "--redis-url",
+        redis.url,
+      ]);
       using mockUpstream = setupMockUpstream({ did: DID });
       cliPort = cli.port;
       upstream = mockUpstream;
