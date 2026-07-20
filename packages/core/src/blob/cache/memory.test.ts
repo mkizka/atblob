@@ -16,7 +16,7 @@ const BLOB: FetchedBlob = {
 
 describe("createMemoryBlobCache", () => {
   it("returns undefined when the key is not cached", async () => {
-    await using cache = createMemoryBlobCache({
+    using cache = createMemoryBlobCache({
       blobCacheTTL: 1000,
       blobCacheMaxBytes: 1024,
     });
@@ -25,7 +25,7 @@ describe("createMemoryBlobCache", () => {
   });
 
   it("round-trips a cached blob through get/set", async () => {
-    await using cache = createMemoryBlobCache({
+    using cache = createMemoryBlobCache({
       blobCacheTTL: 1000,
       blobCacheMaxBytes: 1024,
     });
@@ -35,7 +35,7 @@ describe("createMemoryBlobCache", () => {
   });
 
   it("distinguishes entries by did and cid", async () => {
-    await using cache = createMemoryBlobCache({
+    using cache = createMemoryBlobCache({
       blobCacheTTL: 1000,
       blobCacheMaxBytes: 1024,
     });
@@ -46,7 +46,7 @@ describe("createMemoryBlobCache", () => {
   });
 
   it("does not cache a blob larger than the byte cap", async () => {
-    await using cache = createMemoryBlobCache({
+    using cache = createMemoryBlobCache({
       blobCacheTTL: 1000,
       blobCacheMaxBytes: 2,
     });
@@ -56,14 +56,14 @@ describe("createMemoryBlobCache", () => {
     await expect(cache.get(DID, CID)).resolves.toBeUndefined();
   });
 
-  it("clears the underlying cache's background purge interval when disposed", async () => {
+  it("clears the underlying cache's background purge interval when disposed", () => {
     const clearIntervalSpy = vi.spyOn(global, "clearInterval");
     const cache = createMemoryBlobCache({
       blobCacheTTL: 1000,
       blobCacheMaxBytes: 1024,
     });
 
-    await cache[Symbol.asyncDispose]();
+    cache[Symbol.dispose]();
 
     expect(clearIntervalSpy).toHaveBeenCalled();
   });

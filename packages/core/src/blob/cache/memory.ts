@@ -5,7 +5,7 @@ import type { BlobCache } from "./cache.js";
 
 const toKey = (did: Did, cid: string): string => `${did}:${cid}`;
 
-export type MemoryBlobCache = BlobCache & AsyncDisposable;
+export type MemoryBlobCache = BlobCache & Disposable;
 
 export const createMemoryBlobCache = (deps: {
   blobCacheTTL: number;
@@ -29,6 +29,6 @@ export const createMemoryBlobCache = (deps: {
   return {
     get,
     set,
-    [Symbol.asyncDispose]: () => cache[Symbol.asyncDispose](),
+    [Symbol.dispose]: () => cache[Symbol.dispose](),
   };
 };

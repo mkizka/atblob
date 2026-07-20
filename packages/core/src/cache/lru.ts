@@ -1,7 +1,7 @@
 export type LruCache<V> = {
   get: (key: string) => V | undefined;
   set: (key: string, value: V) => void;
-} & AsyncDisposable;
+} & Disposable;
 
 type CacheEntry<V> = { value: V; expiresAt: number; size: number };
 
@@ -71,9 +71,8 @@ export const createLruCache = <V>(deps: {
   return {
     get,
     set,
-    [Symbol.asyncDispose]: () => {
+    [Symbol.dispose]: () => {
       clearInterval(timer);
-      return Promise.resolve();
     },
   };
 };
