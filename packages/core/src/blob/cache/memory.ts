@@ -6,7 +6,7 @@ type CacheEntry = { blob: FetchedBlob; expiresAt: number };
 
 const toKey = (did: Did, cid: string): string => `${did}:${cid}`;
 
-export type MemoryBlobCache = BlobCache & AsyncDisposable;
+type MemoryBlobCache = BlobCache & AsyncDisposable;
 
 export const createMemoryBlobCache = (deps: {
   blobCacheTTL: number;

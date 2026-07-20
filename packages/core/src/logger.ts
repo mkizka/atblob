@@ -26,7 +26,7 @@ const consoleLog: Record<Level, (line: string) => void> = {
   error: (line) => console.error(line),
 };
 
-export type LogFormat = "json" | "pretty";
+type LogFormat = "json" | "pretty";
 
 const formatJson = (
   level: Level,
