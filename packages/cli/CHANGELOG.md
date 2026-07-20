@@ -1,5 +1,18 @@
 # @atblob/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- aa82fbf: Add a `--blob-cache-max-bytes` / `BLOB_CACHE_MAX_BYTES` option to cap the in-memory blob cache size.
+
+### Patch Changes
+
+- Updated dependencies [9f4c4ef]
+- Updated dependencies [aa82fbf]
+  - @atblob/core@0.3.0
+  - @atblob/hono@0.2.2
+
 ## 0.4.2
 
 ### Patch Changes
