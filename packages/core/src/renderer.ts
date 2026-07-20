@@ -26,6 +26,7 @@ export const createRenderer = async (
     .value("maxBlobSize", resolved.maxBlobSize)
     .value("blobFetchTimeout", resolved.blobFetchTimeout)
     .value("blobCacheTTL", resolved.blobCacheTTL)
+    .value("blobCacheMaxBytes", resolved.blobCacheMaxBytes)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
     .value("logger", resolved.logger)
@@ -36,7 +37,11 @@ export const createRenderer = async (
       ["maxBlobSize", "blobFetchTimeout", "blobFetch"],
       createBlobFetcher,
     )
-    .service("blobCache", ["blobCacheTTL"], createMemoryBlobCache);
+    .service(
+      "blobCache",
+      ["blobCacheTTL", "blobCacheMaxBytes"],
+      createMemoryBlobCache,
+    );
 
   const registry =
     resolved.didCache === "memory"
