@@ -24,13 +24,13 @@ const fakeBlobResolver = (
   resolveBlob: BlobResolver["resolveBlob"],
 ): BlobResolver => ({ resolveBlob });
 
+const notCalledResolver = fakeBlobResolver(() => {
+  throw new Error("should not be called");
+});
+
 describe("createRenderFn", () => {
   it("results in BadRequestError when preset is unknown", async () => {
-    const render = createRenderFn({
-      blobResolver: fakeBlobResolver(() => {
-        throw new Error("should not be called");
-      }),
-    });
+    const render = createRenderFn({ blobResolver: notCalledResolver });
 
     await expect(
       render({ preset: "unknown", did: VALID_DID, cid: VALID_CID }),
@@ -38,11 +38,7 @@ describe("createRenderFn", () => {
   });
 
   it("results in BadRequestError when did is invalid", async () => {
-    const render = createRenderFn({
-      blobResolver: fakeBlobResolver(() => {
-        throw new Error("should not be called");
-      }),
-    });
+    const render = createRenderFn({ blobResolver: notCalledResolver });
 
     await expect(
       render({ preset: "avatar", did: "invalid-did", cid: VALID_CID }),
@@ -50,11 +46,7 @@ describe("createRenderFn", () => {
   });
 
   it("results in BadRequestError when cid is invalid", async () => {
-    const render = createRenderFn({
-      blobResolver: fakeBlobResolver(() => {
-        throw new Error("should not be called");
-      }),
-    });
+    const render = createRenderFn({ blobResolver: notCalledResolver });
 
     await expect(
       render({ preset: "avatar", did: VALID_DID, cid: "invalid-cid" }),
@@ -62,11 +54,7 @@ describe("createRenderFn", () => {
   });
 
   it("results in BadRequestError when format is unsupported", async () => {
-    const render = createRenderFn({
-      blobResolver: fakeBlobResolver(() => {
-        throw new Error("should not be called");
-      }),
-    });
+    const render = createRenderFn({ blobResolver: notCalledResolver });
 
     await expect(
       render({

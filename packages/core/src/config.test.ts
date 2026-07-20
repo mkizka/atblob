@@ -3,6 +3,15 @@ import { describe, expect, it } from "vitest";
 import { resolveConfig } from "./config.js";
 import { createNoopLogger } from "./logger.js";
 
+const DEFAULT_CONFIG = {
+  maxBlobSize: 10 * 1024 * 1024,
+  didResolveTimeout: 5000,
+  blobFetchTimeout: 15000,
+  blobCacheTTL: 5 * 60 * 1000,
+  blobCacheMaxBytes: 100 * 1024 * 1024,
+  plcDirectoryUrl: "https://plc.directory",
+};
+
 describe("resolveConfig", () => {
   it("builds a config including redisUrl when didCache is redis", () => {
     const config = resolveConfig({
@@ -11,14 +20,9 @@ describe("resolveConfig", () => {
     });
 
     expect(config).toMatchObject({
+      ...DEFAULT_CONFIG,
       didCache: "redis",
       redisUrl: "redis://localhost:6379",
-      maxBlobSize: 10 * 1024 * 1024,
-      didResolveTimeout: 5000,
-      blobFetchTimeout: 15000,
-      blobCacheTTL: 5 * 60 * 1000,
-      blobCacheMaxBytes: 100 * 1024 * 1024,
-      plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();
   });
@@ -58,13 +62,8 @@ describe("resolveConfig", () => {
     const config = resolveConfig();
 
     expect(config).toMatchObject({
+      ...DEFAULT_CONFIG,
       didCache: "memory",
-      maxBlobSize: 10 * 1024 * 1024,
-      didResolveTimeout: 5000,
-      blobFetchTimeout: 15000,
-      blobCacheTTL: 5 * 60 * 1000,
-      blobCacheMaxBytes: 100 * 1024 * 1024,
-      plcDirectoryUrl: "https://plc.directory",
     });
     expect(config.logger).toBeDefined();
   });

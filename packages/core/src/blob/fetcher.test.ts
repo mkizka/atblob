@@ -35,6 +35,12 @@ const startServer = async (
 describe("createBlobFetcher", () => {
   let close: (() => Promise<void>) | undefined;
 
+  const fetcher = createBlobFetcher({
+    maxBlobSize: 1024,
+    blobFetchTimeout: 1000,
+    blobFetch: fetch,
+  });
+
   afterEach(async () => {
     await close?.();
     close = undefined;
@@ -49,11 +55,6 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
     const result = await fetcher.fetchBlob(new URL(server.url), DID, cid);
 
     expect(result.contentType).toBe("image/png");
@@ -69,12 +70,6 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
-
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, wrongCid),
     ).rejects.toThrow(NotFoundError);
@@ -86,12 +81,6 @@ describe("createBlobFetcher", () => {
       res.end("not found");
     });
     close = server.close;
-
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
 
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
@@ -105,12 +94,6 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
-
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
     ).rejects.toThrow(BadGatewayError);
@@ -123,12 +106,6 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
-
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
     ).rejects.toThrow(BadRequestError);
@@ -140,12 +117,6 @@ describe("createBlobFetcher", () => {
       res.end("<svg></svg>");
     });
     close = server.close;
-
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
 
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
@@ -162,12 +133,6 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
-
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
     ).rejects.toThrow(BadRequestError);
@@ -179,12 +144,6 @@ describe("createBlobFetcher", () => {
       res.end(Buffer.alloc(2048));
     });
     close = server.close;
-
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
 
     await expect(
       fetcher.fetchBlob(new URL(server.url), DID, "cid"),
@@ -201,24 +160,18 @@ describe("createBlobFetcher", () => {
     });
     close = server.close;
 
-    const fetcher = createBlobFetcher({
+    const timeoutFetcher = createBlobFetcher({
       maxBlobSize: 1024,
       blobFetchTimeout: 100,
       blobFetch: fetch,
     });
 
     await expect(
-      fetcher.fetchBlob(new URL(server.url), DID, "cid"),
+      timeoutFetcher.fetchBlob(new URL(server.url), DID, "cid"),
     ).rejects.toThrow(BadGatewayError);
   });
 
   it("results in BadGatewayError when the connection fails", async () => {
-    const fetcher = createBlobFetcher({
-      maxBlobSize: 1024,
-      blobFetchTimeout: 1000,
-      blobFetch: fetch,
-    });
-
     await expect(
       fetcher.fetchBlob(new URL("http://127.0.0.1:1"), DID, "cid"),
     ).rejects.toThrow(BadGatewayError);

@@ -1,4 +1,4 @@
-import { safeFetchWrap } from "@atproto-labs/fetch-node";
+import { createSafeFetch } from "../safe-fetch.js";
 
 export type BlobFetch = typeof fetch;
 
@@ -8,11 +8,7 @@ export const createBlobFetch = (deps: {
   blobFetchTimeout: number;
   maxBlobSize: number;
 }): BlobFetch =>
-  safeFetchWrap({
-    // Resolve globalThis.fetch lazily, at call time rather than here, so
-    // that fetch mocks (e.g. msw) installed after this function runs are
-    // still honored.
-    fetch: (input, init) => globalThis.fetch(input, init),
+  createSafeFetch({
     timeout: deps.blobFetchTimeout,
     responseMaxSize: deps.maxBlobSize,
   });
