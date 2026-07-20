@@ -21,7 +21,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "format": "eslint --fix . && prettier --write --log-level warn .",
     "lint": "eslint . && prettier --check .",
     "test": "vitest run",
