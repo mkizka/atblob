@@ -11,6 +11,7 @@ import {
   vi,
 } from "vitest";
 
+import pkg from "../package.json" with { type: "json" };
 import { runCli } from "./cli.js";
 
 let infoSpy: MockInstance<typeof console.info>;
@@ -150,6 +151,34 @@ describe("runCli", () => {
     await expect(runCli(["--did-cache", "redis"], {})).rejects.toThrow(
       '--redis-url (or the REDIS_URL environment variable) is required when --did-cache is "redis"',
     );
+  });
+
+  it("throws when an option is passed a value outside its allowed choices", async () => {
+    await expect(runCli(["--log-level", "not-a-level"], {})).rejects.toThrow(
+      "--log-level must be one of: debug, info, warn, error, silent",
+    );
+  });
+
+  it("prints the help text and returns without starting the server", async () => {
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
+
+    await runCli(["--help"], {});
+
+    expect(writeSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Start a cdn.bsky.app-compatible image server"),
+    );
+  });
+
+  it("prints the version and returns without starting the server", async () => {
+    const writeSpy = vi
+      .spyOn(process.stdout, "write")
+      .mockImplementation(() => true);
+
+    await runCli(["--version"], {});
+
+    expect(writeSpy).toHaveBeenCalledWith(`${pkg.version}\n`);
   });
 
   it("logs a structured access log entry for each request", async () => {
