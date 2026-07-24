@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@types/node": "24.13.3",
-    "hono": "4.12.30",
-    "prettier": "3.9.5",
+    "hono": "4.12.31",
+    "prettier": "3.9.6",
     "prettier-plugin-pkg": "0.22.1",
     "vitest": "4.1.10"
   },
