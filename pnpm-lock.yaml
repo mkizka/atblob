@@ -3,7 +3,6 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
-  injectWorkspacePackages: true
 
 importers:
 
@@ -93,7 +92,7 @@ importers:
     dependencies:
       '@atblob/core':
         specifier: workspace:*
-        version: file:packages/core(@types/node@24.13.3)(supports-color@7.2.0)
+        version: link:../core
       '@atblob/hono':
         specifier: workspace:*
         version: link:../hono
@@ -167,7 +166,7 @@ importers:
     dependencies:
       '@atblob/core':
         specifier: workspace:*
-        version: file:packages/core(@types/node@24.13.3)(supports-color@7.2.0)
+        version: link:../core
     devDependencies:
       '@types/express':
         specifier: 5.0.6
@@ -192,7 +191,7 @@ importers:
     dependencies:
       '@atblob/core':
         specifier: workspace:*
-        version: file:packages/core(@types/node@24.13.3)(supports-color@7.2.0)
+        version: link:../core
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -211,9 +210,6 @@ importers:
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(msw@2.15.0(@types/node@24.13.3)(typescript@6.0.3))(vite@8.1.4(@types/node@24.13.3)(yaml@2.9.0))
 
 packages:
-
-  '@atblob/core@file:packages/core':
-    resolution: {directory: packages/core, type: directory}
 
   '@atproto-labs/did-resolver@0.3.5':
     resolution: {integrity: sha512-0dMM+hj40VQiD/EJhlC1UMQgPXRwKeqM7NgJte7fVuYMv5b3P0W6+Lu3iDumHULcSjMmMXxJZzoi3i493Y0gCA==}
@@ -2631,10 +2627,6 @@ packages:
     resolution: {integrity: sha512-HvltHd7avK13QIw/oLe4qoOLyoVSoafqJ2jYOrtMRBkbYT31eiBQ8O0ehRKZiEZCMEyLFQNIADpgCWC5fALvYQ==}
     engines: {node: '>=22.19.0'}
 
-  undici@8.7.0:
-    resolution: {integrity: sha512-N7iQtfyLhIMOFgQubvmLV26svHpO0bqKnAiWotTQCVKCmWrcGbBotPuW1x+xwYZ2VHdSTVUfPQQnlEt1/LouTQ==}
-    engines: {node: '>=22.19.0'}
-
   universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
@@ -2806,19 +2798,6 @@ packages:
 
 snapshots:
 
-  '@atblob/core@file:packages/core(@types/node@24.13.3)(supports-color@7.2.0)':
-    dependencies:
-      '@atproto-labs/did-resolver': 0.3.5
-      '@atproto-labs/fetch-node': 0.3.4
-      '@atproto/did': 0.5.4
-      '@gyaku/di': 4.0.0
-      ioredis: 6.0.0(supports-color@7.2.0)
-      multiformats: 14.0.5
-      sharp: 0.35.3(@types/node@24.13.3)
-    transitivePeerDependencies:
-      - '@types/node'
-      - supports-color
-
   '@atproto-labs/did-resolver@0.3.5':
     dependencies:
       '@atproto-labs/fetch': 0.3.4
@@ -2835,7 +2814,7 @@ snapshots:
       ipaddr.js: 2.4.0
       undici_v6: undici@6.27.0
       undici_v7: undici@7.28.0
-      undici_v8: undici@8.7.0
+      undici_v8: undici@8.10.0
 
   '@atproto-labs/fetch@0.3.3':
     dependencies:
@@ -5437,8 +5416,6 @@ snapshots:
   undici@7.28.0: {}
 
   undici@8.10.0: {}
-
-  undici@8.7.0: {}
 
   universalify@0.1.2: {}
 

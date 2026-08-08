@@ -2,7 +2,7 @@ packages:
   - "packages/*"
   - "e2e"
 
-injectWorkspacePackages: true
+injectWorkspacePackages: false
 
 allowBuilds:
   cpu-features: false
