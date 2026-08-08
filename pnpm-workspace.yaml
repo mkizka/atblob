@@ -2,8 +2,6 @@ packages:
   - "packages/*"
   - "e2e"
 
-injectWorkspacePackages: false
-
 allowBuilds:
   cpu-features: false
   msw: true
