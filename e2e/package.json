@@ -10,6 +10,7 @@
   "license": "AGPL-3.0-only",
   "private": true,
   "scripts": {
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "format": "eslint --fix . && prettier --write --log-level warn .",
     "lint": "eslint . && prettier --check .",
     "test": "vitest run",

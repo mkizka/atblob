@@ -23,6 +23,7 @@
     "dist"
   ],
   "scripts": {
+    "_syncPnpm": "pnpm sync-dependencies-meta-injected",
     "build": "tsc -p tsconfig.build.json",
     "format": "eslint --fix . && prettier --write --log-level warn .",
     "lint": "eslint . && prettier --check .",
