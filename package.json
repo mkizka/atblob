@@ -9,7 +9,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.22.0",
+  "packageManager": "pnpm@11.24.0",
   "scripts": {
     "atblob": "turbo run build --filter=@atblob/cli && node packages/cli/dist/bin.js",
     "build": "turbo run build",
@@ -23,18 +23,18 @@
     "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "3.0.0",
+    "@changesets/cli": "3.0.1",
     "@mkizka/eslint-config": "10.0.0",
     "@tsconfig/node-lts": "24.0.1",
     "@tsconfig/strictest": "2.0.8",
     "@types/node": "24.13.3",
     "@vitest/coverage-v8": "4.1.11",
-    "eslint": "10.8.1",
+    "eslint": "10.9.1",
     "husky": "9.1.7",
     "lint-staged": "17.3.0",
     "prettier": "3.9.6",
     "prettier-plugin-pkg": "0.22.1",
-    "turbo": "2.10.11",
+    "turbo": "2.10.12",
     "typescript": "6.0.3",
     "vitest": "4.1.11"
   }
