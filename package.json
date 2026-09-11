@@ -9,7 +9,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.26.0",
+  "packageManager": "pnpm@12.4.0",
   "scripts": {
     "atblob": "turbo run build --filter=@atblob/cli && node packages/cli/dist/bin.js",
     "build": "turbo run build",
