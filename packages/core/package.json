@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@atproto-labs/did-resolver": "^0.3.5",
-    "@atproto-labs/fetch-node": "^0.3.4",
+    "@atproto-labs/fetch-node": "^0.4.0",
     "@atproto/did": "^0.5.4",
     "@gyaku/di": "^4.0.0",
     "ioredis": "^6.0.0",
@@ -40,7 +40,7 @@
     "get-port": "7.2.0",
     "prettier": "3.9.6",
     "prettier-plugin-pkg": "0.22.1",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   },
   "prettier": {
     "plugins": [
