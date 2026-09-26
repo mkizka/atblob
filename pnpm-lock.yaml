@@ -295,8 +295,8 @@ importers:
         specifier: ^0.5.4
         version: 0.5.4
       '@gyaku/di':
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^5.0.0
+        version: 5.0.0
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@7.2.0)
@@ -619,8 +619,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  '@gyaku/di@4.0.0':
-    resolution: {integrity: sha512-7rlVctTHqvQzf9Ht8H0myHhGs0bt5/VfShblyLuuWvFekPI8IxVlfuuDIMouX6iLD8VB+ehu2aC0onPnAYINbg==}
+  '@gyaku/di@5.0.0':
+    resolution: {integrity: sha512-8Bw5vevl0ol1VzWCrCVMJ8V144XB9ANV1rSTBKtee3wTo8wWah1RHjB97jpiXkMlHt2/mPyC3/QcSM4ub2TyPQ==}
     engines: {node: '>=24'}
 
   '@hono/node-server@2.1.1':
@@ -3286,7 +3286,7 @@ snapshots:
       protobufjs: 7.6.5
       yargs: 17.7.3
 
-  '@gyaku/di@4.0.0': {}
+  '@gyaku/di@5.0.0': {}
 
   '@hono/node-server@2.1.1(hono@4.13.8)':
     dependencies:
