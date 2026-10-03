@@ -97,7 +97,7 @@ export const setupMockUpstream = (opts: { did: string }): MockUpstream => {
     // under test as unhandled and errors on them too.
     http.all(LOCAL_SERVER_PATTERN, () => passthrough()),
   );
-  server.listen({ onUnhandledRequest: "error" });
+  server.listen({ onUnhandledFrame: "error" });
 
   const registerBlobAt = (cid: string, bytes: Uint8Array): string => {
     blobReplies.set(cid, bytes);
