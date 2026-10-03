@@ -45,7 +45,7 @@ export const createRenderer = async (
 
   const registry =
     resolved.didCache === "memory"
-      ? base.service("didCache", [], createMemoryDidCache)
+      ? base.service("didCache", createMemoryDidCache)
       : base
           .value("redisUrl", resolved.redisUrl)
           .service("didCache", ["redisUrl", "logger"], createRedisDidCache);
