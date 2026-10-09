@@ -20,15 +20,15 @@
   },
   "devDependencies": {
     "@testcontainers/redis": "12.2.0",
-    "@types/node": "24.19.0",
+    "@types/node": "24.19.1",
     "get-port": "7.2.0",
-    "msw": "3.0.0",
+    "msw": "3.0.2",
     "multiformats": "14.0.5",
     "prettier": "3.9.9",
     "prettier-plugin-pkg": "0.22.1",
     "sharp": "0.35.5",
     "testcontainers": "12.2.0",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   },
   "prettier": {
     "plugins": [
