@@ -19,16 +19,16 @@
     "@atblob/cli": "workspace:*"
   },
   "devDependencies": {
-    "@testcontainers/redis": "12.2.0",
-    "@types/node": "24.19.1",
+    "@testcontainers/redis": "12.2.1",
+    "@types/node": "24.19.2",
     "get-port": "7.2.0",
-    "msw": "3.0.2",
+    "msw": "3.0.3",
     "multiformats": "14.0.5",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "prettier-plugin-pkg": "0.22.1",
     "sharp": "0.35.5",
-    "testcontainers": "12.2.0",
-    "vitest": "5.0.3"
+    "testcontainers": "12.2.1",
+    "vitest": "5.0.4"
   },
   "prettier": {
     "plugins": [
