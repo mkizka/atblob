@@ -42,7 +42,7 @@
     "get-port": "7.2.0",
     "prettier": "3.9.10",
     "prettier-plugin-pkg": "0.22.1",
-    "vitest": "5.0.4"
+    "vitest": "5.0.5"
   },
   "prettier": {
     "plugins": [
