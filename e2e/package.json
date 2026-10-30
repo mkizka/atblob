@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@testcontainers/redis": "12.2.1",
-    "@types/node": "24.19.2",
+    "@types/node": "26.6.5",
     "get-port": "7.2.0",
     "msw": "3.0.3",
     "multiformats": "14.0.5",
