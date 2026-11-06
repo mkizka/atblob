@@ -9,7 +9,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@12.16.1",
+  "packageManager": "pnpm@12.17.0",
   "scripts": {
     "atblob": "turbo run build --filter=@atblob/cli && node packages/cli/dist/bin.js",
     "build": "turbo run build",
@@ -27,15 +27,15 @@
     "@mkizka/eslint-config": "10.0.0",
     "@tsconfig/node-lts": "24.0.1",
     "@tsconfig/strictest": "2.0.8",
-    "@types/node": "26.6.5",
-    "@vitest/coverage-v8": "5.0.5",
-    "eslint": "10.13.0",
+    "@types/node": "26.6.6",
+    "@vitest/coverage-v8": "5.1.0",
+    "eslint": "10.14.0",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
     "prettier": "3.9.10",
     "prettier-plugin-pkg": "0.22.1",
     "turbo": "2.11.10",
     "typescript": "6.0.3",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   }
 }

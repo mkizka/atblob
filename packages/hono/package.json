@@ -34,11 +34,11 @@
     "@atblob/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "26.6.5",
-    "hono": "4.13.14",
+    "@types/node": "26.6.6",
+    "hono": "4.13.16",
     "prettier": "3.9.10",
     "prettier-plugin-pkg": "0.22.1",
-    "vitest": "5.0.5"
+    "vitest": "5.1.0"
   },
   "prettier": {
     "plugins": [
