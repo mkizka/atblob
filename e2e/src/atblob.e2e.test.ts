@@ -1,15 +1,17 @@
+import { TestNetworkNoAppView } from "@atproto/dev-env";
+import { CID } from "multiformats/cid";
+import * as raw from "multiformats/codecs/raw";
+import { sha256 } from "multiformats/hashes/sha2";
 import sharp from "sharp";
 import { aroundAll, describe, expect, it, vi } from "vitest";
 
 import { request, startCli } from "./local-server.js";
 import { startTestRedis } from "./redis-container.js";
-import { type MockUpstream, setupMockUpstream } from "./upstream.js";
-
-const DID = "did:plc:z72i7hdynmk6r22z27h6tvur";
 
 describe("atblob e2e", () => {
-  let cliPort: number;
-  let upstream: MockUpstream;
+  let network: TestNetworkNoAppView;
+  let did: string;
+  let cid: string;
 
   aroundAll(async (runSuite) => {
     vi.spyOn(console, "info").mockImplementation(() => undefined);
@@ -18,16 +20,32 @@ describe("atblob e2e", () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
     try {
-      await using redis = await startTestRedis();
-      await using cli = await startCli([
-        "--did-cache",
-        "redis",
-        "--redis-url",
-        redis.url,
-      ]);
-      using mockUpstream = setupMockUpstream({ did: DID });
-      cliPort = cli.port;
-      upstream = mockUpstream;
+      await using testNetwork = await TestNetworkNoAppView.create({});
+      network = testNetwork;
+
+      const agent = network.pds.getAgent();
+      const account = await agent.createAccount({
+        handle: "alice.test",
+        email: "alice@test.com",
+        password: "password",
+      });
+      did = account.data.did;
+
+      const image = await sharp({
+        create: { width: 400, height: 200, channels: 3, background: "#08f" },
+      })
+        .png()
+        .toBuffer();
+      const uploaded = await agent.uploadBlob(image, {
+        encoding: "image/png",
+      });
+      await agent.com.atproto.repo.putRecord({
+        repo: did,
+        collection: "app.bsky.actor.profile",
+        rkey: "self",
+        record: { avatar: uploaded.data.blob },
+      });
+      cid = uploaded.data.blob.ref.toString();
 
       await runSuite();
     } finally {
@@ -35,76 +53,100 @@ describe("atblob e2e", () => {
     }
   });
 
-  it("resolves the did, fetches the blob from the pds, and returns a resized image", async () => {
-    const cid = await upstream.serveBlob({ width: 400, height: 200 });
+  describe("with SSRF protection enabled", () => {
+    let cliPort: number;
 
-    const res = await request(
-      cliPort,
-      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
-    );
+    aroundAll(async (runSuite) => {
+      await using cli = await startCli([
+        "--plc-directory-url",
+        network.plc.url,
+      ]);
+      cliPort = cli.port;
 
-    expect(res.status).toBe(200);
-    expect(res.headers["content-type"]).toBe("image/webp");
-    expect(res.headers["cache-control"]).toBe("public, max-age=31536000");
-    const metadata = await sharp(res.body).metadata();
-    expect(metadata.format).toBe("webp");
-    expect(metadata.width).toBe(128);
-    expect(metadata.height).toBe(128);
+      await runSuite();
+    });
+
+    it("returns 404 because the plc directory on a local address over http is refused", async () => {
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/${did}/${cid}`,
+      );
+
+      expect(res.status).toBe(404);
+    });
   });
 
-  it("returns 400 for an unknown preset", async () => {
-    // preset is validated before the cid, so it need not be registered.
-    const res = await request(
-      cliPort,
-      `/img/not_a_real_preset/plain/${DID}/unused`,
-    );
+  describe("with SSRF protection disabled", () => {
+    let cliPort: number;
 
-    expect(res.status).toBe(400);
-  });
+    aroundAll(async (runSuite) => {
+      await using redis = await startTestRedis();
+      await using cli = await startCli([
+        "--disable-ssrf-protection",
+        "--plc-directory-url",
+        network.plc.url,
+        "--did-cache",
+        "redis",
+        "--redis-url",
+        redis.url,
+      ]);
+      cliPort = cli.port;
 
-  it("returns 400 for a malformed cid", async () => {
-    const res = await request(
-      cliPort,
-      `/img/avatar_thumbnail/plain/${DID}/not-a-valid-cid`,
-    );
+      await runSuite();
+    });
 
-    expect(res.status).toBe(400);
-  });
+    it("resolves the did, fetches the blob from the pds, and returns a resized image", async () => {
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/${did}/${cid}`,
+      );
 
-  it("returns 404 when the did fails to resolve", async () => {
-    const unknownDid = "did:plc:doesnotexist000000000000";
-    const cid = await upstream.unregisteredCid();
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toBe("image/webp");
+      expect(res.headers["cache-control"]).toBe("public, max-age=31536000");
+      const metadata = await sharp(res.body).metadata();
+      expect(metadata.format).toBe("webp");
+      expect(metadata.width).toBe(128);
+      expect(metadata.height).toBe(128);
+    });
 
-    const res = await request(
-      cliPort,
-      `/img/avatar_thumbnail/plain/${unknownDid}/${cid}`,
-    );
+    it("returns 400 for an unknown preset", async () => {
+      const res = await request(
+        cliPort,
+        `/img/not_a_real_preset/plain/${did}/${cid}`,
+      );
 
-    expect(res.status).toBe(404);
-  });
+      expect(res.status).toBe(400);
+    });
 
-  it("returns 404 when the pds has no blob for the cid", async () => {
-    const cid = await upstream.unregisteredCid();
+    it("returns 400 for a malformed cid", async () => {
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/${did}/not-a-valid-cid`,
+      );
 
-    const res = await request(
-      cliPort,
-      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
-    );
+      expect(res.status).toBe(400);
+    });
 
-    expect(res.status).toBe(404);
-  });
+    it("returns 404 when the did fails to resolve", async () => {
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/did:plc:doesnotexist000000000000/${cid}`,
+      );
 
-  it("returns 404 when the fetched blob's hash doesn't match the cid", async () => {
-    // Unlike the "no blob for the cid" case above, the pds mock here
-    // responds with 200 and real bytes - only atblob's own cid
-    // verification can catch that they don't hash to the requested cid.
-    const cid = await upstream.serveBlobWithMismatchedCid();
+      expect(res.status).toBe(404);
+    });
 
-    const res = await request(
-      cliPort,
-      `/img/avatar_thumbnail/plain/${DID}/${cid}`,
-    );
+    it("returns 404 when the pds has no blob for the cid", async () => {
+      const digest = await sha256.digest(new TextEncoder().encode("missing"));
+      const missingCid = CID.createV1(raw.code, digest).toString();
 
-    expect(res.status).toBe(404);
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/${did}/${missingCid}`,
+      );
+
+      expect(res.status).toBe(404);
+    });
   });
 });

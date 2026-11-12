@@ -3,9 +3,10 @@ packages:
   - "e2e"
 
 allowBuilds:
+  better-sqlite3: true
   cpu-features: false
-  msw: true
   protobufjs: false
+  sharp: false
   ssh2: false
 
 minimumReleaseAgeExclude:
