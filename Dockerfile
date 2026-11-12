@@ -19,6 +19,9 @@ FROM gcr.io/distroless/nodejs24-debian12:nonroot AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV LOG_FORMAT=json
+ENV MALLOC_ARENA_MAX=2
+ENV MALLOC_TRIM_THRESHOLD_=131072
+ENV MALLOC_MMAP_THRESHOLD_=131072
 COPY --from=builder /app/deploy .
 
 EXPOSE 3000
