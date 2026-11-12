@@ -17,6 +17,7 @@ describe("buildConfig", () => {
         blobCacheTTL: 300,
         blobCacheMaxBytes: 4096,
         plcDirectoryUrl: "https://plc.example.com",
+        disableSsrfProtection: true,
         port: 8080,
         logLevel: "debug",
       },
@@ -32,6 +33,7 @@ describe("buildConfig", () => {
       blobCacheTTL: 300,
       blobCacheMaxBytes: 4096,
       plcDirectoryUrl: "https://plc.example.com",
+      disableSsrfProtection: true,
       port: 8080,
     });
     expect(config.logger).toBeDefined();
@@ -47,6 +49,7 @@ describe("buildConfig", () => {
       BLOB_CACHE_TTL: "500",
       BLOB_CACHE_MAX_BYTES: "8192",
       PLC_DIRECTORY_URL: "https://plc.example.com",
+      DISABLE_SSRF_PROTECTION: "true",
       PORT: "9000",
       LOG_LEVEL: "warn",
     };
@@ -62,6 +65,7 @@ describe("buildConfig", () => {
       blobCacheTTL: 500,
       blobCacheMaxBytes: 8192,
       plcDirectoryUrl: "https://plc.example.com",
+      disableSsrfProtection: true,
       port: 9000,
     });
     expect(config.logger).toBeDefined();

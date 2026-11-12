@@ -10,6 +10,7 @@ const DEFAULT_CONFIG = {
   blobCacheTTL: 5 * 60 * 1000,
   blobCacheMaxBytes: 100 * 1024 * 1024,
   plcDirectoryUrl: "https://plc.directory",
+  disableSsrfProtection: false,
 };
 
 describe("resolveConfig", () => {
@@ -37,6 +38,7 @@ describe("resolveConfig", () => {
       blobCacheTTL: 300,
       blobCacheMaxBytes: 4096,
       plcDirectoryUrl: "https://plc.example.com",
+      disableSsrfProtection: true,
       logger,
     });
 
@@ -48,6 +50,7 @@ describe("resolveConfig", () => {
       blobCacheTTL: 300,
       blobCacheMaxBytes: 4096,
       plcDirectoryUrl: "https://plc.example.com",
+      disableSsrfProtection: true,
       logger,
     });
   });

@@ -3,6 +3,7 @@ import { safeFetchWrap } from "@atproto-labs/fetch-node";
 export const createSafeFetch = (deps: {
   timeout: number;
   responseMaxSize?: number;
+  ssrfProtection: boolean;
 }): typeof fetch =>
   safeFetchWrap({
     // Resolve globalThis.fetch lazily, at call time rather than here, so
@@ -10,6 +11,7 @@ export const createSafeFetch = (deps: {
     // still honored.
     fetch: (input, init) => globalThis.fetch(input, init),
     timeout: deps.timeout,
+    ssrfProtection: deps.ssrfProtection,
     ...(deps.responseMaxSize !== undefined && {
       responseMaxSize: deps.responseMaxSize,
     }),

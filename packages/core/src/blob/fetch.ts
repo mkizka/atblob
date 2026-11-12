@@ -7,8 +7,10 @@ export type BlobFetch = typeof fetch;
 export const createBlobFetch = (deps: {
   blobFetchTimeout: number;
   maxBlobSize: number;
+  ssrfProtection: boolean;
 }): BlobFetch =>
   createSafeFetch({
     timeout: deps.blobFetchTimeout,
     responseMaxSize: deps.maxBlobSize,
+    ssrfProtection: deps.ssrfProtection,
   });

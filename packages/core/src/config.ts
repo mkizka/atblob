@@ -7,6 +7,7 @@ type BaseAtblobConfig = {
   blobCacheTTL: number;
   blobCacheMaxBytes: number;
   plcDirectoryUrl: string;
+  disableSsrfProtection: boolean;
   logger: Logger;
 };
 
@@ -36,6 +37,7 @@ export const resolveConfig = (
     blobCacheTTL: config.blobCacheTTL ?? 5 * 60 * 1000,
     blobCacheMaxBytes: config.blobCacheMaxBytes ?? 100 * 1024 * 1024,
     plcDirectoryUrl: config.plcDirectoryUrl ?? "https://plc.directory",
+    disableSsrfProtection: config.disableSsrfProtection ?? false,
     logger: config.logger ?? createConsoleLogger(),
   };
   if (config.didCache !== "redis") {

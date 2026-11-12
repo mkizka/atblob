@@ -29,9 +29,18 @@ export const createRenderer = async (
     .value("blobCacheMaxBytes", resolved.blobCacheMaxBytes)
     .value("plcDirectoryUrl", resolved.plcDirectoryUrl)
     .value("didResolveTimeout", resolved.didResolveTimeout)
+    .value("ssrfProtection", !resolved.disableSsrfProtection)
     .value("logger", resolved.logger)
-    .service("blobFetch", ["blobFetchTimeout", "maxBlobSize"], createBlobFetch)
-    .service("didFetch", ["didResolveTimeout"], createDidFetch)
+    .service(
+      "blobFetch",
+      ["blobFetchTimeout", "maxBlobSize", "ssrfProtection"],
+      createBlobFetch,
+    )
+    .service(
+      "didFetch",
+      ["didResolveTimeout", "ssrfProtection"],
+      createDidFetch,
+    )
     .service(
       "blobFetcher",
       ["maxBlobSize", "blobFetchTimeout", "blobFetch"],
