@@ -1,5 +1,15 @@
 # @atblob/core
 
+## 0.4.0
+
+### Minor Changes
+
+- 98cad5e: Add option to disable SSRF protection for local development.
+
+### Patch Changes
+
+- a0e3483: Distinguish DID resolution failures in response status codes.
+
 ## 0.3.0
 
 ### Minor Changes

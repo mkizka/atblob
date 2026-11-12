@@ -1,5 +1,19 @@
 # @atblob/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- 98cad5e: Add option to disable SSRF protection for local development.
+
+### Patch Changes
+
+- 0518c33: Reduce memory usage of the Docker image.
+- Updated dependencies [a0e3483]
+- Updated dependencies [98cad5e]
+  - @atblob/core@0.4.0
+  - @atblob/hono@0.2.3
+
 ## 0.5.0
 
 ### Minor Changes
