@@ -147,6 +147,15 @@ describe("atblob e2e", () => {
       expect(res.status).toBe(400);
     });
 
+    it("returns 400 for a malformed did", async () => {
+      const res = await request(
+        cliPort,
+        `/img/avatar_thumbnail/plain/did:plc:doesnotexist000000000000/${cid}`,
+      );
+
+      expect(res.status).toBe(400);
+    });
+
     it("returns 404 when the did fails to resolve", async () => {
       const res = await request(
         cliPort,
