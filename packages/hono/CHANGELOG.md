@@ -1,5 +1,13 @@
 # @atblob/hono
 
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies [a0e3483]
+- Updated dependencies [98cad5e]
+  - @atblob/core@0.4.0
+
 ## 0.2.2
 
 ### Patch Changes
