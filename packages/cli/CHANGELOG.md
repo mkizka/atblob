@@ -1,5 +1,11 @@
 # @atblob/cli
 
+## 0.6.2
+
+### Patch Changes
+
+- 231a083: Fix Docker build failing on Node.js 26 without corepack.
+
 ## 0.6.1
 
 ### Patch Changes
