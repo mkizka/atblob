@@ -37,6 +37,7 @@ export type CliArgValues = NonRequired<{
   blobCacheTTL: number;
   blobCacheMaxBytes: number;
   plcDirectoryUrl: string;
+  disableSsrfProtection: boolean;
   port: number;
   logLevel: (typeof LOG_LEVEL_CHOICES)[number];
   logFormat: (typeof LOG_FORMAT_CHOICES)[number];
@@ -64,6 +65,11 @@ const logFormatSchema = v.picklist(
 );
 
 const stringSchema = v.string();
+
+const booleanSchema = v.pipe(
+  v.picklist(["true", "false"], "must be one of: true, false"),
+  v.transform((value) => value === "true"),
+);
 
 export function buildConfig(
   values: CliArgValues,
@@ -106,6 +112,7 @@ export function buildConfig(
     blobCacheTTL: values.blobCacheTTL ?? env("BLOB_CACHE_TTL", numberSchema),
     blobCacheMaxBytes: values.blobCacheMaxBytes ?? env("BLOB_CACHE_MAX_BYTES", numberSchema),
     plcDirectoryUrl: values.plcDirectoryUrl ?? env("PLC_DIRECTORY_URL", stringSchema),
+    disableSsrfProtection: values.disableSsrfProtection ?? env("DISABLE_SSRF_PROTECTION", booleanSchema),
     port: values.port ?? env("PORT", numberSchema, 3000),
     logger: createConsoleLogger({
       level: values.logLevel ?? env("LOG_LEVEL", logLevelSchema, "info"),

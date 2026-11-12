@@ -54,6 +54,7 @@ Options:
   --blob-cache-ttl <number>  Blob cache TTL (milliseconds)
   --blob-cache-max-bytes <number>  Maximum total bytes held in the blob cache
   --plc-directory-url <url>  PLC Directory URL
+  --disable-ssrf-protection  Disable SSRF protection (for local development only)
   -p, --port <number>        Port number the server listens on
   --log-level <choice>       Minimum log level to output (${LOG_LEVEL_CHOICES.join(", ")})
   --log-format <choice>      Log output format (${LOG_FORMAT_CHOICES.join(", ")})
@@ -81,6 +82,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       "--blob-cache-ttl": Number,
       "--blob-cache-max-bytes": Number,
       "--plc-directory-url": String,
+      "--disable-ssrf-protection": Boolean,
       "--port": Number,
       "--log-level": oneOf(LOG_LEVEL_CHOICES),
       "--log-format": oneOf(LOG_FORMAT_CHOICES),
@@ -113,6 +115,7 @@ export async function runCli(argv: string[], processEnv: Env): Promise<void> {
       blobCacheTTL: args["--blob-cache-ttl"],
       blobCacheMaxBytes: args["--blob-cache-max-bytes"],
       plcDirectoryUrl: args["--plc-directory-url"],
+      disableSsrfProtection: args["--disable-ssrf-protection"],
       port: args["--port"],
       logLevel: args["--log-level"],
       logFormat: args["--log-format"],
