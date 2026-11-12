@@ -1,5 +1,11 @@
 # @atblob/cli
 
+## 0.6.1
+
+### Patch Changes
+
+- ac9b37d: Fix Docker release skipped after changesets/action v2 output rename.
+
 ## 0.6.0
 
 ### Minor Changes
