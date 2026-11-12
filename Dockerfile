@@ -1,5 +1,7 @@
 FROM node:26-slim AS base
-RUN corepack enable
+WORKDIR /app
+COPY package.json ./
+RUN npm install -g "$(node -p "require('./package.json').packageManager")"
 
 FROM base AS pruner
 WORKDIR /app
