@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { BadGatewayError, NotFoundError } from "../errors.js";
+import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
 import { createMemoryDidCache } from "./cache/memory.js";
 import type { Did } from "./did.js";
 import { createPdsResolver } from "./resolver.js";
@@ -58,6 +58,16 @@ describe("createPdsResolver", () => {
     await expect(resolver.resolvePdsEndpoint(DID)).rejects.toThrow(
       NotFoundError,
     );
+  });
+
+  it("throws BadRequestError when the did is malformed", async () => {
+    const resolver = resolverWith(() =>
+      Promise.reject(new Error("unreachable")),
+    );
+
+    await expect(
+      resolver.resolvePdsEndpoint("did:plc:doesnotexist000000000000"),
+    ).rejects.toThrow(BadRequestError);
   });
 
   it("throws BadGatewayError when the plc directory responds 5xx", async () => {

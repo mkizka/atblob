@@ -57,7 +57,7 @@ describe("atblob e2e", () => {
   });
 
   describe("with SSRF protection enabled", () => {
-    it("returns 404 because the plc directory on a local address over http is refused", async () => {
+    it("returns 502 because the plc directory on a local address over http is refused", async () => {
       await using cli = await startCli([
         "--plc-directory-url",
         network.plc.url,
@@ -68,7 +68,7 @@ describe("atblob e2e", () => {
         `/img/avatar_thumbnail/plain/${did}/${cid}`,
       );
 
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(502);
     });
 
     it("returns 502 because the pds on a local address over http is refused", async () => {
@@ -150,7 +150,7 @@ describe("atblob e2e", () => {
     it("returns 404 when the did fails to resolve", async () => {
       const res = await request(
         cliPort,
-        `/img/avatar_thumbnail/plain/did:plc:doesnotexist000000000000/${cid}`,
+        `/img/avatar_thumbnail/plain/did:plc:aaaaaaaaaaaaaaaaaaaaaaaa/${cid}`,
       );
 
       expect(res.status).toBe(404);

@@ -5,7 +5,7 @@ import {
   extractPdsUrl,
 } from "@atproto-labs/did-resolver";
 
-import { BadGatewayError, NotFoundError } from "../errors.js";
+import { BadGatewayError, BadRequestError, NotFoundError } from "../errors.js";
 import type { Did } from "./did.js";
 import type { DidFetch } from "./fetch.js";
 
@@ -35,6 +35,9 @@ export const createPdsResolver = (deps: {
       const document = await resolver.resolve(did);
       return extractPdsUrl(document);
     } catch (cause) {
+      if (cause instanceof DidError && cause.code === "did-invalid") {
+        throw new BadRequestError(`invalid did: ${did}`, { cause });
+      }
       if (isNotFound(cause)) {
         throw new NotFoundError(`did not found: ${did}`, { cause });
       }
