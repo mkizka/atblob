@@ -10,6 +10,7 @@ import { startTestRedis } from "./redis-container.js";
 
 describe("atblob e2e", () => {
   let network: TestNetworkNoAppView;
+  let redisUrl: string;
   let did: string;
   let cid: string;
 
@@ -22,6 +23,8 @@ describe("atblob e2e", () => {
     try {
       await using testNetwork = await TestNetworkNoAppView.create({});
       network = testNetwork;
+      await using redis = await startTestRedis();
+      redisUrl = redis.url;
 
       const agent = network.pds.getAgent();
       const account = await agent.createAccount({
@@ -54,25 +57,42 @@ describe("atblob e2e", () => {
   });
 
   describe("with SSRF protection enabled", () => {
-    let cliPort: number;
-
-    aroundAll(async (runSuite) => {
+    it("returns 404 because the plc directory on a local address over http is refused", async () => {
       await using cli = await startCli([
         "--plc-directory-url",
         network.plc.url,
       ]);
-      cliPort = cli.port;
 
-      await runSuite();
-    });
-
-    it("returns 404 because the plc directory on a local address over http is refused", async () => {
       const res = await request(
-        cliPort,
+        cli.port,
         `/img/avatar_thumbnail/plain/${did}/${cid}`,
       );
 
       expect(res.status).toBe(404);
+    });
+
+    it("returns 502 because the pds on a local address over http is refused", async () => {
+      const args = [
+        "--plc-directory-url",
+        network.plc.url,
+        "--did-cache",
+        "redis",
+        "--redis-url",
+        redisUrl,
+      ];
+      const path = `/img/avatar_thumbnail/plain/${did}/${cid}`;
+      {
+        await using cli = await startCli([
+          "--disable-ssrf-protection",
+          ...args,
+        ]);
+        expect((await request(cli.port, path)).status).toBe(200);
+      }
+      await using cli = await startCli(args);
+
+      const res = await request(cli.port, path);
+
+      expect(res.status).toBe(502);
     });
   });
 
@@ -80,7 +100,6 @@ describe("atblob e2e", () => {
     let cliPort: number;
 
     aroundAll(async (runSuite) => {
-      await using redis = await startTestRedis();
       await using cli = await startCli([
         "--disable-ssrf-protection",
         "--plc-directory-url",
@@ -88,7 +107,7 @@ describe("atblob e2e", () => {
         "--did-cache",
         "redis",
         "--redis-url",
-        redis.url,
+        redisUrl,
       ]);
       cliPort = cli.port;
 
