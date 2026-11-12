@@ -34,8 +34,6 @@ docker run -p 3000:3000 ghcr.io/mkizka/atblob:latest
 
 Tags matching the `@atblob/cli` package version (e.g. `1.2.3`) are published alongside `latest`.
 
-The image disables the in-memory blob cache (`BLOB_CACHE_MAX_BYTES=0`), assuming a CDN caches responses in front of it. Set the variable to enable it.
-
 ## Usage
 
 ```sh
