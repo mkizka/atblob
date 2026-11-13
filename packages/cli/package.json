@@ -34,7 +34,7 @@
     "@atblob/hono": "workspace:*",
     "@hono/node-server": "2.1.6",
     "arg": "5.0.2",
-    "hono": "4.13.16",
+    "hono": "4.13.17",
     "valibot": "1.5.0"
   },
   "devDependencies": {
