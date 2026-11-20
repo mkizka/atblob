@@ -19,12 +19,12 @@
     "@atblob/cli": "workspace:*"
   },
   "devDependencies": {
-    "@atproto/dev-env": "0.7.7",
+    "@atproto/dev-env": "0.7.13",
     "@testcontainers/redis": "12.2.1",
     "@types/node": "26.6.6",
     "get-port": "7.2.0",
     "multiformats": "14.0.5",
-    "prettier": "3.9.10",
+    "prettier": "3.10.1",
     "prettier-plugin-pkg": "0.22.1",
     "sharp": "0.35.5",
     "testcontainers": "12.2.1",
